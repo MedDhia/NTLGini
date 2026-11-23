@@ -11,14 +11,15 @@ Description: Provides harmonized 1992-2024 nighttime-light Gini coefficients
     'VIIRS'-like nighttime lights and 'GADM' 4.1 boundaries. Subunit-level
     'Parquet' tables are downloaded on demand and cached locally.
 License: MIT + file LICENSE
-URL: https://github.com/MedDhia/ntlgini
-BugReports: https://github.com/MedDhia/ntlgini/issues
+URL: https://github.com/MedDhia/NTLGini
+BugReports: https://github.com/MedDhia/NTLGini/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 Depends:
     R (>= 4.1.0)
 Imports:
+    stats,
     tibble,
     tools,
     utils

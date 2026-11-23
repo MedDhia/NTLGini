@@ -29,8 +29,10 @@ A tibble of subunit-year Gini coefficients and within-contributions.
 }
 \description{
 Reads subunit-level Parquet tables (`gini_by_unit_adm1.parquet` through
-`gini_by_unit_adm4.parquet`). If the file is not yet present in `data_dir`, it is downloaded from the `ntlgini`
-GitHub release (`v0.1.0`) and cached in `tools::R_user_dir("ntlgini", "cache")`.
+`gini_by_unit_adm4.parquet`) using `arrow` predicate pushdown when filtering
+by `iso3` or `years`. If the file is not yet present in `data_dir`, it is
+downloaded from the `ntlgini` GitHub release (`v0.1.0`) and cached in
+`tools::R_user_dir("ntlgini", "cache")`.
 }
 \examples{
 if (interactive() && requireNamespace("arrow", quietly = TRUE)) {

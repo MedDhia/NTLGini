@@ -12,6 +12,17 @@ test_that("bundled ntl_gini_global dataset schema and completeness", {
   expect_true(all(ntl_gini_global$year %in% 1992:2024))
 })
 
+test_that("bundled ntl_gini_countries metadata matches ntl_gini_global", {
+  data("ntl_gini_countries", package = "ntlgini")
+  expect_s3_class(ntl_gini_countries, "tbl_df")
+  expect_equal(nrow(ntl_gini_countries), 228)
+  expect_equal(ncol(ntl_gini_countries), 9)
+  tun <- ntl_gini_countries[ntl_gini_countries$iso3 == "TUN", ]
+  expect_equal(tun$max_level, 4L)
+  expect_equal(tun$boundary_source, "MapsTN")
+  expect_equal(tun$n_adm4, 2075L)
+})
+
 test_that("Pyatt/Dagum identities hold across all 16,203 rows", {
   data("ntl_gini_global", package = "ntlgini")
   sub <- ntl_gini_global[!is.na(ntl_gini_global$total_gini) & ntl_gini_global$total_gini > 0, ]
@@ -48,6 +59,34 @@ test_that("ntl_gini_decomp handles full, filtered, and empty queries", {
   expect_s3_class(empty, "tbl_df")
   expect_equal(nrow(empty), 0)
   expect_equal(ncol(empty), 13)
+})
+
+test_that("ntl_gini_trends computes log-linear trends cleanly", {
+  tr <- ntl_gini_trends(iso3 = c("TUN", "MAR"), level = "adm1", window = "viirs")
+  expect_s3_class(tr, "tbl_df")
+  expect_equal(nrow(tr), 2)
+  expect_equal(unique(tr$window), "viirs")
+  expect_true(all(tr$n_years == 13L))
+  expect_true(all(!is.na(tr$percent_per_year)))
+  expect_true(all(tr$r_squared >= 0 & tr$r_squared <= 1))
+
+  empty_tr <- ntl_gini_trends(iso3 = "ZZZ")
+  expect_equal(nrow(empty_tr), 0)
+})
+
+test_that("cache helpers work in an isolated tempdir", {
+  tmp_dir <- file.path(tempdir(), "ntlgini_cache_test")
+  dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
+  writeLines("test", file.path(tmp_dir, "gini_by_unit_adm1.parquet"))
+
+  info <- ntl_gini_cache_info(data_dir = tmp_dir)
+  expect_equal(nrow(info), 1)
+  expect_equal(info$file, "gini_by_unit_adm1.parquet")
+
+  n_del <- ntl_gini_clear_cache(data_dir = tmp_dir)
+  expect_equal(n_del, 1L)
+  expect_equal(nrow(ntl_gini_cache_info(data_dir = tmp_dir)), 0)
+  unlink(tmp_dir, recursive = TRUE)
 })
 
 test_that("ntl_gini_units validates arguments and fails gracefully offline", {

@@ -1,0 +1,51 @@
+---
+title: "Introduction to ntlgini"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to ntlgini}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+`ntlgini` provides harmonized annual nighttime-light Gini coefficients and
+Pyatt/Dagum decompositions (`within`, `between`, and `overlap`) across
+administrative levels `ADM_1` to `ADM_4` for 228 countries and territories
+from 1992 to 2024.
+
+## 1. Exploring Country Coverage
+
+The bundled `ntl_gini_countries` table summarizes which administrative levels
+are available for each country:
+
+```{r coverage}
+library(ntlgini)
+
+data("ntl_gini_countries", package = "ntlgini")
+head(ntl_gini_countries, 10)
+table(ntl_gini_countries$max_level)
+```
+
+## 2. Multi-Scale Inequality Evolution
+
+For countries with four administrative levels (such as Tunisia or Morocco),
+`ntl_gini_decomp()` reveals how inequality behaves differently across spatial
+scales:
+
+```{r multiscale}
+tun <- ntl_gini_decomp(iso3 = "TUN", years = c(1992, 2010, 2024))
+tun[, c("year", "level", "n_groups", "total_gini", "between_gini", "within_gini")]
+```
+
+## 3. Longitudinal Trends by Sensor Era
+
+Because Cheng et al. (2026) transition from *NightNet*-reconstructed DMSP-OLS
+(1992–2011) to native NPP-VIIRS (2012–2024), `ntl_gini_trends()` lets you fit
+log-linear trends separately for each era:
+
+```{r trends}
+ntl_gini_trends(iso3 = c("TUN", "MAR"), level = "adm1", window = "viirs")
+```

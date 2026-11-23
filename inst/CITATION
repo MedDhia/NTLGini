@@ -1,0 +1,29 @@
+bibentry(
+  bibtype  = "Manual",
+  title    = "ntlgini: Global Subnational Nighttime-Light Gini Evolution (1992-2024)",
+  author   = person("Mohamed Dhia", "Hammami"),
+  year     = "2026",
+  note     = "R package version 0.1.0",
+  url      = "https://github.com/MedDhia/NTLGini"
+)
+
+bibentry(
+  bibtype  = "Article",
+  title    = "A temporally consistent global 500 m-resolution monthly VIIRS-like nighttime light dataset (1992-2024)",
+  author   = c(
+    person("Hongquan", "Cheng"),
+    person("Mengqing", "Geng"),
+    person("Xuecao", "Li"),
+    person("Siqi", "Li"),
+    person("Meiling", "Zhao"),
+    person("Chen", "Lin"),
+    person("Jie", "Wang"),
+    person("Peng", "Gong"),
+    person("Yuyu", "Zhou")
+  ),
+  journal  = "Earth System Science Data",
+  year     = "2026",
+  volume   = "18",
+  pages    = "3449--3479",
+  doi      = "10.5194/essd-18-3449-2026"
+)
