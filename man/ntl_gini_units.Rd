@@ -8,18 +8,20 @@ ntl_gini_units(
   level = c("adm1", "adm2", "adm3", "adm4"),
   iso3 = NULL,
   years = NULL,
-  data_dir = tools::R_user_dir("ntlgini", which = "cache"),
+  data_dir = ntl_cache_dir(),
   download = TRUE
 )
 }
 \arguments{
 \item{level}{Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).}
 
-\item{iso3}{Optional character vector of ISO3 country codes to filter.}
+\item{iso3}{Optional character vector of ISO3 country codes to filter
+(case-insensitive).}
 
 \item{years}{Optional integer vector of years to filter.}
 
-\item{data_dir}{Directory where Parquet files are cached.}
+\item{data_dir}{Directory where Parquet files are cached. Defaults to
+[ntl_cache_dir()].}
 
 \item{download}{Logical; whether to download missing Parquet files from
 GitHub Releases.}
@@ -29,11 +31,24 @@ A tibble of subunit-year Gini coefficients and within-contributions.
 }
 \description{
 Reads subunit-level Parquet tables (`gini_by_unit_adm1.parquet` through
-`gini_by_unit_adm4.parquet`). If the file is not yet present in `data_dir`, it is downloaded from the `ntlgini`
-GitHub release (`v0.1.0`) and cached in `tools::R_user_dir("ntlgini", "cache")`.
+`gini_by_unit_adm4.parquet`). If the file is not yet present in `data_dir`,
+it is downloaded from the `ntlgini` GitHub release matching the package's
+data version and cached in [ntl_cache_dir()].
+}
+\details{
+When 'dplyr' is installed, filters on `iso3` and `years` are pushed down to
+'arrow' so only matching rows are read into memory. Without 'dplyr', the
+whole table is read and then filtered.
+
+Large downloads use a timeout of at least 600 seconds (or the current
+`getOption("timeout")` if larger). Downloaded files are verified against
+known MD5 checksums when available.
 }
 \examples{
 if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
   tun_adm4 <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2010:2024)
 }
+}
+\seealso{
+[ntl_cache_list()], [ntl_cache_clear()]
 }

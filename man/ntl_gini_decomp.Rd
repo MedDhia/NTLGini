@@ -7,11 +7,14 @@
 ntl_gini_decomp(iso3 = NULL, level = NULL, years = NULL)
 }
 \arguments{
-\item{iso3}{Optional character vector of ISO3 country codes to filter.}
+\item{iso3}{Optional character vector of ISO3 country codes to filter.
+Matching is case-insensitive; unknown codes trigger a warning.}
 
-\item{level}{Optional administrative level (`"adm1"`, `"adm2"`, `"adm3"`, `"adm4"`).}
+\item{level}{Optional character vector of administrative levels
+(`"adm1"`, `"adm2"`, `"adm3"`, `"adm4"`).}
 
-\item{years}{Optional integer vector of years (`1992:2024`) to filter.}
+\item{years}{Optional integer vector of years (`1992:2024`) to filter.
+Years outside the covered range trigger a warning.}
 }
 \value{
 A tibble of country-year Gini decompositions.
@@ -21,4 +24,5 @@ Filter country-level Gini decompositions (ADM_1 to ADM_4, 1992-2024)
 }
 \examples{
 ntl_gini_decomp(iso3 = c("TUN", "MAR"), years = 2020:2024)
+ntl_gini_decomp(iso3 = "tun", level = c("adm1", "adm4"), years = 2024)
 }

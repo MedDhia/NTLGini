@@ -63,6 +63,26 @@ tun_imadas <- ntl_gini_units(
 )
 ```
 
+### 3. Plotting the Decomposition (Requires `ggplot2`)
+
+```r
+# Stacked within / between / overlap components with total Gini line
+plot_ntl_gini(c("TUN", "MAR", "EGY"), level = "adm1")
+
+# Component shares of total Gini (sum to 1)
+plot_ntl_gini("TUN", level = "adm4", years = 2000:2024, type = "shares")
+```
+
+### 4. Managing the Cache
+
+```r
+ntl_cache_dir()          # versioned cache directory
+ntl_cache_list()         # cached files and sizes
+ntl_cache_clear("adm4")  # delete one level (or all with no argument)
+```
+
+Install `dplyr` alongside `arrow` so `ntl_gini_units()` reads only the rows for the requested countries and years instead of the whole table.
+
 ---
 
 ## Methodology

@@ -1,6 +1,6 @@
 Package: ntlgini
 Title: Global Subnational Nighttime-Light Gini Evolution (1992-2024)
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R:
     person("Mohamed Dhia", "Hammami", role = c("aut", "cre"),
            email = "med.dhia.hammami@gmail.com")
@@ -11,8 +11,8 @@ Description: Provides harmonized 1992-2024 nighttime-light Gini coefficients
     'VIIRS'-like nighttime lights and 'GADM' 4.1 boundaries. Subunit-level
     'Parquet' tables are downloaded on demand and cached locally.
 License: MIT + file LICENSE
-URL: https://github.com/MedDhia/ntlgini
-BugReports: https://github.com/MedDhia/ntlgini/issues
+URL: https://github.com/MedDhia/NTLGini
+BugReports: https://github.com/MedDhia/NTLGini/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
@@ -24,5 +24,8 @@ Imports:
     utils
 Suggests:
     arrow,
-    testthat (>= 3.0.0)
+    dplyr,
+    ggplot2 (>= 3.4.0),
+    testthat (>= 3.0.0),
+    withr
 Config/testthat/edition: 3
