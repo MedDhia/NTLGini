@@ -29,8 +29,8 @@ ntl_gini_decomp <- function(iso3 = NULL, level = NULL, years = NULL) {
 #'   GitHub Releases.
 #' @return A tibble of subunit-year Gini coefficients and within-contributions.
 #' @examples
-#' \dontrun{
-#' tun_adm4 <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2010:2024)
+#' if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
+#'   tun_adm4 <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2010:2024)
 #' }
 #' @export
 ntl_gini_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
@@ -61,10 +61,12 @@ ntl_gini_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     )
     tmp <- paste0(path, ".tmp")
     status <- tryCatch(
-      utils::download.file(url, destfile = tmp, mode = "wb", quiet = TRUE),
+      suppressWarnings(
+        utils::download.file(url, destfile = tmp, mode = "wb", quiet = TRUE)
+      ),
       error = function(e) 1L
     )
-    if (!identical(status, 0L) || !file.exists(tmp)) {
+    if (!identical(status, 0L) || !file.exists(tmp) || isTRUE(file.info(tmp)$size <= 0)) {
       unlink(tmp)
       stop("Failed to download ", fname, " from ", url, call. = FALSE)
     }

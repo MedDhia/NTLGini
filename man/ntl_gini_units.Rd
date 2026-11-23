@@ -33,7 +33,7 @@ Reads subunit-level Parquet tables (`gini_by_unit_adm1.parquet` through
 GitHub release (`v0.1.0`) and cached in `tools::R_user_dir("ntlgini", "cache")`.
 }
 \examples{
-\dontrun{
-tun_adm4 <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2010:2024)
+if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
+  tun_adm4 <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2010:2024)
 }
 }
