@@ -89,11 +89,39 @@ test_that("cache helpers work in an isolated tempdir", {
   unlink(tmp_dir, recursive = TRUE)
 })
 
-test_that("ntl_gini_units validates arguments and fails gracefully offline", {
+test_that("ntl_gini_units validates arguments and filters Parquet with arrow", {
   expect_error(ntl_gini_units(level = "adm5"))
   skip_if_not_installed("arrow")
   expect_error(
     ntl_gini_units(level = "adm1", data_dir = tempdir(), download = FALSE),
     "not found"
   )
+
+  tmp_dir <- file.path(tempdir(), "ntlgini_arrow_test")
+  dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
+  sample_df <- data.frame(
+    iso3 = c("TUN", "TUN", "MAR"),
+    year = c(2023L, 2024L, 2024L),
+    level = c("adm1", "adm1", "adm1"),
+    gid = c("G1", "G1", "G2"),
+    name = c("A", "A", "B"),
+    n_pixels = c(10L, 10L, 20L),
+    mean_radiance = c(1.0, 2.0, 3.0),
+    pop_share = c(0.5, 0.5, 1.0),
+    value_share = c(0.5, 0.5, 1.0),
+    gini = c(0.4, 0.3, 0.5),
+    within_contribution = c(0.1, 0.1, 0.2),
+    stringsAsFactors = FALSE
+  )
+  arrow::write_parquet(sample_df, file.path(tmp_dir, "gini_by_unit_adm1.parquet"))
+
+  res <- ntl_gini_units(
+    level = "adm1", iso3 = "TUN", years = 2024L,
+    data_dir = tmp_dir, download = FALSE
+  )
+  expect_s3_class(res, "tbl_df")
+  expect_equal(nrow(res), 1)
+  expect_equal(res$iso3, "TUN")
+  expect_equal(res$year, 2024L)
+  unlink(tmp_dir, recursive = TRUE)
 })

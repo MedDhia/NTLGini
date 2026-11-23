@@ -148,21 +148,24 @@ ntl_gini_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     file.rename(tmp, path)
   }
 
-  # Use Arrow Scanner / Expression pushdown to avoid loading full 100 MB tables
-  tab <- arrow::read_parquet(path, as_data_frame = FALSE)
+  # Use Arrow Dataset Scanner pushdown to avoid loading full 100 MB tables
+  ds <- arrow::open_dataset(path)
+  or_eq <- function(col, vals) {
+    Reduce("|", lapply(vals, function(v) arrow::Expression$field_ref(col) == v))
+  }
   expr <- NULL
   if (!is.null(iso3)) {
-    e_iso <- arrow::Expression$field_ref("iso3")$isin(as.character(iso3))
-    expr <- e_iso
+    expr <- or_eq("iso3", as.character(iso3))
   }
   if (!is.null(years)) {
-    e_yr <- arrow::Expression$field_ref("year")$isin(as.integer(years))
+    e_yr <- or_eq("year", as.integer(years))
     expr <- if (is.null(expr)) e_yr else (expr & e_yr)
   }
+  scan <- ds$NewScan()
   if (!is.null(expr)) {
-    tab <- tab$Filter(expr)
+    scan$Filter(expr)
   }
-  tibble::as_tibble(as.data.frame(tab))
+  tibble::as_tibble(as.data.frame(scan$Finish()$ToTable()))
 }
 
 #' Inspect cached ntlgini Parquet files
