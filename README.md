@@ -9,7 +9,7 @@
 
 `ntlgini` provides harmonized annual nighttime-light Gini coefficients and **Pyatt (1976) / Dagum (1997)** within-, between-, and overlap-component decompositions across administrative levels (`ADM_1` through `ADM_4`) for **228 countries and territories** from **1992 to 2024**.
 
-The dataset is derived from **Cheng et al. (2026)** 500 m-resolution VIIRS-like nighttime lights ([*Earth System Science Data*](https://doi.org/10.5194/essd-18-3449-2026)) intersected with **GADM 4.1** administrative boundaries (and **MapsTN** `ADM_1`–`ADM_4` boundaries for Tunisia).
+The dataset is derived from **Cheng et al. (2026)** 500 m-resolution VIIRS-like nighttime lights ([*Earth System Science Data*](https://doi.org/10.5194/essd-18-3449-2026)) intersected with **GADM 4.1** administrative boundaries (and **HDX COD-AB** `ADM_1`–`ADM_4` boundaries for Tunisia).
 
 ---
 

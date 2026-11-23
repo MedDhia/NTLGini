@@ -19,7 +19,7 @@ test_that("bundled ntl_gini_countries metadata matches ntl_gini_global", {
   expect_equal(ncol(ntl_gini_countries), 9)
   tun <- ntl_gini_countries[ntl_gini_countries$iso3 == "TUN", ]
   expect_equal(tun$max_level, 4L)
-  expect_equal(tun$boundary_source, "MapsTN")
+  expect_equal(tun$boundary_source, "HDX COD-AB")
   expect_equal(tun$n_adm4, 2075L)
 })
 

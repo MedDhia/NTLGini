@@ -15,7 +15,7 @@ A tibble with 228 rows and 9 variables:
   \item{n_adm4}{Number of `ADM_4` units (`NA` if unavailable).}
   \item{n_pixels}{Total 500 m land pixels.}
   \item{n_years}{Number of calendar years covered.}
-  \item{boundary_source}{Boundary source (`"GADM 4.1"` or `"MapsTN"`).}
+  \item{boundary_source}{Boundary source (`"GADM 4.1"` or `"HDX COD-AB"`).}
 }
 }
 \usage{
