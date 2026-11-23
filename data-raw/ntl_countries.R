@@ -36,6 +36,22 @@ for (k in seq_len(nrow(manual))) {
   }
 }
 
+# Merge keys for political-science datasets.
+ntl_countries$cown <- countrycode(iso3, "iso3c", "cown", warn = FALSE)
+ntl_countries$vdem_id <- countrycode(iso3, "iso3c", "vdem", warn = FALSE)
+ntl_countries$cown[ntl_countries$iso3 == "XKO"] <- 347L
+ntl_countries$vdem_id[ntl_countries$iso3 == "XKO"] <- 43L
+ntl_countries$cown <- as.integer(ntl_countries$cown)
+ntl_countries$vdem_id <- as.integer(ntl_countries$vdem_id)
+
+# World Bank income group (current classification) from the World Bank API.
+wb <- jsonlite::fromJSON("https://api.worldbank.org/v2/country?format=json&per_page=400")[[2]]
+wb <- data.frame(iso3 = wb$id, income_group = wb$incomeLevel$value, stringsAsFactors = FALSE)
+wb$iso3[wb$iso3 == "XKX"] <- "XKO"  # World Bank code for Kosovo
+wb <- wb[wb$income_group != "Aggregates" & wb$income_group != "", ]
+ntl_countries$income_group <- wb$income_group[match(ntl_countries$iso3, wb$iso3)]
+ntl_countries$income_group[ntl_countries$income_group == "Not classified"] <- NA
+
 # Keep the bundled data ASCII-only (avoids a CRAN note), e.g. "Cote d'Ivoire".
 ntl_countries$country <- iconv(ntl_countries$country, "UTF-8", "ASCII//TRANSLIT")
 stopifnot(!anyNA(ntl_countries$country))

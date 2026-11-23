@@ -11,8 +11,9 @@ ntl_add_country_info(df)
 or [ntl_gini_units()].}
 }
 \value{
-`df` as a tibble with `country`, `continent`, `region` and
-  `un_subregion` columns added after `iso3`.
+`df` as a tibble with the [ntl_countries] columns (`country`,
+  `continent`, `region`, `un_subregion`, `income_group`, `cown`,
+  `vdem_id`) added after `iso3`.
 }
 \description{
 Joins [ntl_countries] onto any table with an `iso3` column, keeping the

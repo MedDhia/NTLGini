@@ -2,6 +2,18 @@
 
 ## Research helpers
 
+* New `ntl_panel()` builds an analysis-ready country-year panel (long or wide
+  across levels) with metadata, quality flags and light intensity
+  (`mean_light`, `log_mean_light`), ready for `fixest`/`plm` or
+  `haven::write_dta()`.
+* New `ntl_event_window()` centres series on events (elections, coups,
+  reforms) for event studies, with values relative to a reference year and a
+  `crosses_sensor_break` indicator.
+* `ntl_countries` gains `cown` (Correlates of War), `vdem_id` (V-Dem) and
+  `income_group` (World Bank, current classification).
+* New vignette, "Pitfalls and research designs", documenting the 2012 sensor
+  switch, saturation, cross-level comparability and few-subunit noise, with
+  example designs for geography, political science and economics.
 * New `ntl_countries` dataset: country name, continent, World Bank region and
   UN subregion for all 228 codes (including GADM-specific `XAD`, `XKO`, `ZNC`).
 * `ntl_gini_decomp()` gains `region` and `continent` filters.

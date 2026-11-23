@@ -1,0 +1,165 @@
+---
+title: "Pitfalls and research designs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Pitfalls and research designs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4)
+has_ggplot2 <- requireNamespace("ggplot2", quietly = TRUE)
+```
+
+```{r}
+library(ntlgini)
+```
+
+This vignette lists the traps that most often lead to wrong conclusions with
+nighttime-light Gini data, shows each one in the bundled data, and sketches
+how geographers, political scientists and economists can use the package
+without falling into them.
+
+## 1. The 2012 sensor switch
+
+Years 1992-2011 are reconstructed from the older DMSP-OLS satellites; 2012
+onward is native VIIRS. Dim rural pixels drop sharply in 2012, so part of any
+2011-2012 change is the sensor, not the economy.
+
+```{r}
+d <- ntl_gini_decomp(level = "adm1")
+d <- d[order(d$iso3, d$year), ]
+d$abs_change <- abs(ave(d$total_gini, d$iso3, FUN = function(x) c(NA, diff(x))))
+round(tapply(d$abs_change, d$year, median, na.rm = TRUE)[as.character(2008:2016)], 4)
+```
+
+The median change in 2012 is several times larger than in neighbouring years.
+
+**What to do**
+
+* Include a sensor-period indicator (`sensor` from `ntl_flag_quality()` or
+  `ntl_panel()`) or year fixed effects.
+* Estimate trends separately on each side:
+  `ntl_gini_trend(df, split_sensor = TRUE)`.
+* Run robustness checks on 2012-2024 only.
+
+**The Arab Spring trap.** The switch coincides with the 2011 uprisings, the
+Libyan and Syrian wars, and other events. A before/after comparison around
+2011-2012 cannot separate the event from the sensor. `ntl_event_window()`
+marks such windows with `crosses_sensor_break`:
+
+```{r}
+events <- data.frame(iso3 = c("TUN", "EGY", "LBY"), event_year = 2011)
+ev <- ntl_event_window(ntl_panel("adm1", iso3 = events$iso3, flags = FALSE),
+                       events, window = -3:3)
+unique(ev[, c("iso3", "event_year", "crosses_sensor_break")])
+```
+
+Use a control group of countries without the event (difference-in-differences)
+so that the common sensor shift cancels out.
+
+## 2. Saturation near 1
+
+Most land pixels are unlit, so the Gini is often very close to 1:
+
+```{r}
+mean(d$total_gini > 0.99, na.rm = TRUE)
+```
+
+In these countries the Gini mainly measures how much of the territory is dark
+(deserts, forests, sparse settlement) and moves very little. A small change
+there is not comparable to the same change in a country at 0.7.
+
+**What to do:** flag or drop saturated rows (`flag_saturated`), analyse the
+components and shares rather than the total, and check results without them.
+The package does not include a Gini restricted to lit pixels; that requires
+reprocessing the raster data.
+
+## 3. Comparing decompositions across levels and countries
+
+`total_gini` is the same at every level. The split is not: finer levels move
+inequality from *within* to *between*, so a country's `between_share` partly
+reflects how many subunits it has.
+
+```{r}
+x <- ntl_gini_decomp(level = "adm1", years = 2024)
+x <- x[!is.na(x$between_share), ]
+cor(log(x$n_groups), x$between_share, method = "spearman")
+```
+
+**What to do:** compare `between_share` across countries only with
+`log(n_groups)` as a control, or among countries with similar numbers of
+subunits. Within one country over time, the number of subunits is fixed, so
+changes are comparable.
+
+## 4. Few subunits
+
+With a handful of regions, one region's change moves the whole split, so the
+shares are noisier from year to year:
+
+```{r}
+few <- ntl_gini_decomp(level = "adm1")
+few <- few[order(few$iso3, few$year), ]
+few$change <- abs(ave(few$between_share, few$iso3, FUN = function(x) c(NA, diff(x))))
+few$small <- few$n_groups < 5
+# median year-on-year change in between_share: FALSE = 5+ regions, TRUE = fewer
+round(tapply(few$change, few$small, median, na.rm = TRUE), 4)
+```
+
+**What to do:** use `flag_few_groups`, or move to a finer level.
+
+## 5. Isolated jumps
+
+Single-year spikes are often artifacts. Gabon's between-region share collapses
+in 1997 and recovers the next year:
+
+```{r}
+q <- ntl_flag_quality(ntl_gini_decomp(iso3 = "GAB", level = "adm1"))
+q[q$year %in% 1995:1999, c("year", "total_gini", "between_share", "flag_jump")]
+```
+
+**What to do:** inspect flagged rows before treating them as real shocks.
+
+## Research designs
+
+### Geography: scale and concentration
+
+How much inequality sits between regions at each scale, and is it rising?
+
+```{r}
+s <- ntl_panel(c("adm1", "adm2", "adm3"), iso3 = "TUN", flags = FALSE, format = "wide")
+s[s$year %in% c(2012, 2024), c("year", "between_share_adm1", "between_share_adm2",
+                               "between_share_adm3")]
+```
+
+### Political science: event studies
+
+Centre each country's series on an event (coup, election, decentralisation
+reform, change of leader) and compare with countries without the event:
+
+```{r, eval = FALSE}
+events <- data.frame(iso3 = c("MLI", "BFA", "NER"), event_year = c(2020, 2022, 2023))
+p <- ntl_panel("adm2", continent = "Africa")
+ev <- ntl_event_window(p, events, window = -5:3, measure = "between_share")
+```
+
+`ntl_panel()` includes Correlates of War (`cown`) and V-Dem (`vdem_id`) codes
+for merging with conflict, regime and election data.
+
+### Economics: panel regressions
+
+```{r, eval = FALSE}
+p <- ntl_panel("adm1")
+p <- p[!p$flag_saturated & !p$flag_few_groups, ]
+
+# Kuznets-type relationship between light intensity and inequality
+fixest::feols(between_share ~ log_mean_light + I(log_mean_light^2) |
+                iso3 + year, data = p, cluster = ~iso3)
+
+# Export for Stata
+haven::write_dta(p, "ntl_panel_adm1.dta")
+```
+
+`income_group` is the World Bank's *current* classification, not the
+historical one; use it for grouping, not as a time-varying control.

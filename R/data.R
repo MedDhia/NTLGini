@@ -45,7 +45,7 @@
 #' [ntl_add_country_info()] and the `region` / `continent` filters of
 #' [ntl_gini_decomp()].
 #'
-#' @format A tibble with 228 rows and 5 variables:
+#' @format A tibble with 228 rows and 8 variables:
 #' \describe{
 #'   \item{iso3}{ISO 3166-1 alpha-3 code as used by GADM 4.1 (includes the
 #'     GADM-specific codes `XAD`, `XKO` and `ZNC`).}
@@ -54,7 +54,13 @@
 #'     `"Europe"`, `"Oceania"`).}
 #'   \item{region}{World Bank region.}
 #'   \item{un_subregion}{United Nations geoscheme subregion.}
+#'   \item{cown}{Correlates of War country code, for merging with COW, UCDP
+#'     and similar data. `NA` for territories COW does not cover.}
+#'   \item{vdem_id}{V-Dem country ID. `NA` where V-Dem has no country.}
+#'   \item{income_group}{World Bank income group, current classification at
+#'     build time (not historical). `NA` for unclassified territories.}
 #' }
-#' @source Built with the 'countrycode' package (Arel-Bundock et al. 2018),
-#'   with manual entries for GADM-specific codes; see `data-raw/ntl_countries.R`.
+#' @source Built with the 'countrycode' package (Arel-Bundock et al. 2018)
+#'   and the World Bank country API, with manual entries for GADM-specific
+#'   codes; see `data-raw/ntl_countries.R`.
 "ntl_countries"

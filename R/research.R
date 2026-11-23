@@ -5,8 +5,9 @@
 #'
 #' @param df A data frame with an `iso3` column, e.g. from [ntl_gini_decomp()]
 #'   or [ntl_gini_units()].
-#' @return `df` as a tibble with `country`, `continent`, `region` and
-#'   `un_subregion` columns added after `iso3`.
+#' @return `df` as a tibble with the [ntl_countries] columns (`country`,
+#'   `continent`, `region`, `un_subregion`, `income_group`, `cown`,
+#'   `vdem_id`) added after `iso3`.
 #' @examples
 #' ntl_add_country_info(ntl_gini_decomp(iso3 = c("TUN", "BRA"), years = 2024))
 #' @export

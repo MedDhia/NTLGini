@@ -1,7 +1,11 @@
 test_that("ntl_countries covers every country with no missing metadata", {
   expect_s3_class(ntl_countries, "tbl_df")
   expect_setequal(ntl_countries$iso3, unique(ntl_gini_global$iso3))
-  expect_false(anyNA(ntl_countries))
+  expect_false(anyNA(ntl_countries[, c("iso3", "country", "continent", "region",
+                                        "un_subregion")]))
+  expect_equal(ntl_countries$cown[ntl_countries$iso3 == "TUN"], 616L)
+  expect_true(all(stats::na.omit(ntl_countries$income_group) %in%
+                    c("Low income", "Lower middle income", "Upper middle income", "High income")))
   expect_false(anyDuplicated(ntl_countries$iso3) > 0)
   expect_equal(ntl_countries$country[ntl_countries$iso3 == "XKO"], "Kosovo")
 })
@@ -26,7 +30,7 @@ test_that("ntl_add_country_info adds metadata and keeps order", {
   expect_equal(out$iso3, d$iso3)
   expect_equal(names(out)[1:5], c("iso3", "country", "continent", "region", "un_subregion"))
   expect_equal(unique(out$country[out$iso3 == "TUN"]), "Tunisia")
-  expect_equal(ncol(out), ncol(d) + 4)
+  expect_equal(ncol(out), ncol(d) + 7)
 
   again <- ntl_add_country_info(out)
   expect_equal(ncol(again), ncol(out))

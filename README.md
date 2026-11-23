@@ -100,7 +100,26 @@ ntl_gini_trend(africa, measure = "between_share", split_sensor = TRUE)
 citation("ntlgini")
 ```
 
-See `vignette("ntlgini")` for a full walkthrough.
+### 6. Panels and Event Studies
+
+```r
+# Analysis-ready panel: metadata (incl. COW / V-Dem codes, income group),
+# light intensity and quality flags
+p <- ntl_panel("adm1", continent = "Africa")
+haven::write_dta(p, "ntl_panel_adm1.dta")    # optional Stata export
+
+# Wide panel comparing levels side by side
+w <- ntl_panel(c("adm1", "adm2", "adm3"), iso3 = "TUN", format = "wide")
+
+# Event study: centre series on events
+events <- data.frame(iso3 = c("MLI", "BFA"), event_year = c(2020, 2022))
+ev <- ntl_event_window(ntl_panel("adm2", iso3 = events$iso3), events,
+                       window = -5:3, measure = "between_share")
+```
+
+See `vignette("ntlgini")` for a walkthrough and `vignette("pitfalls")` for
+the traps to avoid (2012 sensor switch, saturation, cross-level comparisons)
+and example research designs.
 
 ---
 
