@@ -123,5 +123,27 @@ test_that("ntl_gini_units validates arguments and filters Parquet with arrow", {
   expect_equal(nrow(res), 1)
   expect_equal(res$iso3, "TUN")
   expect_equal(res$year, 2024L)
+
+  top <- ntl_gini_top_units(
+    level = "adm1", iso3 = "TUN", year = 2024L, n = 1L,
+    data_dir = tmp_dir, download = FALSE
+  )
+  expect_equal(nrow(top), 1)
+  expect_equal(top$name, "A")
+
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+    p_top <- ntl_gini_plot_top_units(
+      level = "adm1", iso3 = "TUN", year = 2024L, n = 1L,
+      data_dir = tmp_dir, download = FALSE
+    )
+    expect_s3_class(p_top, "ggplot")
+  }
   unlink(tmp_dir, recursive = TRUE)
+})
+
+test_that("plotting functions return ggplot objects", {
+  skip_if_not_installed("ggplot2")
+  expect_s3_class(ntl_gini_plot_series(c("TUN", "MAR"), level = "adm1"), "ggplot")
+  expect_s3_class(ntl_gini_plot_decomp("TUN", level = "adm2"), "ggplot")
+  expect_s3_class(ntl_gini_plot_levels(c("TUN", "MAR")), "ggplot")
 })

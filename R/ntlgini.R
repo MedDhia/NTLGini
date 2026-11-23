@@ -203,3 +203,48 @@ ntl_gini_clear_cache <- function(data_dir = tools::R_user_dir("ntlgini", which =
   if (length(files) > 0) unlink(files)
   invisible(length(files))
 }
+
+#' Rank top or bottom administrative subunits by inequality or brightness
+#'
+#' Queries `ntl_gini_units()` for a single country and year, then returns the
+#' top (or bottom) `n` administrative subunits ordered by `by`.
+#'
+#' @param level Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).
+#' @param iso3 Single ISO3 country code (e.g., `"TUN"`).
+#' @param year Single calendar year (`1992` to `2024`).
+#' @param n Number of subunits to return (default `10L`).
+#' @param by Ranking column: `"within_contribution"`, `"gini"`,
+#'   `"mean_radiance"`, or `"value_share"`.
+#' @param decreasing Logical; `TRUE` returns highest values, `FALSE` lowest.
+#' @param ... Additional arguments passed to [ntl_gini_units()] (such as
+#'   `data_dir` or `download`).
+#' @return A tibble of the top/bottom `n` subunits.
+#' @examples
+#' if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
+#'   ntl_gini_top_units("adm2", iso3 = "TUN", year = 2024, n = 10)
+#' }
+#' @export
+ntl_gini_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
+                               iso3,
+                               year = 2024L,
+                               n = 10L,
+                               by = c("within_contribution", "gini", "mean_radiance", "value_share"),
+                               decreasing = TRUE,
+                               ...) {
+  level <- match.arg(level)
+  by <- match.arg(by)
+  if (length(iso3) != 1L) stop("iso3 must be a single country code.", call. = FALSE)
+  if (length(year) != 1L) stop("year must be a single calendar year.", call. = FALSE)
+
+  df <- ntl_gini_units(level = level, iso3 = iso3, years = as.integer(year), ...)
+  if (nrow(df) == 0L) return(df)
+
+  vals <- df[[by]]
+  keep <- !is.na(vals)
+  df <- df[keep, , drop = FALSE]
+  if (nrow(df) == 0L) return(df)
+
+  ord <- order(df[[by]], decreasing = decreasing)
+  df <- df[ord, , drop = FALSE]
+  utils::head(df, n = as.integer(n))
+}
