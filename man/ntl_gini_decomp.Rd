@@ -4,7 +4,13 @@
 \alias{ntl_gini_decomp}
 \title{Filter country-level Gini decompositions (ADM_1 to ADM_4, 1992-2024)}
 \usage{
-ntl_gini_decomp(iso3 = NULL, level = NULL, years = NULL)
+ntl_gini_decomp(
+  iso3 = NULL,
+  level = NULL,
+  years = NULL,
+  region = NULL,
+  continent = NULL
+)
 }
 \arguments{
 \item{iso3}{Optional character vector of ISO3 country codes to filter.
@@ -15,9 +21,16 @@ Matching is case-insensitive; unknown codes trigger a warning.}
 
 \item{years}{Optional integer vector of years (`1992:2024`) to filter.
 Years outside the covered range trigger a warning.}
+
+\item{region}{Optional character vector of World Bank regions (see
+`unique(ntl_countries$region)`) to filter.}
+
+\item{continent}{Optional character vector of continents (`"Africa"`,
+`"Americas"`, `"Asia"`, `"Europe"`, `"Oceania"`) to filter.}
 }
 \value{
-A tibble of country-year Gini decompositions.
+A tibble of country-year Gini decompositions. Use
+  [ntl_add_country_info()] to add country names and regions.
 }
 \description{
 Filter country-level Gini decompositions (ADM_1 to ADM_4, 1992-2024)
@@ -25,4 +38,5 @@ Filter country-level Gini decompositions (ADM_1 to ADM_4, 1992-2024)
 \examples{
 ntl_gini_decomp(iso3 = c("TUN", "MAR"), years = 2020:2024)
 ntl_gini_decomp(iso3 = "tun", level = c("adm1", "adm4"), years = 2024)
+ntl_gini_decomp(continent = "Africa", level = "adm1", years = 2024)
 }

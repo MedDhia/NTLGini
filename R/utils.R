@@ -113,3 +113,21 @@ ntl_download <- function(fname, path) {
   }
   invisible(path)
 }
+
+# Validate a region/continent filter against ntl_countries (case-insensitive).
+check_meta <- function(x, column) {
+  if (is.null(x)) return(NULL)
+  if (!is.character(x) || anyNA(x)) {
+    stop("`", column, "` must be a character vector.", call. = FALSE)
+  }
+  valid <- sort(unique(ntlgini::ntl_countries[[column]]))
+  hit <- valid[match(tolower(x), tolower(valid))]
+  if (anyNA(hit)) {
+    stop(
+      "Invalid `", column, "`: ", paste(x[is.na(hit)], collapse = ", "),
+      ". Must be one of: ", paste(valid, collapse = "; "), ".",
+      call. = FALSE
+    )
+  }
+  unique(hit)
+}

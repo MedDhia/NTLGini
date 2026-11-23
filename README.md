@@ -83,6 +83,25 @@ ntl_cache_clear("adm4")  # delete one level (or all with no argument)
 
 Install `dplyr` alongside `arrow` so `ntl_gini_units()` reads only the rows for the requested countries and years instead of the whole table.
 
+### 5. Research Helpers
+
+```r
+# Filter by region or continent, then add country names
+africa <- ntl_gini_decomp(continent = "Africa", level = "adm1")
+africa <- ntl_add_country_info(africa)
+
+# Flag the 2012 sensor break, few subunits, saturation and suspicious jumps
+africa <- ntl_flag_quality(africa)
+clean  <- africa[!africa$any_flag, ]
+
+# Trend per country, estimated separately before and after the sensor switch
+ntl_gini_trend(africa, measure = "between_share", split_sensor = TRUE)
+
+citation("ntlgini")
+```
+
+See `vignette("ntlgini")` for a full walkthrough.
+
 ---
 
 ## Methodology

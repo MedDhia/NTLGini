@@ -6,17 +6,31 @@
 #'   (`"adm1"`, `"adm2"`, `"adm3"`, `"adm4"`).
 #' @param years Optional integer vector of years (`1992:2024`) to filter.
 #'   Years outside the covered range trigger a warning.
-#' @return A tibble of country-year Gini decompositions.
+#' @param region Optional character vector of World Bank regions (see
+#'   `unique(ntl_countries$region)`) to filter.
+#' @param continent Optional character vector of continents (`"Africa"`,
+#'   `"Americas"`, `"Asia"`, `"Europe"`, `"Oceania"`) to filter.
+#' @return A tibble of country-year Gini decompositions. Use
+#'   [ntl_add_country_info()] to add country names and regions.
 #' @examples
 #' ntl_gini_decomp(iso3 = c("TUN", "MAR"), years = 2020:2024)
 #' ntl_gini_decomp(iso3 = "tun", level = c("adm1", "adm4"), years = 2024)
+#' ntl_gini_decomp(continent = "Africa", level = "adm1", years = 2024)
 #' @export
-ntl_gini_decomp <- function(iso3 = NULL, level = NULL, years = NULL) {
+ntl_gini_decomp <- function(iso3 = NULL, level = NULL, years = NULL,
+                            region = NULL, continent = NULL) {
   iso3 <- check_iso3(iso3)
   level <- check_level(level, several_ok = TRUE)
   years <- check_years(years)
+  region <- check_meta(region, "region")
+  continent <- check_meta(continent, "continent")
 
   df <- ntlgini::ntl_gini_global
+  meta <- ntlgini::ntl_countries
+  if (!is.null(region)) df <- df[df$iso3 %in% meta$iso3[meta$region %in% region], , drop = FALSE]
+  if (!is.null(continent)) {
+    df <- df[df$iso3 %in% meta$iso3[meta$continent %in% continent], , drop = FALSE]
+  }
   if (!is.null(iso3)) df <- df[df$iso3 %in% iso3, , drop = FALSE]
   if (!is.null(level)) df <- df[df$level %in% level, , drop = FALSE]
   if (!is.null(years)) df <- df[df$year %in% years, , drop = FALSE]

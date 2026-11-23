@@ -1,0 +1,119 @@
+---
+title: "Getting started with ntlgini"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with ntlgini}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.5)
+has_ggplot2 <- requireNamespace("ggplot2", quietly = TRUE)
+```
+
+`ntlgini` provides yearly nighttime-light Gini coefficients for 228 countries
+and territories (1992-2024), each split into within-, between- and overlap
+components across administrative levels ADM_1 to ADM_4.
+
+```{r}
+library(ntlgini)
+```
+
+## The decomposition
+
+For a country, year and administrative level, the pixel-level Gini of
+nighttime radiance is split as
+
+$$G_{total} = G_{within} + G_{between} + G_{overlap}$$
+
+* **within**: inequality among pixels inside the same subunit;
+* **between**: inequality across subunit mean radiances;
+* **overlap**: the part due to subunits' distributions overlapping (bright
+  pixels in a dim region, dim pixels in a bright one).
+
+`total_gini` is the same at every level; only the split changes. Finer levels
+move inequality from *within* to *between*:
+
+```{r}
+ntl_gini_decomp(iso3 = "TUN", years = 2024)[, c("level", "n_groups", "total_gini",
+                                               "within_share", "between_share",
+                                               "overlap_share")]
+```
+
+## Selecting countries
+
+Filter by ISO3 code, level, year, World Bank region or continent, and add
+country names with `ntl_add_country_info()`:
+
+```{r}
+mena <- ntl_gini_decomp(
+  region = "Middle East, North Africa, Afghanistan & Pakistan",
+  level = "adm1", years = 2024
+)
+head(ntl_add_country_info(mena)[, c("iso3", "country", "total_gini", "between_share")])
+```
+
+`ntl_countries` lists all codes, names and regions.
+
+## Plotting
+
+```{r, eval = has_ggplot2}
+plot_ntl_gini(c("TUN", "MAR", "EGY"), level = "adm1")
+```
+
+```{r, eval = has_ggplot2}
+plot_ntl_gini("TUN", level = "adm4", type = "shares")
+```
+
+## Data quality
+
+Three features of the data deserve attention in any analysis:
+
+1. **Sensor switch in 2012.** Years 1992-2011 are reconstructed from DMSP-OLS;
+   2012 onward is native VIIRS. Dim rural pixels drop sharply in 2012, so the
+   typical year-on-year change in `total_gini` is about three times larger in
+   2012 than in other years.
+2. **Few subunits.** With only a handful of regions (`n_groups`), the overlap
+   term is large and the between/overlap split is unstable.
+3. **Saturation.** Most land pixels are unlit, so `total_gini` is often above
+   0.99 and has little room to vary.
+
+`ntl_flag_quality()` marks these cases, plus unusually large year-on-year
+jumps:
+
+```{r}
+q <- ntl_flag_quality(ntl_gini_decomp(level = "adm1"))
+colMeans(q[, c("flag_sensor_break", "flag_few_groups", "flag_saturated",
+               "flag_jump", "flag_missing")])
+# Gabon's between-region share collapses for one year in 1997
+q[q$flag_jump & q$iso3 == "GAB", c("iso3", "year", "total_gini", "between_share")]
+```
+
+## Trends
+
+`ntl_gini_trend()` reports start and end values, their change, and an OLS
+slope per year. Use `split_sensor = TRUE` so the 2012 switch does not drive
+the trend:
+
+```{r}
+d <- ntl_gini_decomp(iso3 = c("TUN", "MAR", "EGY"), level = "adm1")
+ntl_gini_trend(d, measure = "total_gini", split_sensor = TRUE)
+```
+
+## Subunit series
+
+Per-region Gini series are stored as Parquet files that are downloaded once
+and cached. They require the `arrow` package (and `dplyr` for fast filtered
+reads):
+
+```{r, eval = FALSE}
+tun_adm4 <- ntl_gini_units("adm4", iso3 = "TUN", years = 2010:2024)
+ntl_cache_list()
+```
+
+## Citation
+
+```{r, eval = FALSE}
+citation("ntlgini")
+```

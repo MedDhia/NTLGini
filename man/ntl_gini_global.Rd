@@ -34,4 +34,22 @@ Country-by-year Pyatt/Dagum Gini decompositions of 500 m 'VIIRS'-like
 nighttime lights across administrative levels `adm1` to `adm4` for 228
 countries and territories.
 }
+\section{Comparability}{
+
+\itemize{
+  \item Years 1992-2011 are reconstructed from DMSP-OLS and 2012 onward are
+    native VIIRS. Dim rural pixels drop sharply in 2012, so compare levels
+    across the break with care; see [ntl_flag_quality()] and
+    `ntl_gini_trend(split_sensor = TRUE)`.
+  \item `total_gini` does not depend on `level`, but the split between
+    components does: finer levels move inequality from `within` to
+    `between`. Compare `between_share` across countries only at levels with
+    similar numbers of subunits (`n_groups`).
+  \item With few subunits (small `n_groups`) the overlap term is large and
+    unstable.
+  \item Values near 1 are common because most land pixels are unlit; they
+    mainly reflect how concentrated settlement is.
+}
+}
+
 \keyword{datasets}
