@@ -151,6 +151,41 @@ ntl_gini_map_units("path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year =
 
 ![Subnational Gini at ADM4 in Tunisia in 2024](man/figures/map_tun_adm4_2024.png)
 
+### 4. `blackmarblepy`-Style Grid Raster & Zonal Extraction (`terra` + `sf`)
+
+Build `terra::SpatRaster` layers or extract polygon-level zonal summaries from `gini_by_pixel.parquet` (`0.125° × 0.125°` cells of `30 × 30` `500 m` pixels):
+
+```r
+# Build a 0.125° SpatRaster masked to Tunisia's Governorates (2024)
+r <- ntl_gini_raster(tun_gov_sf, years = 2024, metric = "gini", iso3 = "TUN")
+r_df <- as.data.frame(r, xy = TRUE, na.rm = TRUE)
+names(r_df)[3] <- "gini"
+
+ggplot2::ggplot(r_df) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = gini), width = 0.125, height = 0.125) +
+  ggplot2::geom_sf(data = tun_gov_sf, fill = NA, color = "#0f172a", linewidth = 0.25) +
+  ggplot2::scale_fill_viridis_c(option = "inferno", direction = -1, name = "Grid-cell Gini") +
+  ggplot2::theme_void()
+```
+
+![Grid-cell spatial Gini in Tunisia built with ntl_gini_raster in 2024](man/figures/map_tun_raster_2024.png)
+
+```r
+# Extract zonal mean and sum of nighttime radiance per Governorate (2024)
+ext <- ntl_gini_extract(
+  tun_gov_sf, years = 2024, metric = "mean_radiance",
+  aggfunc = c("mean", "sum"), iso3 = "TUN"
+)
+gov_joined <- merge(tun_gov_sf, ext[, c("GID_2", "mean_radiance_mean")], by = "GID_2")
+
+ggplot2::ggplot(gov_joined) +
+  ggplot2::geom_sf(ggplot2::aes(fill = mean_radiance_mean), color = "#475569", linewidth = 0.2) +
+  ggplot2::scale_fill_viridis_c(option = "plasma", trans = "log10", name = "Mean radiance") +
+  ggplot2::theme_void()
+```
+
+![Zonal mean nighttime radiance in Tunisia built with ntl_gini_extract in 2024](man/figures/map_tun_extract_2024.png)
+
 ---
 
 ## Function Reference
