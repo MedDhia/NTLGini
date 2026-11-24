@@ -108,6 +108,20 @@ ntl_gini_plot_series(c("TCD", "NER", "MRT", "LBY", "ARE"), level = "adm2", metri
 
 ![Within-unit Gini at ADM2 across Chad, Niger, Mauritania, Libya, and UAE](man/figures/within_adm2_global.png)
 
+### 4. Choropleth Mapping with Shapefiles (Requires `sf` and `ggplot2`)
+
+```r
+# Global between-unit Gini at ADM_1 in 2024 using a world shapefile
+ntl_gini_map_countries("path/to/world_countries.shp", level = "adm1", year = 2024)
+
+# Subnational within-unit Gini at ADM_4 in Tunisia (2024)
+ntl_gini_map_units("path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year = 2024)
+```
+
+![Global between-unit Gini at ADM1 in 2024](man/figures/map_global_between_adm1.png)
+
+![Subnational Gini at ADM4 in Tunisia in 2024](man/figures/map_tun_adm4_2024.png)
+
 ---
 
 ## Methodology & Data Dictionary

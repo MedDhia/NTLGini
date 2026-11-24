@@ -411,7 +411,12 @@ ntl_gini_map_countries <- function(sf_or_path,
   }
 
   df <- ntl_gini_decomp(level = level, years = as.integer(year))
-  shp$.join_key <- as.character(shp[[id_col]])
+  key <- as.character(shp[[id_col]])
+  if (identical(id_col, "ISO_A3") && "ADM0_A3" %in% names(shp)) {
+    bad <- is.na(key) | key == "-99"
+    key[bad] <- as.character(shp[["ADM0_A3"]][bad])
+  }
+  shp$.join_key <- key
   df$.join_key <- as.character(df$iso3)
   merged <- merge(shp, df, by = ".join_key", all.x = TRUE, sort = FALSE)
 
