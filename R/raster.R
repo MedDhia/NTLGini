@@ -359,10 +359,14 @@ ntl_raster <- function(country = NULL,
     remote_vsi <- sprintf("/vsizip//vsicurl/%s/raw/%d/%d.zip/%d/%s", base_url, year, year, year, fname)
   }
 
-  # Configure GDAL for HTTP streaming
+  # Configure GDAL for HTTP streaming, multiplexing, and multi-threaded decompression
   terra::setGDALconfig("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
   terra::setGDALconfig("CPL_VSIL_CURL_ALLOWED_EXTENSIONS", ".tif,.zip")
   terra::setGDALconfig("VSI_CACHE", "TRUE")
+  terra::setGDALconfig("GDAL_HTTP_MERGE_CONSECUTIVE_RANGES", "YES")
+  terra::setGDALconfig("GDAL_HTTP_MULTIPLEX", "YES")
+  terra::setGDALconfig("VSI_CACHE_SIZE", "67108864")
+  terra::setGDALconfig("GDAL_NUM_THREADS", "ALL_CPUS")
 
   r_remote <- tryCatch(
     terra::rast(remote_vsi),
@@ -432,29 +436,62 @@ ntl_extract <- function(roi,
   n_units <- nrow(roi_base)
 
   v_roi <- terra::vect(roi)
-  out_rows <- list()
 
+  # Collect all requested (year, month) combinations
+  periods <- list()
   for (yr in years) {
     for (mo in months) {
-      r <- ntl_raster(roi = roi, year = yr, month = mo, output_dir = output_dir, return_raster = TRUE)
-      ext_df <- terra::extract(r, v_roi, ID = TRUE, raw = TRUE, touches = TRUE)
+      periods[[length(periods) + 1L]] <- list(year = yr, month = mo)
+    }
+  }
 
-      # Group by ID (ext_df is a matrix when raw=TRUE)
-      ext_id <- ext_df[, 1]
-      ext_val <- ext_df[, 2]
-      by_id <- split(ext_val, ext_id)
+  n_periods <- length(periods)
+  if (n_periods == 0L) {
+    return(if (drop_geom) tibble::as_tibble(roi_base) else roi_base)
+  }
 
-      # Compute metrics for each feature
-      sum_vals <- numeric(n_units)
-      mean_vals <- numeric(n_units)
-      px_vals <- integer(n_units)
-      lit_px <- integer(n_units)
-      share_vals <- numeric(n_units)
-      gini_vals <- numeric(n_units)
+  # Fetch or crop each layer
+  r_list <- vector("list", n_periods)
+  for (k in seq_len(n_periods)) {
+    p <- periods[[k]]
+    r_list[[k]] <- ntl_raster(
+      roi = roi,
+      year = p$year,
+      month = p$month,
+      output_dir = output_dir,
+      return_raster = TRUE
+    )
+  }
 
-      for (i in seq_len(n_units)) {
-        id_str <- as.character(i)
-        vals <- if (id_str %in% names(by_id)) by_id[[id_str]] else numeric(0)
+  # Multi-layer raster stacking:
+  # Intersects polygons with raster geometry ONCE instead of n_periods times
+  r_stack <- if (n_periods == 1L) r_list[[1L]] else terra::rast(r_list)
+
+  ext_df <- terra::extract(r_stack, v_roi, ID = TRUE, raw = TRUE, touches = TRUE)
+
+  n_extracted <- nrow(ext_df)
+  by_id_rows <- if (n_extracted > 0L) split(seq_len(n_extracted), ext_df[, 1L]) else list()
+  layer_mat <- if (n_extracted > 0L) ext_df[, -1L, drop = FALSE] else matrix(numeric(0), nrow = 0, ncol = n_periods)
+
+  out_rows <- vector("list", n_periods)
+
+  for (k in seq_len(n_periods)) {
+    p <- periods[[k]]
+    yr <- p$year
+    mo <- p$month
+    vals_k <- if (n_extracted > 0L) layer_mat[, k] else numeric(0)
+
+    sum_vals <- numeric(n_units)
+    mean_vals <- numeric(n_units)
+    px_vals <- integer(n_units)
+    share_vals <- numeric(n_units)
+    gini_vals <- numeric(n_units)
+
+    for (i in seq_len(n_units)) {
+      id_str <- as.character(i)
+      if (id_str %in% names(by_id_rows)) {
+        rows_i <- by_id_rows[[id_str]]
+        vals <- vals_k[rows_i]
         vals_ok <- vals[!is.na(vals)]
         n_p <- length(vals_ok)
         px_vals[i] <- n_p
@@ -462,7 +499,6 @@ ntl_extract <- function(roi,
           lit_idx <- vals_ok > 0
           n_l <- sum(lit_idx)
           s_l <- sum(vals_ok[lit_idx])
-          lit_px[i] <- n_l
           sum_vals[i] <- s_l
           mean_vals[i] <- s_l / n_p
           share_vals[i] <- n_l / n_p
@@ -475,21 +511,26 @@ ntl_extract <- function(roi,
           share_vals[i] <- NA_real_
           gini_vals[i] <- NA_real_
         }
+      } else {
+        sum_vals[i] <- NA_real_
+        mean_vals[i] <- NA_real_
+        share_vals[i] <- NA_real_
+        gini_vals[i] <- NA_real_
       }
-
-      period_df <- roi_base
-      period_df$year <- yr
-      period_df$month <- if (is.null(mo)) NA_integer_ else mo
-      period_df$date <- if (is.null(mo)) sprintf("%d", yr) else sprintf("%d-%02d-01", yr, mo)
-
-      if ("sum" %in% stat) period_df$sum_of_lights <- sum_vals
-      if ("mean" %in% stat) period_df$mean_radiance <- mean_vals
-      if ("pixels" %in% stat) period_df$pixels <- px_vals
-      if ("lit_share" %in% stat) period_df$lit_share <- share_vals
-      if ("gini" %in% stat) period_df$gini <- gini_vals
-
-      out_rows[[length(out_rows) + 1L]] <- period_df
     }
+
+    period_df <- roi_base
+    period_df$year <- yr
+    period_df$month <- if (is.null(mo)) NA_integer_ else mo
+    period_df$date <- if (is.null(mo)) sprintf("%d", yr) else sprintf("%d-%02d-01", yr, mo)
+
+    if ("sum" %in% stat) period_df$sum_of_lights <- sum_vals
+    if ("mean" %in% stat) period_df$mean_radiance <- mean_vals
+    if ("pixels" %in% stat) period_df$pixels <- px_vals
+    if ("lit_share" %in% stat) period_df$lit_share <- share_vals
+    if ("gini" %in% stat) period_df$gini <- gini_vals
+
+    out_rows[[k]] <- period_df
   }
 
   res <- do.call(rbind, out_rows)

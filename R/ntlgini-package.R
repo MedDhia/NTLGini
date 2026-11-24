@@ -63,3 +63,8 @@
 #'
 #' @keywords internal
 "_PACKAGE"
+
+# Internal package session environment for caching parsed datasets and configurations
+.ntlgini_env <- new.env(parent = emptyenv())
+.ntlgini_env$monthly <- list()
+.ntlgini_env$units <- list()
