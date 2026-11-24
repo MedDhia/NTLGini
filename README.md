@@ -98,13 +98,13 @@ ntl_gini_top_units(level = "adm3", iso3 = "TUN", year = 2024, n = 10)
 # Between-unit Gini at ADM_3 across Egypt, Iraq, Syria, and Tunisia (1992-2024)
 ntl_gini_plot_series(c("EGY", "IRQ", "SYR", "TUN"), level = "adm3", metric = "between_gini")
 
-# Within-unit Gini at ADM_1 across Libya, Mauritania, Niger, Chad, and Yemen (1992-2024)
-ntl_gini_plot_series(c("YEM", "LBY", "MRT", "TCD", "NER"), level = "adm1", metric = "within_gini")
+# Within-unit Gini at ADM_2 across Chad, Niger, Mauritania, Libya, and UAE (1992-2024)
+ntl_gini_plot_series(c("TCD", "NER", "MRT", "LBY", "ARE"), level = "adm2", metric = "within_gini")
 ```
 
 ![Between-unit Gini at ADM3 across Egypt, Iraq, Syria, and Tunisia](man/figures/between_adm3_comparison.png)
 
-![Within-unit Gini at ADM1 across Libya, Mauritania, Niger, Chad, and Yemen](man/figures/within_adm1_global.png)
+![Within-unit Gini at ADM2 across Chad, Niger, Mauritania, Libya, and UAE](man/figures/within_adm2_global.png)
 
 ---
 
