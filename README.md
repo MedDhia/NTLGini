@@ -1,4 +1,4 @@
-# ntlgini
+# ntlgini <img src="man/figures/logo.png" align="right" height="139" alt="ntlgini logo" />
 
 **Global Subnational Nighttime-Light Gini Evolution (1992–2024)**
 
