@@ -56,6 +56,8 @@ Country-level decompositions (`ntl_gini_global`) and coverage metadata (`ntl_gin
 | `ntl_gini_plot_decomp()` | Plot stacked area shares (`between_share`, `within_share`, `overlap_share`) |
 | `ntl_gini_plot_levels()` | Compare `between_gini` across all available `adm1`–`adm4` levels |
 | `ntl_gini_plot_top_units()` | Horizontal bar chart of top/bottom subunits from `ntl_gini_top_units()` |
+| `ntl_gini_map_units()` | Choropleth map of subunit-level Gini or radiance from a shapefile / `sf` object |
+| `ntl_gini_map_countries()` | Choropleth map of country-level decompositions from a world/regional shapefile |
 | `ntl_gini_cache_info()` / `ntl_gini_clear_cache()` | Inspect or clear locally cached `.parquet` files |
 
 ---

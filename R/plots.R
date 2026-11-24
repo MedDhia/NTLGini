@@ -258,3 +258,176 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     ) +
     ggplot2::theme_minimal(base_size = 11)
 }
+
+.require_sf <- function() {
+  if (!requireNamespace("sf", quietly = TRUE)) {
+    stop(
+      "Package 'sf' is required for shapefile mapping. ",
+      "Install with install.packages('sf').",
+      call. = FALSE
+    )
+  }
+}
+
+.read_spatial <- function(sf_or_path, layer = NULL) {
+  if (inherits(sf_or_path, "sf")) return(sf_or_path)
+  if (!is.character(sf_or_path) || length(sf_or_path) != 1L || !file.exists(sf_or_path)) {
+    stop("sf_or_path must be an 'sf' object or an existing shapefile/GeoPackage/GeoJSON path.", call. = FALSE)
+  }
+  if (is.null(layer)) sf::st_read(sf_or_path, quiet = TRUE) else sf::st_read(sf_or_path, layer = layer, quiet = TRUE)
+}
+
+.detect_id_col <- function(cols, candidates) {
+  low <- tolower(cols)
+  for (cand in tolower(candidates)) {
+    hit <- which(low == cand)
+    if (length(hit) > 0L) return(cols[hit[1L]])
+  }
+  NULL
+}
+
+#' Map subunit-level nighttime-light Gini or radiance using a shapefile
+#'
+#' Joins `ntl_gini_units()` output onto user-supplied administrative polygons
+#' (an `sf` object or path to a `.shp`, `.gpkg`, or `.geojson` file) and
+#' renders a `ggplot2` choropleth map.
+#'
+#' @param sf_or_path An `sf` polygon object or path to a shapefile/GeoPackage/GeoJSON.
+#' @param level Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).
+#' @param iso3 Single ISO3 country code (e.g., `"TUN"`).
+#' @param year Single calendar year (default `2024L`).
+#' @param metric Metric to map: `"gini"`, `"mean_radiance"`,
+#'   `"within_contribution"`, or `"value_share"`.
+#' @param id_col Optional column name in `sf_or_path` containing unit IDs matching
+#'   `gid` (auto-detected across `GID_*` and `adm*_pcode` if `NULL`).
+#' @param layer Optional layer name when reading a multi-layer GeoPackage.
+#' @param ... Additional arguments passed to [ntl_gini_units()].
+#' @return A `ggplot` object.
+#' @examples
+#' if (interactive() && requireNamespace("sf", quietly = TRUE) &&
+#'     requireNamespace("arrow", quietly = TRUE) &&
+#'     requireNamespace("ggplot2", quietly = TRUE)) {
+#'   ntl_gini_map_units("path/to/gadm41_TUN.gpkg", level = "adm2", iso3 = "TUN", layer = "ADM_ADM_2")
+#' }
+#' @export
+ntl_gini_map_units <- function(sf_or_path,
+                               level = c("adm1", "adm2", "adm3", "adm4"),
+                               iso3,
+                               year = 2024L,
+                               metric = c("gini", "mean_radiance", "within_contribution", "value_share"),
+                               id_col = NULL,
+                               layer = NULL,
+                               ...) {
+  .require_ggplot2()
+  .require_sf()
+  level <- match.arg(level)
+  metric <- match.arg(metric)
+  if (length(iso3) != 1L) stop("iso3 must be a single country code.", call. = FALSE)
+  if (length(year) != 1L) stop("year must be a single calendar year.", call. = FALSE)
+
+  shp <- .read_spatial(sf_or_path, layer = layer)
+  if (is.null(id_col)) {
+    lv_num <- sub("^adm", "", level)
+    id_col <- .detect_id_col(
+      names(shp),
+      c(
+        paste0("GID_", lv_num),
+        paste0("adm", lv_num, "_pcode"),
+        paste0("ADM", lv_num, "_PCODE"),
+        "gid", "shapeID", "pcode"
+      )
+    )
+    if (is.null(id_col)) {
+      stop("Could not auto-detect join ID column; please specify `id_col`.", call. = FALSE)
+    }
+  }
+
+  df <- ntl_gini_units(level = level, iso3 = iso3, years = as.integer(year), ...)
+  if (nrow(df) == 0L) stop("No subunit data found for the requested iso3/level/year.", call. = FALSE)
+
+  shp$.join_key <- as.character(shp[[id_col]])
+  df$.join_key <- as.character(df$gid)
+  merged <- merge(shp, df, by = ".join_key", all.x = TRUE, sort = FALSE)
+
+  ggplot2::ggplot(merged) +
+    ggplot2::geom_sf(
+      ggplot2::aes(fill = .data[[metric]]),
+      color = "#475569",
+      linewidth = 0.12
+    ) +
+    ggplot2::scale_fill_viridis_c(
+      option = "inferno",
+      direction = -1,
+      na.value = "#cbd5e1",
+      name = metric
+    ) +
+    ggplot2::labs(
+      title = sprintf("%s (%s, %s %d)", metric, iso3, toupper(level), year)
+    ) +
+    ggplot2::theme_void(base_size = 11)
+}
+
+#' Map country-level Gini decompositions using a world or regional shapefile
+#'
+#' Joins bundled `ntl_gini_decomp()` output onto country polygons (`sf` object
+#' or shapefile path) and renders a `ggplot2` choropleth map.
+#'
+#' @param sf_or_path An `sf` country polygon object or path to a shapefile/GeoPackage/GeoJSON.
+#' @param level Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).
+#' @param year Single calendar year (default `2024L`).
+#' @param metric Metric to map: `"between_gini"`, `"total_gini"`,
+#'   `"within_gini"`, `"between_share"`, or `"within_share"`.
+#' @param id_col Optional ISO3 column name in `sf_or_path` (auto-detected across
+#'   `ISO_A3`, `ADM0_A3`, `GID_0`, `iso3`, `ISO3` if `NULL`).
+#' @param layer Optional layer name when reading a multi-layer GeoPackage.
+#' @return A `ggplot` object.
+#' @examples
+#' if (interactive() && requireNamespace("sf", quietly = TRUE) &&
+#'     requireNamespace("ggplot2", quietly = TRUE)) {
+#'   ntl_gini_map_countries("path/to/world_countries.shp", level = "adm1", year = 2024)
+#' }
+#' @export
+ntl_gini_map_countries <- function(sf_or_path,
+                                   level = c("adm1", "adm2", "adm3", "adm4"),
+                                   year = 2024L,
+                                   metric = c("between_gini", "total_gini", "within_gini", "between_share", "within_share"),
+                                   id_col = NULL,
+                                   layer = NULL) {
+  .require_ggplot2()
+  .require_sf()
+  level <- match.arg(level)
+  metric <- match.arg(metric)
+  if (length(year) != 1L) stop("year must be a single calendar year.", call. = FALSE)
+
+  shp <- .read_spatial(sf_or_path, layer = layer)
+  if (is.null(id_col)) {
+    id_col <- .detect_id_col(
+      names(shp),
+      c("ISO_A3", "ADM0_A3", "GID_0", "iso3", "ISO3", "SOV_A3", "adm0_pcode")
+    )
+    if (is.null(id_col)) {
+      stop("Could not auto-detect ISO3 column; please specify `id_col`.", call. = FALSE)
+    }
+  }
+
+  df <- ntl_gini_decomp(level = level, years = as.integer(year))
+  shp$.join_key <- as.character(shp[[id_col]])
+  df$.join_key <- as.character(df$iso3)
+  merged <- merge(shp, df, by = ".join_key", all.x = TRUE, sort = FALSE)
+
+  ggplot2::ggplot(merged) +
+    ggplot2::geom_sf(
+      ggplot2::aes(fill = .data[[metric]]),
+      color = "#475569",
+      linewidth = 0.15
+    ) +
+    ggplot2::scale_fill_viridis_c(
+      option = "plasma",
+      na.value = "#e2e8f0",
+      name = metric
+    ) +
+    ggplot2::labs(
+      title = sprintf("Global %s (%s, %d)", metric, toupper(level), year)
+    ) +
+    ggplot2::theme_void(base_size = 11)
+}

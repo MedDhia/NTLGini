@@ -150,3 +150,46 @@ test_that("plotting functions return ggplot objects", {
   expect_s3_class(ntl_gini_plot_decomp("TUN", level = "adm2"), "ggplot")
   expect_s3_class(ntl_gini_plot_levels(c("TUN", "MAR")), "ggplot")
 })
+
+test_that("shapefile mapping functions return ggplot objects", {
+  skip_if_not_installed("ggplot2")
+  skip_if_not_installed("sf")
+
+  poly1 <- sf::st_polygon(list(rbind(c(0, 0), c(1, 0), c(1, 1), c(0, 1), c(0, 0))))
+  poly2 <- sf::st_polygon(list(rbind(c(1, 0), c(2, 0), c(2, 1), c(1, 1), c(1, 0))))
+  world_sf <- sf::st_sf(
+    ISO_A3 = c("TUN", "MAR"),
+    geometry = sf::st_sfc(poly1, poly2, crs = 4326)
+  )
+  p_world <- ntl_gini_map_countries(world_sf, level = "adm1", year = 2024L)
+  expect_s3_class(p_world, "ggplot")
+
+  skip_if_not_installed("arrow")
+  tmp_dir <- file.path(tempdir(), "ntlgini_map_test")
+  dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
+  sample_df <- data.frame(
+    iso3 = c("TUN", "TUN"),
+    year = c(2024L, 2024L),
+    level = c("adm1", "adm1"),
+    gid = c("U1", "U2"),
+    name = c("Unit 1", "Unit 2"),
+    n_pixels = c(10L, 20L),
+    mean_radiance = c(1.0, 2.0),
+    pop_share = c(0.4, 0.6),
+    value_share = c(0.3, 0.7),
+    gini = c(0.25, 0.65),
+    within_contribution = c(0.05, 0.15),
+    stringsAsFactors = FALSE
+  )
+  arrow::write_parquet(sample_df, file.path(tmp_dir, "gini_by_unit_adm1.parquet"))
+  unit_sf <- sf::st_sf(
+    GID_1 = c("U1", "U2"),
+    geometry = sf::st_sfc(poly1, poly2, crs = 4326)
+  )
+  p_units <- ntl_gini_map_units(
+    unit_sf, level = "adm1", iso3 = "TUN", year = 2024L,
+    data_dir = tmp_dir, download = FALSE
+  )
+  expect_s3_class(p_units, "ggplot")
+  unlink(tmp_dir, recursive = TRUE)
+})
