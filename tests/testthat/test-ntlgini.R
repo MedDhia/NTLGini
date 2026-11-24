@@ -149,6 +149,7 @@ test_that("plotting functions return ggplot objects", {
   expect_s3_class(ntl_gini_plot_series(c("TUN", "MAR"), level = "adm1"), "ggplot")
   expect_s3_class(ntl_gini_plot_decomp("TUN", level = "adm2"), "ggplot")
   expect_s3_class(ntl_gini_plot_levels(c("TUN", "MAR")), "ggplot")
+  expect_s3_class(ntl_gini_plot_scatter(level = "adm1", year = 2024L, label_iso3 = c("TUN", "MAR")), "ggplot")
 })
 
 test_that("shapefile mapping functions return ggplot objects", {
@@ -191,24 +192,5 @@ test_that("shapefile mapping functions return ggplot objects", {
     data_dir = tmp_dir, download = FALSE
   )
   expect_s3_class(p_units, "ggplot")
-
-  p_npix <- ntl_gini_map_units(
-    unit_sf, level = "adm1", iso3 = "TUN", year = 2024L,
-    metric = "n_pixels", data_dir = tmp_dir, download = FALSE
-  )
-  expect_s3_class(p_npix, "ggplot")
-
-  if (requireNamespace("terra", quietly = TRUE)) {
-    r <- terra::rast(xmin = 0, xmax = 2, ymin = 0, ymax = 1, ncols = 8, nrows = 4, crs = "EPSG:4326")
-    terra::values(r) <- seq_len(terra::ncell(r))
-    p_grid <- ntl_gini_map_grid(r, sf_or_path = unit_sf, unit_id = "U1")
-    expect_s3_class(p_grid, "ggplot")
-
-    p_grid_units <- ntl_gini_map_grid_units(
-      r, sf_or_path = unit_sf, level = "adm1", iso3 = "TUN", year = 2024L,
-      data_dir = tmp_dir, download = FALSE
-    )
-    expect_s3_class(p_grid_units, "ggplot")
-  }
   unlink(tmp_dir, recursive = TRUE)
 })

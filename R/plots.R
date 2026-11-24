@@ -641,3 +641,110 @@ ntl_gini_map_countries <- function(sf_or_path,
     ) +
     ggplot2::theme_void(base_size = 11)
 }
+
+#' Scatter plot comparing two Gini decomposition metrics across countries
+#'
+#' Plots one decomposition metric against another across all available countries
+#' for a given administrative level and calendar year (e.g., Inter-regional Gini
+#' vs. Intra-regional Gini).
+#'
+#' @param level Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).
+#' @param year Single calendar year (default `2024L`).
+#' @param x Horizontal-axis metric (`"between_gini"`, `"within_gini"`,
+#'   `"total_gini"`, `"overlap_gini"`, `"between_share"`, or `"within_share"`).
+#' @param y Vertical-axis metric (`"within_gini"`, `"between_gini"`,
+#'   `"total_gini"`, `"overlap_gini"`, `"between_share"`, or `"within_share"`).
+#' @param color Point color metric (`"total_gini"`, `"between_gini"`,
+#'   `"within_gini"`, `"overlap_gini"`, or `"none"`).
+#' @param iso3 Optional character vector of ISO3 codes to subset to.
+#' @param label_iso3 Optional character vector of ISO3 codes to label on the plot.
+#' @param diag Logical; if `TRUE`, draws a dashed 1:1 reference line.
+#' @return A `ggplot` object.
+#' @examples
+#' if (requireNamespace("ggplot2", quietly = TRUE)) {
+#'   ntl_gini_plot_scatter(level = "adm1", year = 2024, label_iso3 = c("TUN", "EGY", "USA", "CHN"))
+#' }
+#' @export
+ntl_gini_plot_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4"),
+                                  year = 2024L,
+                                  x = c("between_gini", "within_gini", "total_gini", "overlap_gini", "between_share", "within_share"),
+                                  y = c("within_gini", "between_gini", "total_gini", "overlap_gini", "between_share", "within_share"),
+                                  color = c("total_gini", "between_gini", "within_gini", "overlap_gini", "none"),
+                                  iso3 = NULL,
+                                  label_iso3 = NULL,
+                                  diag = NULL) {
+  .require_ggplot2()
+  level <- match.arg(level)
+  x <- match.arg(x)
+  y <- match.arg(y)
+  color <- match.arg(color)
+  if (length(year) != 1L) stop("year must be a single calendar year.", call. = FALSE)
+  if (is.null(diag)) {
+    diag <- x %in% c("between_gini", "within_gini") && y %in% c("between_gini", "within_gini")
+  }
+
+  df <- ntl_gini_decomp(iso3 = iso3, level = level, years = as.integer(year))
+  df <- df[!is.na(df[[x]]) & !is.na(df[[y]]), , drop = FALSE]
+  if (nrow(df) == 0L) stop("No non-missing rows match the requested level/year.", call. = FALSE)
+
+  metric_labels <- c(
+    between_gini = "Inter-regional Gini",
+    within_gini = "Intra-regional Gini",
+    total_gini = "Overall spatial Gini",
+    overlap_gini = "Cross-region overlap",
+    between_share = "Inter-regional share",
+    within_share = "Intra-regional share"
+  )
+
+  p <- ggplot2::ggplot(df, ggplot2::aes(x = .data[[x]], y = .data[[y]]))
+  if (isTRUE(diag)) {
+    p <- p + ggplot2::geom_abline(
+      slope = 1, intercept = 0,
+      linetype = "dashed", color = "#64748b", linewidth = 0.5
+    )
+  }
+  if (color == "none") {
+    p <- p + ggplot2::geom_point(color = "#0f766e", alpha = 0.8, size = 2.2)
+  } else {
+    p <- p +
+      ggplot2::geom_point(ggplot2::aes(color = .data[[color]]), alpha = 0.85, size = 2.3) +
+      ggplot2::scale_color_viridis_c(option = "plasma", name = metric_labels[[color]])
+  }
+
+  if (!is.null(label_iso3) && length(label_iso3) > 0L) {
+    lab_df <- df[df$iso3 %in% toupper(label_iso3), , drop = FALSE]
+    if (nrow(lab_df) > 0L) {
+      p <- p + ggplot2::geom_text(
+        data = lab_df,
+        ggplot2::aes(label = .data[["iso3"]]),
+        size = 3,
+        fontface = "bold",
+        color = "#0f172a",
+        vjust = -0.6,
+        check_overlap = TRUE
+      )
+    }
+  }
+
+  subtitle_str <- if (x == "between_gini" && y == "within_gini") {
+    sprintf(
+      "Comparing nighttime-light inequality across %s regions (x) vs. inside %s regions across 250,000 m\u00b2 (500 m) grid cells (y)",
+      toupper(level), toupper(level)
+    )
+  } else {
+    sprintf(
+      "%s vs. %s across %d countries at %s (250,000 m\u00b2 / 500 m nighttime-light grid cells)",
+      metric_labels[[x]], metric_labels[[y]], nrow(df), toupper(level)
+    )
+  }
+
+  p +
+    ggplot2::labs(
+      title = sprintf("%s vs. %s (%s, %d)", metric_labels[[x]], metric_labels[[y]], toupper(level), year),
+      subtitle = subtitle_str,
+      x = metric_labels[[x]],
+      y = metric_labels[[y]]
+    ) +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(legend.position = "bottom")
+}

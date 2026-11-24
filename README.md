@@ -55,11 +55,10 @@ Country-level decompositions (`ntl_gini_global`) and coverage metadata (`ntl_gin
 | `ntl_gini_plot_series()` | Plot `total_gini`, `between_gini`, `within_gini`, and `overlap_gini` over time |
 | `ntl_gini_plot_decomp()` | Plot stacked area shares (`between_share`, `within_share`, `overlap_share`) |
 | `ntl_gini_plot_levels()` | Compare `between_gini` across all available `adm1`–`adm4` levels |
+| `ntl_gini_plot_scatter()` | Scatter plot comparing two Gini decomposition metrics across countries |
 | `ntl_gini_plot_top_units()` | Horizontal bar chart of top/bottom subunits from `ntl_gini_top_units()` |
-| `ntl_gini_map_units()` | Choropleth map of subunit-level Gini, radiance, or 500 m grid-cell counts (`n_pixels`) from a shapefile / `sf` object |
+| `ntl_gini_map_units()` | Choropleth map of subunit-level Gini or radiance from a shapefile / `sf` object |
 | `ntl_gini_map_countries()` | Choropleth map of country-level decompositions from a world/regional shapefile |
-| `ntl_gini_map_grid()` | Map 500 m (250,000 m²) grid-cell nighttime-light radiance overlaid with administrative units |
-| `ntl_gini_map_grid_units()` | Map 500 m (250,000 m²) grid-cell radiance with administrative unit borders and internal Gini labels |
 | `ntl_gini_cache_info()` / `ntl_gini_clear_cache()` | Inspect or clear locally cached `.parquet` files |
 
 ---
@@ -104,11 +103,19 @@ ntl_gini_plot_series(c("EGY", "IRQ", "SYR", "TUN"), level = "adm3", metric = "be
 
 # Within-unit Gini at ADM_2 across Chad, Niger, Mauritania, Libya, and UAE (1992-2024)
 ntl_gini_plot_series(c("TCD", "NER", "MRT", "LBY", "ARE"), level = "adm2", metric = "within_gini")
+
+# Inter-regional vs. intra-regional Gini across all countries at ADM_1 (2024)
+ntl_gini_plot_scatter(
+  level = "adm1", year = 2024,
+  label_iso3 = c("TUN", "EGY", "SYR", "IRQ", "TCD", "NER", "ARE", "USA", "CHN", "FRA", "BRA")
+)
 ```
 
 ![Between-unit Gini at ADM3 across Egypt, Iraq, Syria, and Tunisia](man/figures/between_adm3_comparison.png)
 
 ![Within-unit Gini at ADM2 across Chad, Niger, Mauritania, Libya, and UAE](man/figures/within_adm2_global.png)
+
+![Inter-regional vs. intra-regional Gini across countries at ADM1 in 2024](man/figures/scatter_adm1_2024.png)
 
 ### 4. Choropleth Mapping with Shapefiles (Requires `sf` and `ggplot2`)
 
@@ -122,9 +129,6 @@ ntl_gini_map_countries(europe_sf, level = "adm1", year = 2024) +
 
 # Subnational within-unit Gini at ADM_4 in Tunisia (2024)
 ntl_gini_map_units("path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year = 2024)
-
-# Count of 250,000 m² (500 m × 500 m) grid cells per ADM_2 département in France (2024)
-ntl_gini_map_units("path/to/gadm41_FRA.gpkg", level = "adm2", iso3 = "FRA", year = 2024, metric = "n_pixels", layer = "ADM_ADM_2")
 ```
 
 ![Global between-unit Gini at ADM1 in 2024](man/figures/map_global_between_adm1.png)
@@ -132,8 +136,6 @@ ntl_gini_map_units("path/to/gadm41_FRA.gpkg", level = "adm2", iso3 = "FRA", year
 ![Europe between-unit Gini at ADM1 in 2024](man/figures/map_europe_between_adm1.png)
 
 ![Subnational Gini at ADM4 in Tunisia in 2024](man/figures/map_tun_adm4_2024.png)
-
-![France 500 m grid cells at ADM2 in 2024](man/figures/map_fra_adm2_npixels.png)
 
 ---
 
