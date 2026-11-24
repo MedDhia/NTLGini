@@ -128,8 +128,9 @@ ntl_gini_plot_unit_scatter(level = "adm3", iso3 = "TUN", year = 2024)
 Pass any `sf` polygon object or path to a `.shp`, `.gpkg`, or `.geojson` file:
 
 ```r
-# Global inter-regional Gini at ADM_1 in 2024
-ntl_gini_map_countries("path/to/world_countries.shp", level = "adm1", year = 2024)
+# Global inter-regional Gini at ADM_1 in 2024 (Robinson projection)
+ntl_gini_map_countries("path/to/world_countries.shp", level = "adm1", year = 2024) +
+  ggplot2::coord_sf(crs = "+proj=robin")
 ```
 
 ![Global inter-regional Gini at ADM1 in 2024](man/figures/map_global_between_adm1.png)
@@ -137,7 +138,7 @@ ntl_gini_map_countries("path/to/world_countries.shp", level = "adm1", year = 202
 ```r
 # Regional subset (Europe, cropped with coord_sf)
 ntl_gini_map_countries(europe_sf, level = "adm1", year = 2024) +
-  ggplot2::coord_sf(xlim = c(-12, 42), ylim = c(34, 71)) +
+  ggplot2::coord_sf(xlim = c(-24, 45), ylim = c(34, 71), expand = FALSE) +
   ggplot2::labs(title = "Europe: Inter-Regional Gini (ADM1, 2024)")
 ```
 

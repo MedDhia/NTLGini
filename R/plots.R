@@ -540,19 +540,35 @@ ntl_gini_map_units <- function(sf_or_path,
   ggplot2::ggplot(merged) +
     ggplot2::geom_sf(
       ggplot2::aes(fill = .data[[metric]]),
-      color = "#475569",
-      linewidth = 0.12
+      color = "#1e293b",
+      linewidth = 0.07
     ) +
     ggplot2::scale_fill_viridis_c(
       option = "plasma",
       na.value = "#cbd5e1",
-      name = metric_labels[[metric]]
+      name = metric_labels[[metric]],
+      guide = ggplot2::guide_colorbar(
+        barwidth = 14,
+        barheight = 0.55,
+        title.position = "top",
+        title.hjust = 0.5
+      )
     ) +
     ggplot2::labs(
       title = sprintf("%s (%s, %s, %d)", metric_labels[[metric]], iso3, unit_pl, year),
       subtitle = metric_subtitles[[metric]]
     ) +
-    ggplot2::theme_void(base_size = 11)
+    ggplot2::theme_void(base_size = 11) +
+    ggplot2::theme(
+      plot.background = ggplot2::element_rect(fill = "#ffffff", color = NA),
+      plot.title = ggplot2::element_text(face = "bold", size = 13, color = "#0f172a", margin = ggplot2::margin(b = 4)),
+      plot.subtitle = ggplot2::element_text(size = 9.5, color = "#475569", margin = ggplot2::margin(b = 10)),
+      legend.position = "bottom",
+      legend.title = ggplot2::element_text(size = 9.5, face = "bold", color = "#1e293b"),
+      legend.text = ggplot2::element_text(size = 8.5, color = "#475569"),
+      legend.margin = ggplot2::margin(t = 8),
+      plot.margin = ggplot2::margin(14, 16, 12, 16)
+    )
 }
 
 #' Map country-level Gini decompositions using a world or regional shapefile
@@ -626,19 +642,36 @@ ntl_gini_map_countries <- function(sf_or_path,
   ggplot2::ggplot(merged) +
     ggplot2::geom_sf(
       ggplot2::aes(fill = .data[[metric]]),
-      color = "#475569",
+      color = "#334155",
       linewidth = 0.15
     ) +
     ggplot2::scale_fill_viridis_c(
       option = "plasma",
-      na.value = "#e2e8f0",
-      name = metric_labels[[metric]]
+      na.value = "#cbd5e1",
+      name = metric_labels[[metric]],
+      guide = ggplot2::guide_colorbar(
+        barwidth = 16,
+        barheight = 0.55,
+        title.position = "top",
+        title.hjust = 0.5
+      )
     ) +
     ggplot2::labs(
       title = sprintf("Global %s (%s, %d)", metric_labels[[metric]], toupper(level), year),
       subtitle = metric_subtitles[[metric]]
     ) +
-    ggplot2::theme_void(base_size = 11)
+    ggplot2::theme_void(base_size = 11) +
+    ggplot2::theme(
+      plot.background = ggplot2::element_rect(fill = "#ffffff", color = NA),
+      panel.background = ggplot2::element_rect(fill = "#f1f5f9", color = NA),
+      plot.title = ggplot2::element_text(face = "bold", size = 13, color = "#0f172a", margin = ggplot2::margin(b = 4)),
+      plot.subtitle = ggplot2::element_text(size = 9.5, color = "#475569", margin = ggplot2::margin(b = 10)),
+      legend.position = "bottom",
+      legend.title = ggplot2::element_text(size = 9.5, face = "bold", color = "#1e293b"),
+      legend.text = ggplot2::element_text(size = 8.5, color = "#475569"),
+      legend.margin = ggplot2::margin(t = 8),
+      plot.margin = ggplot2::margin(14, 16, 12, 16)
+    )
 }
 
 #' Scatter plot comparing two Gini decomposition metrics across countries
