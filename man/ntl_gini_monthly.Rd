@@ -19,7 +19,7 @@ ntl_gini_monthly(
 
 \item{level}{Administrative level: `"national"` (default) or `"adm1"`.}
 
-\item{years}{Optional integer vector of years to filter (e.g. `2024`).}
+\item{years}{Optional integer vector of years to filter (e.g. `1992:2024`).}
 
 \item{months}{Optional integer vector of months (`1:12`) to filter.}
 
@@ -38,13 +38,15 @@ A tibble with columns: `iso3`, `country`, `level`, `gid`, `name`,
 \description{
 Retrieves monthly nighttime-light Gini coefficients, Theil T & L indices,
 sum of lights, and lit-pixel proportions at national and ADM_1 levels.
+Covers the complete satellite record (1992–2024, 393 monthly composites for Tunisia).
 Monthly data is read from `gini_monthly.parquet`, which is looked up in
 `data_dir` or the package internal data directory (`inst/extdata`). If missing,
 it is downloaded from GitHub Releases and cached.
 }
 \examples{
 if (requireNamespace("arrow", quietly = TRUE)) {
-  m_tun <- ntl_gini_monthly("TUN", level = "national", years = 2024)
+  # Query 33-year monthly series (1992-2024) for Tunisia
+  m_tun <- ntl_gini_monthly("TUN", level = "national", years = 1992:2024)
 }
 }
 \seealso{

@@ -390,6 +390,14 @@ test_that("ntl_gini_monthly retrieves and filters monthly data accurately", {
   expect_equal(nrow(m_lit), 12L)
   expect_true(all(m_lit$gini < m_tun$gini)) # lit-only Gini is strictly less than zeros-included Gini
 
+  # Full multi-year query across the complete satellite era (1992-2024)
+  m_33yr <- ntl_gini_monthly("TUN", level = "national", years = 1992:2024)
+  expect_equal(nrow(m_33yr), 393L) # 33 years (1992 has 9 months, 1993-2024 have 12 months each)
+  expect_equal(min(m_33yr$year), 1992L)
+  expect_equal(max(m_33yr$year), 2024L)
+  expect_equal(min(m_33yr$date), "1992-04-01")
+  expect_equal(max(m_33yr$date), "2024-12-01")
+
   # Validation errors
   expect_error(ntl_gini_monthly("TUN", level = "adm2"), "should be one of")
   expect_error(ntl_gini_monthly("TUN", zeros = "invalid"), "should be one of")

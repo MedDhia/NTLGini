@@ -86,39 +86,40 @@ ntl_gini_top_units(level = "adm3", iso3 = "TUN", year = 2024, n = 10)
 
 `ntlgini` provides both pre-computed monthly inequality series and BlackMarble-style on-demand raster streaming from **Cheng et al. (2026)**:
 
-#### 1. Analyzing National Monthly Inequality Trends
+#### 1. Analyzing Long-Term National Monthly Inequality (1992–2024)
 
-Query monthly Gini coefficients, Theil indices, and light volume across 2024 for Tunisia:
+Query monthly Gini coefficients, Theil indices, and light volume across the entire 33-year satellite record (1992–2024, 393 monthly observations) for Tunisia:
 
 ```r
 library(ntlgini)
 library(ggplot2)
 
-# Query national monthly series for Tunisia (all pixels vs. lit only)
-tun_all <- ntl_gini_monthly("Tunisia", level = "national", years = 2024, zeros = "zeros_included")
-tun_lit <- ntl_gini_monthly("Tunisia", level = "national", years = 2024, zeros = "lit_only")
+# Query complete 33-year monthly time series (1992-2024) for Tunisia
+tun_all <- ntl_gini_monthly("Tunisia", level = "national", years = 1992:2024, zeros = "zeros_included")
+tun_lit <- ntl_gini_monthly("Tunisia", level = "national", years = 1992:2024, zeros = "lit_only")
 tun_monthly <- rbind(tun_all, tun_lit)
 
-# Plot monthly inequality dynamics across 2024
+# Plot long-term monthly inequality dynamics across 1992-2024 (393 months)
 ggplot(tun_monthly, aes(x = as.Date(date), y = gini, color = zeros)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2.5) +
+  geom_line(alpha = 0.45, linewidth = 0.6) +
+  geom_smooth(method = "loess", span = 0.15, se = FALSE, linewidth = 1.2) +
   scale_color_manual(
-    values = c("zeros_included" = "#f43f5e", "lit_only" = "#38bdf8"),
-    labels = c("zeros_included" = "All Pixels (Spatial Inequality)", "lit_only" = "Lit Pixels Only")
+    values = c("zeros_included" = "#f43f5e", "lit_only" = "#0284c7"),
+    labels = c("zeros_included" = "All Pixels (Spatial Inequality, zeros included)",
+               "lit_only" = "Lit Pixels Only (Concentration among lit areas)")
   ) +
-  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+  scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
   labs(
-    title = "Tunisia: Monthly Nighttime-Light Gini Evolution (2024)",
-    subtitle = "Cheng et al. (2026) 500 m harmonized monthly composites",
-    x = "2024 Month", y = "Gini Coefficient", color = "Sample"
+    title = "Tunisia: Long-Term Monthly Nighttime-Light Inequality (1992-2024)",
+    subtitle = "393 monthly observations from Cheng et al. (2026) 500 m harmonized DMSP-OLS/VIIRS composites",
+    x = "Year", y = "Gini Coefficient", color = "Specification"
   ) +
   theme_minimal(base_size = 12) +
   theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
 ```
 
 <p align="center">
-  <img src="man/figures/tunisia_monthly_gini_2024.png" width="700" alt="Tunisia Monthly Nighttime Light Gini Evolution 2024" />
+  <img src="man/figures/tunisia_monthly_gini_1992_2024.png" width="800" alt="Tunisia Monthly Nighttime Light Gini Evolution 1992-2024" />
 </p>
 
 #### 2. Subnational Governorate Level (ADM_1)

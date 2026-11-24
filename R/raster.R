@@ -354,7 +354,8 @@ ntl_raster <- function(country = NULL,
     fname <- if (year >= 2012L) sprintf("SVDNB_npp_%d.tif", year) else sprintf("SVDNB_npp_simulated_%d.tif", year)
     remote_vsi <- sprintf("/vsicurl/%s/yearly/%d/%s", base_url, year, fname)
   } else {
-    fname <- if (year >= 2012L) sprintf("SVDNB_npp_%d%02d.tif", year, month) else sprintf("SVDNB_npp_simulated_%d%02d.tif", year, month)
+    is_sim <- (year < 2012L) || (year == 2012L && month < 4L)
+    fname <- if (!is_sim) sprintf("SVDNB_npp_%d%02d.tif", year, month) else sprintf("SVDNB_npp_simulated_%d%02d.tif", year, month)
     remote_vsi <- sprintf("/vsizip//vsicurl/%s/raw/%d/%d.zip/%d/%s", base_url, year, year, year, fname)
   }
 
