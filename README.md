@@ -98,13 +98,13 @@ ntl_gini_top_units(level = "adm3", iso3 = "TUN", year = 2024, n = 10)
 # Between-unit Gini at ADM_3 across Egypt, Iraq, Syria, and Tunisia (1992-2024)
 ntl_gini_plot_series(c("EGY", "IRQ", "SYR", "TUN"), level = "adm3", metric = "between_gini")
 
-# Top 10 ADM_2 subunits by within-unit contribution in 2024
-ntl_gini_plot_top_units("adm2", iso3 = "TUN", year = 2024, n = 10)
+# Within-unit Gini at ADM_1 across Brazil, China, India, USA, and South Africa (1992-2024)
+ntl_gini_plot_series(c("USA", "CHN", "BRA", "IND", "ZAF"), level = "adm1", metric = "within_gini")
 ```
 
 ![Between-unit Gini at ADM3 across Egypt, Iraq, Syria, and Tunisia](man/figures/between_adm3_comparison.png)
 
-![Top 10 ADM2 Units in Tunisia by Within-Unit Contribution (2024)](man/figures/top_adm2_tun.png)
+![Within-unit Gini at ADM1 across Brazil, China, India, USA, and South Africa](man/figures/within_adm1_global.png)
 
 ---
 
