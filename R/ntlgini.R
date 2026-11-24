@@ -255,3 +255,104 @@ ntl_gini_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
   df <- df[ord, , drop = FALSE]
   utils::head(df, n = as.integer(n))
 }
+
+#' Query monthly nighttime-light inequality metrics (2024 pilot & on-demand)
+#'
+#' Retrieves monthly nighttime-light Gini coefficients, Theil T & L indices,
+#' sum of lights, and lit-pixel proportions at national and ADM_1 levels.
+#' Monthly data is read from `gini_monthly.parquet`, which is looked up in
+#' `data_dir` or the package internal data directory (`inst/extdata`). If missing,
+#' it is downloaded from GitHub Releases and cached.
+#'
+#' @param iso3 Optional character vector of ISO3 country codes or country names (e.g. `"TUN"` or `"Tunisia"`).
+#' @param level Administrative level: `"national"` (default) or `"adm1"`.
+#' @param years Optional integer vector of years to filter (e.g. `2024`).
+#' @param months Optional integer vector of months (`1:12`) to filter.
+#' @param zeros How zero-radiance pixels are handled: `"zeros_included"` (default)
+#'   or `"lit_only"`.
+#' @param data_dir Directory where Parquet files are cached.
+#' @param download Logical; whether to download missing Parquet files.
+#' @return A tibble with columns: `iso3`, `country`, `level`, `gid`, `name`,
+#'   `year`, `month`, `date`, `zeros`, `pixels`, `sum_of_lights`, `lit_pixels`,
+#'   `lit_share`, `mean_radiance`, and `gini`.
+#' @seealso [ntl_gini_decomp()], [ntl_raster()], [ntl_extract()]
+#' @examples
+#' if (requireNamespace("arrow", quietly = TRUE)) {
+#'   m_tun <- ntl_gini_monthly("TUN", level = "national", years = 2024)
+#' }
+#' @export
+ntl_gini_monthly <- function(iso3 = NULL,
+                             level = c("national", "adm1"),
+                             years = NULL,
+                             months = NULL,
+                             zeros = c("zeros_included", "lit_only"),
+                             data_dir = tools::R_user_dir("ntlgini", which = "cache"),
+                             download = TRUE) {
+  level <- match.arg(level)
+  zeros <- match.arg(zeros)
+
+  if (!requireNamespace("arrow", quietly = TRUE)) {
+    stop(
+      "Package 'arrow' is required to read monthly Parquet tables. ",
+      "Install with install.packages('arrow').",
+      call. = FALSE
+    )
+  }
+
+  fname <- "gini_monthly.parquet"
+  path <- file.path(data_dir, fname)
+  bundled <- system.file("extdata", fname, package = "ntlgini")
+
+  target_path <- NULL
+  if (file.exists(path)) {
+    target_path <- path
+  } else if (!identical(data_dir, tools::R_user_dir("ntlgini", which = "cache"))) {
+    # Custom directory specified by user
+    if (!download) {
+      stop(fname, " not found in ", data_dir, " and download = FALSE.", call. = FALSE)
+    }
+  } else if (nzchar(bundled) && file.exists(bundled)) {
+    target_path <- bundled
+  } else {
+    if (!download) {
+      stop(fname, " not found in ", data_dir, " or package extdata, and download = FALSE.", call. = FALSE)
+    }
+    dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
+    url <- paste0(
+      "https://github.com/MedDhia/NTLGini/releases/download/v0.1.0/",
+      fname
+    )
+    tmp <- paste0(path, ".tmp")
+    status <- tryCatch(
+      suppressWarnings(
+        utils::download.file(url, destfile = tmp, mode = "wb", quiet = TRUE)
+      ),
+      error = function(e) 1L
+    )
+    if (!identical(status, 0L) || !file.exists(tmp) || isTRUE(file.info(tmp)$size <= 0)) {
+      unlink(tmp)
+      stop("Failed to download ", fname, " from ", url, call. = FALSE)
+    }
+    file.rename(tmp, path)
+    target_path <- path
+  }
+
+  df <- arrow::read_parquet(target_path)
+
+  # Filter level and zeros
+  df <- df[df$level == level & df$zeros == zeros, , drop = FALSE]
+
+  if (!is.null(iso3)) {
+    iso3_clean <- .to_iso3(iso3)
+    df <- df[df$iso3 %in% iso3_clean, , drop = FALSE]
+  }
+  if (!is.null(years)) {
+    df <- df[df$year %in% as.integer(years), , drop = FALSE]
+  }
+  if (!is.null(months)) {
+    df <- df[df$month %in% as.integer(months), , drop = FALSE]
+  }
+
+  tibble::as_tibble(df)
+}
+

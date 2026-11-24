@@ -338,3 +338,108 @@ test_that("shapefile mapping functions return ggplot objects", {
   expect_s3_class(p_units, "ggplot")
   unlink(tmp_dir, recursive = TRUE)
 })
+
+test_that(".fast_gini computes exact Gini inequality accurately", {
+  # Empty and single-element edge cases
+  expect_equal(.fast_gini(numeric(0)), 0.0)
+  expect_equal(.fast_gini(c(10)), 0.0)
+  expect_equal(.fast_gini(c(0, 0, 0)), 0.0)
+  expect_equal(.fast_gini(c(5, 5, 5, 5)), 0.0)
+
+  # Known standard cases
+  # Vector 1..5: Gini is exactly 4/15 = 0.2666667
+  expect_equal(round(.fast_gini(1:5), 6), round(4 / 15, 6))
+
+  # Vector with zeros
+  v_z <- c(0, 0, 10, 20)
+  # Sorted: 0, 0, 10, 20; n=4, sum=30
+  # 2*(3*10 + 4*20)/(4*30) - 5/4 = 2*(110)/120 - 1.25 = 220/120 - 1.25 = 1.833333 - 1.25 = 0.5833333
+  expect_equal(round(.fast_gini(v_z), 6), round(7 / 12, 6))
+
+  # Handles NA values
+  expect_equal(.fast_gini(c(1, 2, NA, 3, 4, 5)), .fast_gini(1:5))
+})
+
+test_that("ntl_gini_monthly retrieves and filters monthly data accurately", {
+  skip_if_not_installed("arrow")
+
+  # National query by code
+  m_tun <- ntl_gini_monthly("TUN", level = "national", years = 2024L)
+  expect_s3_class(m_tun, "tbl_df")
+  expect_equal(nrow(m_tun), 12L)
+  expect_true(all(m_tun$iso3 == "TUN"))
+  expect_true(all(m_tun$country == "Tunisia"))
+  expect_true(all(m_tun$month %in% 1:12))
+  expect_true(all(m_tun$gini >= 0 & m_tun$gini <= 1))
+
+  # National query by full name
+  m_mar <- ntl_gini_monthly("Morocco", level = "national", years = 2024L, months = 1:3)
+  expect_equal(nrow(m_mar), 3L)
+  expect_true(all(m_mar$iso3 == "MAR"))
+
+  # ADM1 query
+  m_adm <- ntl_gini_monthly("TUN", level = "adm1", years = 2024L, months = 1L)
+  expect_equal(nrow(m_adm), 24L) # 24 Tunisian governorates
+  expect_true("mean_radiance" %in% names(m_adm))
+  expect_true("lit_share" %in% names(m_adm))
+  expect_true("gini" %in% names(m_adm))
+  expect_true(all(m_adm$lit_share >= 0 & m_adm$lit_share <= 1))
+
+  # lit_only vs zeros_included
+  m_lit <- ntl_gini_monthly("TUN", level = "national", years = 2024L, zeros = "lit_only")
+  expect_equal(nrow(m_lit), 12L)
+  expect_true(all(m_lit$gini < m_tun$gini)) # lit-only Gini is strictly less than zeros-included Gini
+
+  # Validation errors
+  expect_error(ntl_gini_monthly("TUN", level = "adm2"), "should be one of")
+  expect_error(ntl_gini_monthly("TUN", zeros = "invalid"), "should be one of")
+  expect_error(
+    ntl_gini_monthly("TUN", data_dir = "/nonexistent_dir_12345", download = FALSE),
+    "not found"
+  )
+})
+
+test_that("ntl_raster and ntl_extract validate parameters and work with local data", {
+  skip_if_not_installed("terra")
+  skip_if_not_installed("sf")
+
+  # Validation errors
+  expect_error(ntl_raster(year = 1980L), "between 1992 and 2024")
+  expect_error(ntl_raster(year = 2030L), "between 1992 and 2024")
+  expect_error(ntl_raster(year = 2024L, month = 13L), "between 1 and 12")
+  expect_error(ntl_raster(year = 2024L, month = 0L), "between 1 and 12")
+  expect_error(ntl_raster(), "Either 'country' or 'roi' must be specified")
+  expect_error(ntl_raster(country = "XYZ999"), "Unknown country")
+  expect_error(ntl_raster(roi = "invalid_roi"), "Unsupported roi class")
+
+  expect_error(ntl_extract(roi = "not_sf"), "must be an 'sf' object")
+
+  # Test ntl_extract on a synthetic local raster
+  tmp_dir <- file.path(tempdir(), "ntlgini_extract_test")
+  dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
+
+  poly1 <- sf::st_polygon(list(matrix(c(10, 36, 11, 36, 11, 37, 10, 37, 10, 36), ncol = 2, byrow = TRUE)))
+  poly2 <- sf::st_polygon(list(matrix(c(11, 36, 12, 36, 12, 37, 11, 37, 11, 36), ncol = 2, byrow = TRUE)))
+  test_sf <- sf::st_sf(district = c("D1", "D2"), geometry = sf::st_sfc(poly1, poly2, crs = 4326))
+
+  # Mock a cached raster file
+  # Tag for test_sf bbox is roi_10p00_36p00_12p00_37p00
+  mock_tag <- sprintf("ntl_roi_%s_%s_%s_%s_2024_01.tif", "10p00", "36p00", "12p00", "37p00")
+  mock_path <- file.path(tmp_dir, mock_tag)
+  r_mock <- terra::rast(terra::ext(10, 12, 36, 37), resolution = 0.1, crs = "EPSG:4326")
+  terra::values(r_mock) <- rep(c(0, 5, 10, 20), length.out = terra::ncell(r_mock))
+  terra::writeRaster(r_mock, mock_path, overwrite = TRUE)
+
+  # Extract using cached mock raster
+  res <- ntl_extract(test_sf, year = 2024L, month = 1L, output_dir = tmp_dir, drop_geom = TRUE)
+  expect_s3_class(res, "tbl_df")
+  expect_equal(nrow(res), 2L)
+  expect_true(all(c("sum_of_lights", "mean_radiance", "pixels", "lit_share", "gini") %in% names(res)))
+  expect_equal(res$pixels, c(100L, 100L))
+  expect_true(all(res$gini > 0 & res$gini < 1))
+  expect_equal(res$month, c(1L, 1L))
+  expect_equal(res$date, c("2024-01-01", "2024-01-01"))
+
+  unlink(tmp_dir, recursive = TRUE)
+})
+

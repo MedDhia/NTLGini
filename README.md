@@ -41,10 +41,12 @@ Country-level decompositions (`ntl_gini_global`) and coverage metadata (`ntl_gin
 |---|---|---:|---:|---:|
 | `ntl_gini_global` / `ntl_gini_decomp()` | Country × year × level (`adm1`–`adm4`) | 17,553 | 228 | 0.80 MB (bundled) |
 | `ntl_gini_countries` | Country metadata & max admin level | 228 | 228 | < 0.01 MB (bundled) |
+| `ntl_gini_monthly()` | Monthly Gini & Theil (national & `ADM_1`) | 984 | Pilot / cached | 0.03 MB (bundled) |
 | `ntl_gini_units("adm1")` | `ADM_1` subunits × year | 113,173 | 228 | 3.28 MB (cached) |
 | `ntl_gini_units("adm2")` | `ADM_2` subunits × year | 1,502,072 | 183 | 43.36 MB (cached) |
 | `ntl_gini_units("adm3")` | `ADM_3` subunits × year | 4,194,077 | 92 | 102.86 MB (cached) |
 | `ntl_gini_units("adm4")` | `ADM_4` subunits × year | 7,418,928 | 29 | 136.35 MB (cached) |
+| `ntl_raster()` / `ntl_extract()` | On-demand monthly/annual rasters & ROI zonal stats | Custom | Global (1992–2024) | On-demand / stream |
 
 ---
 
@@ -78,6 +80,21 @@ tun_sectors <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2024)
 
 # Top 10 delegations contributing to Tunisia's intra-regional inequality in 2024
 ntl_gini_top_units(level = "adm3", iso3 = "TUN", year = 2024, n = 10)
+```
+
+### Monthly Inequality & Raster Extraction (`terra` / `blackmarblepy`-style)
+
+```r
+# 1. Query monthly Gini and inequality series (national or ADM_1)
+m_tun <- ntl_gini_monthly("Tunisia", level = "national", years = 2024)
+
+# 2. Stream and crop remote monthly NTL rasters on demand (1992-2024)
+# Fetches from Cheng et al. (2026) via GDAL VSI HTTP streaming without full downloads:
+r_jan <- ntl_raster(country = "TUN", year = 2024, month = 1)
+
+# 3. Extract zonal statistics and pixel Gini across custom polygon boundaries (mimics bm_extract)
+# polygons is any sf object:
+stats_monthly <- ntl_extract(polygons, year = 2024, month = 1:12, stat = c("sum", "mean", "gini"))
 ```
 
 ---
