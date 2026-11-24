@@ -43,3 +43,6 @@ if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
   ntl_gini_top_units("adm2", iso3 = "TUN", year = 2024, n = 10)
 }
 }
+\seealso{
+[ntl_gini_units()], [ntl_gini_plot_top_units()], [ntl_gini_plot_unit_scatter()]
+}

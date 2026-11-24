@@ -10,13 +10,13 @@ A tibble with 17,553 rows and 13 variables:
   \item{iso3}{ISO 3166-1 alpha-3 country/territory code.}
   \item{year}{Calendar year (`1992` to `2024`).}
   \item{level}{Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, `"adm4"`).}
-  \item{n_groups}{Number of administrative subunits with at least one pixel.}
-  \item{n_pixels}{Total land pixels in the country/territory.}
+  \item{n_groups}{Number of administrative subunits with at least one grid cell.}
+  \item{n_pixels}{Total `250,000 m^2` (500 m) land grid cells in the country/territory.}
   \item{sum_of_lights}{Total nighttime-light radiance.}
-  \item{total_gini}{National pixel-level Gini coefficient.}
-  \item{within_gini}{Weighted within-subunit Gini component.}
-  \item{between_gini}{Pixel-weighted between-subunit Gini component.}
-  \item{overlap_gini}{Pyatt/Dagum transvariation overlap residual.}
+  \item{total_gini}{Overall spatial Gini across all land grid cells.}
+  \item{within_gini}{Intra-regional Gini (weighted internal grid-cell inequality).}
+  \item{between_gini}{Inter-regional Gini (grid-cell-weighted inequality across subunit means).}
+  \item{overlap_gini}{Cross-region overlap (Pyatt/Dagum transvariation residual).}
   \item{within_share}{Share of `total_gini` due to `within_gini`.}
   \item{between_share}{Share of `total_gini` due to `between_gini`.}
   \item{overlap_share}{Share of `total_gini` due to `overlap_gini`.}
@@ -24,14 +24,17 @@ A tibble with 17,553 rows and 13 variables:
 }
 \source{
 Derived from Cheng et al. (2026) <doi:10.5194/essd-18-3449-2026>
-  and GADM 4.1 boundaries.
+  with GADM 4.1 (195 countries) and HDX COD-AB (33 countries) boundaries.
 }
 \usage{
 ntl_gini_global
 }
 \description{
-Country-by-year Pyatt/Dagum Gini decompositions of 500 m 'VIIRS'-like
-nighttime lights across administrative levels `adm1` to `adm4` for 228
-countries and territories.
+Country-by-year Pyatt/Dagum Gini decompositions of `250,000 m^2` (500 m)
+'VIIRS'-like nighttime lights across administrative levels `adm1` to `adm4`
+for 228 countries and territories.
+}
+\seealso{
+[ntl_gini_decomp()], [ntl_gini_trends()], [ntl_gini_countries]
 }
 \keyword{datasets}

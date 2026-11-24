@@ -4,6 +4,7 @@
 #' @param level Optional administrative level (`"adm1"`, `"adm2"`, `"adm3"`, `"adm4"`).
 #' @param years Optional integer vector of years (`1992:2024`) to filter.
 #' @return A tibble of country-year Gini decompositions.
+#' @seealso [ntl_gini_trends()], [ntl_gini_plot_series()], [ntl_gini_plot_scatter()], [ntl_gini_global]
 #' @examples
 #' ntl_gini_decomp(iso3 = c("TUN", "MAR"), years = 2020:2024)
 #' @export
@@ -29,6 +30,7 @@ ntl_gini_decomp <- function(iso3 = NULL, level = NULL, years = NULL) {
 #'   `"within_gini"`.
 #' @return A tibble with `iso3`, `level`, `window`, `metric`, `first_year`,
 #'   `last_year`, `n_years`, `percent_per_year`, and `r_squared`.
+#' @seealso [ntl_gini_decomp()], [ntl_gini_plot_series()]
 #' @examples
 #' ntl_gini_trends(iso3 = c("TUN", "MAR"), window = "viirs")
 #' @export
@@ -103,6 +105,7 @@ ntl_gini_trends <- function(iso3 = NULL,
 #' @param download Logical; whether to download missing Parquet files from
 #'   GitHub Releases.
 #' @return A tibble of subunit-year Gini coefficients and within-contributions.
+#' @seealso [ntl_gini_top_units()], [ntl_gini_plot_unit_scatter()], [ntl_gini_map_units()], [ntl_gini_cache_info()]
 #' @examples
 #' if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
 #'   tun_adm4 <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2010:2024)
@@ -219,6 +222,7 @@ ntl_gini_clear_cache <- function(data_dir = tools::R_user_dir("ntlgini", which =
 #' @param ... Additional arguments passed to [ntl_gini_units()] (such as
 #'   `data_dir` or `download`).
 #' @return A tibble of the top/bottom `n` subunits.
+#' @seealso [ntl_gini_units()], [ntl_gini_plot_top_units()], [ntl_gini_plot_unit_scatter()]
 #' @examples
 #' if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
 #'   ntl_gini_top_units("adm2", iso3 = "TUN", year = 2024, n = 10)

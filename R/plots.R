@@ -88,7 +88,7 @@ utils::globalVariables(".data")
   parts <- vapply(names(groups), function(lbl) {
     paste0(lbl, " (", paste(groups[[lbl]], collapse = ", "), ")")
   }, character(1L))
-  paste0(toupper(level), " units \u2014 ", paste(parts, collapse = " | "))
+  paste0(toupper(level), " units : ", paste(parts, collapse = " | "))
 }
 
 #' Plot Gini decomposition series over time (1992-2024)
@@ -134,7 +134,7 @@ ntl_gini_plot_series <- function(iso3,
     overlap_gini = "Cross-region overlap"
   )
   metric_subtitles <- c(
-    total_gini = "Total nighttime-light inequality across 250,000 m\u00b2 (500 m) grid cells nationwide",
+    total_gini = "Total nighttime-light inequality across 250,000 m^2 (500 m) grid cells nationwide",
     between_gini = sprintf("Nighttime-light inequality across %s (differences in regional averages)", scope_lbl),
     within_gini = sprintf("Nighttime-light inequality inside %s (weighted average of internal disparities)", scope_lbl),
     overlap_gini = sprintf("Inequality from overlapping nighttime-light distributions across %s", scope_lbl)
@@ -397,8 +397,8 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
   )
   by_subtitles <- c(
     within_contribution = sprintf("%s ranked by their contribution to %s's intra-regional nighttime-light inequality", unit_pl, iso3),
-    gini = sprintf("%s ranked by internal spatial Gini (nighttime-light inequality across 250,000 m\u00b2 grid cells in each %s)", unit_pl, unit_sg),
-    mean_radiance = sprintf("%s ranked by average nighttime-light radiance per 250,000 m\u00b2 grid cell in each %s", unit_pl, unit_sg),
+    gini = sprintf("%s ranked by internal spatial Gini (nighttime-light inequality across 250,000 m^2 grid cells in each %s)", unit_pl, unit_sg),
+    mean_radiance = sprintf("%s ranked by average nighttime-light radiance per 250,000 m^2 grid cell in each %s", unit_pl, unit_sg),
     value_share = sprintf("%s ranked by percentage share of %s's total national nighttime light", unit_pl, iso3)
   )
 
@@ -531,8 +531,8 @@ ntl_gini_map_units <- function(sf_or_path,
     value_share = "Share of national light"
   )
   metric_subtitles <- c(
-    gini = sprintf("Nighttime-light inequality across 250,000 m\u00b2 (500 m) grid cells inside each %s", unit_sg),
-    mean_radiance = sprintf("Average nighttime-light radiance per 250,000 m\u00b2 (500 m) grid cell inside each %s", unit_sg),
+    gini = sprintf("Nighttime-light inequality across 250,000 m^2 (500 m) grid cells inside each %s", unit_sg),
+    mean_radiance = sprintf("Average nighttime-light radiance per 250,000 m^2 (500 m) grid cell inside each %s", unit_sg),
     within_contribution = sprintf("Each %s's contribution to %s's intra-regional inequality", unit_sg, iso3),
     value_share = sprintf("Percentage of %s's total nighttime light emitted within each %s", iso3, unit_sg)
   )
@@ -618,8 +618,8 @@ ntl_gini_map_countries <- function(sf_or_path,
   )
   metric_subtitles <- c(
     between_gini = sprintf("Nighttime-light inequality across %s administrative regions within each country", toupper(level)),
-    total_gini = "Total nighttime-light inequality across 250,000 m\u00b2 (500 m) grid cells in each country",
-    within_gini = sprintf("Average nighttime-light inequality across 250,000 m\u00b2 grid cells inside %s regions", toupper(level)),
+    total_gini = "Total nighttime-light inequality across 250,000 m^2 (500 m) grid cells in each country",
+    within_gini = sprintf("Average nighttime-light inequality across 250,000 m^2 grid cells inside %s regions", toupper(level)),
     between_share = sprintf("Share of national spatial inequality driven by disparities across %s regions", toupper(level)),
     within_share = sprintf("Share of national spatial inequality occurring inside %s regions", toupper(level))
   )
@@ -728,12 +728,12 @@ ntl_gini_plot_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4"),
 
   subtitle_str <- if (x == "between_gini" && y == "within_gini") {
     sprintf(
-      "Comparing nighttime-light inequality across %s regions (x) vs. inside %s regions across 250,000 m\u00b2 (500 m) grid cells (y)",
+      "Comparing nighttime-light inequality across %s regions (x) vs. inside %s regions across 250,000 m^2 (500 m) grid cells (y)",
       toupper(level), toupper(level)
     )
   } else {
     sprintf(
-      "%s vs. %s across %d countries at %s (250,000 m\u00b2 / 500 m nighttime-light grid cells)",
+      "%s vs. %s across %d countries at %s (250,000 m^2 / 500 m nighttime-light grid cells)",
       metric_labels[[x]], metric_labels[[y]], nrow(df), toupper(level)
     )
   }
@@ -844,7 +844,7 @@ ntl_gini_plot_unit_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4")
     ggplot2::labs(
       title = sprintf("%s vs. %s (%s, %s, %d)", metric_labels[[x]], metric_labels[[y]], iso3, unit_pl, year),
       subtitle = sprintf(
-        "Each point is a %s in %s: comparing average brightness and inequality across 250,000 m\u00b2 (500 m) grid cells",
+        "Each point is a %s in %s: comparing average brightness and inequality across 250,000 m^2 (500 m) grid cells",
         unit_sg, iso3
       ),
       x = x_lab,

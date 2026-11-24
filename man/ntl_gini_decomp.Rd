@@ -22,3 +22,6 @@ Filter country-level Gini decompositions (ADM_1 to ADM_4, 1992-2024)
 \examples{
 ntl_gini_decomp(iso3 = c("TUN", "MAR"), years = 2020:2024)
 }
+\seealso{
+[ntl_gini_trends()], [ntl_gini_plot_series()], [ntl_gini_plot_scatter()], [ntl_gini_global]
+}

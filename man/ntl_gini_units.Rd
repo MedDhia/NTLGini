@@ -39,3 +39,6 @@ if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
   tun_adm4 <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2010:2024)
 }
 }
+\seealso{
+[ntl_gini_top_units()], [ntl_gini_plot_unit_scatter()], [ntl_gini_map_units()], [ntl_gini_cache_info()]
+}

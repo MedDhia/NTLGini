@@ -34,3 +34,6 @@ country-level pair in `ntl_gini_global`.
 \examples{
 ntl_gini_trends(iso3 = c("TUN", "MAR"), window = "viirs")
 }
+\seealso{
+[ntl_gini_decomp()], [ntl_gini_plot_series()]
+}
