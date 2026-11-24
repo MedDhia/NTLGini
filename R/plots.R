@@ -40,10 +40,10 @@ ntl_gini_plot_series <- function(iso3,
   if (nrow(df) == 0L) stop("No rows match the requested iso3/level/years.", call. = FALSE)
 
   metrics <- c(
-    total_gini = "Total Gini",
-    between_gini = "Between-unit Gini",
-    within_gini = "Within-unit Gini",
-    overlap_gini = "Overlap residual"
+    total_gini = "Overall spatial Gini",
+    between_gini = "Inter-regional Gini",
+    within_gini = "Intra-regional Gini",
+    overlap_gini = "Cross-region overlap"
   )
 
   if (metric != "all") {
@@ -122,9 +122,9 @@ ntl_gini_plot_decomp <- function(iso3,
   if (nrow(df) == 0L) stop("No rows match the requested iso3/level/years.", call. = FALSE)
 
   shares <- c(
-    between_share = "Between-unit share",
-    within_share = "Within-unit share",
-    overlap_share = "Overlap share"
+    between_share = "Inter-regional share",
+    within_share = "Intra-regional share",
+    overlap_share = "Cross-region overlap share"
   )
   long_df <- do.call(rbind, lapply(names(shares), function(col) {
     data.frame(
@@ -174,14 +174,14 @@ ntl_gini_plot_levels <- function(iso3, years = 1992L:2024L) {
   if (nrow(df) == 0L) stop("No rows match the requested iso3/years.", call. = FALSE)
 
   tot_df <- unique(df[, c("iso3", "year", "total_gini")])
-  tot_df$series <- "Total pixel Gini"
+  tot_df$series <- "Overall spatial Gini"
   tot_df$value <- tot_df$total_gini
   tot_df <- tot_df[, c("iso3", "year", "series", "value")]
 
   lv_df <- data.frame(
     iso3 = df$iso3,
     year = df$year,
-    series = paste("Between", toupper(df$level)),
+    series = paste("Inter-unit", toupper(df$level)),
     value = df$between_gini,
     stringsAsFactors = FALSE
   )
@@ -194,7 +194,7 @@ ntl_gini_plot_levels <- function(iso3, years = 1992L:2024L) {
     ggplot2::geom_vline(xintercept = 2012, linetype = "dashed", color = "#64748b", linewidth = 0.5) +
     ggplot2::geom_line(linewidth = 0.9) +
     ggplot2::labs(
-      title = "Multi-Scale Between-Unit Gini Across Administrative Levels",
+      title = "Multi-Scale Inter-Regional Gini Across Administrative Levels",
       x = "Year", y = "Gini Coefficient", color = NULL
     ) +
     ggplot2::theme_minimal(base_size = 11) +
@@ -349,6 +349,13 @@ ntl_gini_map_units <- function(sf_or_path,
   df$.join_key <- as.character(df$gid)
   merged <- merge(shp, df, by = ".join_key", all.x = TRUE, sort = FALSE)
 
+  metric_labels <- c(
+    gini = "Internal spatial Gini",
+    mean_radiance = "Mean nighttime radiance",
+    within_contribution = "Local contribution to inequality",
+    value_share = "Share of national light"
+  )
+
   ggplot2::ggplot(merged) +
     ggplot2::geom_sf(
       ggplot2::aes(fill = .data[[metric]]),
@@ -359,10 +366,10 @@ ntl_gini_map_units <- function(sf_or_path,
       option = "inferno",
       direction = -1,
       na.value = "#cbd5e1",
-      name = metric
+      name = metric_labels[[metric]]
     ) +
     ggplot2::labs(
-      title = sprintf("%s (%s, %s %d)", metric, iso3, toupper(level), year)
+      title = sprintf("%s (%s, %s %d)", metric_labels[[metric]], iso3, toupper(level), year)
     ) +
     ggplot2::theme_void(base_size = 11)
 }
@@ -420,6 +427,14 @@ ntl_gini_map_countries <- function(sf_or_path,
   df$.join_key <- as.character(df$iso3)
   merged <- merge(shp, df, by = ".join_key", all.x = TRUE, sort = FALSE)
 
+  metric_labels <- c(
+    between_gini = "Inter-regional Gini",
+    total_gini = "Overall spatial Gini",
+    within_gini = "Intra-regional Gini",
+    between_share = "Inter-regional share",
+    within_share = "Intra-regional share"
+  )
+
   ggplot2::ggplot(merged) +
     ggplot2::geom_sf(
       ggplot2::aes(fill = .data[[metric]]),
@@ -429,10 +444,10 @@ ntl_gini_map_countries <- function(sf_or_path,
     ggplot2::scale_fill_viridis_c(
       option = "plasma",
       na.value = "#e2e8f0",
-      name = metric
+      name = metric_labels[[metric]]
     ) +
     ggplot2::labs(
-      title = sprintf("Global %s (%s, %d)", metric, toupper(level), year)
+      title = sprintf("Global %s (%s, %d)", metric_labels[[metric]], toupper(level), year)
     ) +
     ggplot2::theme_void(base_size = 11)
 }
