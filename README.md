@@ -108,6 +108,10 @@ ntl_gini_plot_levels(c("TUN", "MAR"))
 ntl_gini_plot_top_units("adm2", iso3 = "TUN", year = 2024, n = 10)
 ```
 
+![Multi-Scale Between-Unit Gini Across Administrative Levels](man/figures/levels_tun_mar.png)
+
+![Nighttime-Light Gini Decomposition in Egypt and Syria (ADM3)](man/figures/series_egy_syr.png)
+
 ---
 
 ## Methodology & Data Dictionary
