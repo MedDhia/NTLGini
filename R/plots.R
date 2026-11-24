@@ -91,6 +91,25 @@ utils::globalVariables(".data")
   paste0(toupper(level), " units : ", paste(parts, collapse = " | "))
 }
 
+.theme_ntlgini <- function(base_size = 11) {
+  ggplot2::theme_minimal(base_size = base_size) +
+    ggplot2::theme(
+      plot.background = ggplot2::element_rect(fill = "#ffffff", color = NA),
+      plot.title = ggplot2::element_text(face = "bold", size = 13, color = "#0f172a", margin = ggplot2::margin(b = 4)),
+      plot.subtitle = ggplot2::element_text(size = 9.5, color = "#475569", margin = ggplot2::margin(b = 10)),
+      plot.caption = ggplot2::element_text(size = 8.5, color = "#64748b", margin = ggplot2::margin(t = 10)),
+      legend.position = "bottom",
+      legend.title = ggplot2::element_text(size = 9.5, face = "bold", color = "#1e293b"),
+      legend.text = ggplot2::element_text(size = 8.5, color = "#475569"),
+      legend.margin = ggplot2::margin(t = 6),
+      axis.title = ggplot2::element_text(size = 9.5, color = "#1e293b"),
+      axis.text = ggplot2::element_text(size = 8.5, color = "#475569"),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major = ggplot2::element_line(color = "#f1f5f9", linewidth = 0.5),
+      plot.margin = ggplot2::margin(14, 16, 12, 16)
+    )
+}
+
 #' Plot Gini decomposition series over time (1992-2024)
 #'
 #' Plots either all four Pyatt/Dagum components (`metric = "all"`) or a single
@@ -158,15 +177,15 @@ ntl_gini_plot_series <- function(iso3,
         ggplot2::aes(x = .data[["year"]], y = .data[["value"]], color = .data[["iso3"]])
       ) +
         ggplot2::geom_vline(xintercept = 2012, linetype = "dashed", color = "#64748b", linewidth = 0.5) +
-        ggplot2::geom_line(linewidth = 0.95) +
+        ggplot2::geom_line(linewidth = 1.05) +
+        ggplot2::scale_color_viridis_d(option = "plasma", begin = 0.08, end = 0.88) +
         ggplot2::labs(
           title = title_str,
           subtitle = metric_subtitles[[metric]],
           caption = unit_caption,
           x = "Year", y = metrics[[metric]], color = "Country"
         ) +
-        ggplot2::theme_minimal(base_size = 11) +
-        ggplot2::theme(legend.position = "bottom")
+        .theme_ntlgini(base_size = 11)
     )
   }
 
@@ -191,7 +210,8 @@ ntl_gini_plot_series <- function(iso3,
     ggplot2::aes(x = .data[["year"]], y = .data[["value"]], color = .data[["component"]])
   ) +
     ggplot2::geom_vline(xintercept = 2012, linetype = "dashed", color = "#64748b", linewidth = 0.5) +
-    ggplot2::geom_line(linewidth = 0.9) +
+    ggplot2::geom_line(linewidth = 1.0) +
+    ggplot2::scale_color_viridis_d(option = "plasma", begin = 0.08, end = 0.88) +
     ggplot2::scale_y_continuous(limits = c(0, 1)) +
     ggplot2::labs(
       title = all_title,
@@ -202,8 +222,7 @@ ntl_gini_plot_series <- function(iso3,
       caption = unit_caption,
       x = "Year", y = "Gini Coefficient", color = NULL
     ) +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(legend.position = "bottom")
+    .theme_ntlgini(base_size = 11)
 
   if (length(unique(long_df$iso3)) > 1L) {
     p <- p + ggplot2::facet_wrap(~iso3)
@@ -266,6 +285,7 @@ ntl_gini_plot_decomp <- function(iso3,
   ) +
     ggplot2::geom_area(alpha = 0.88, position = "stack") +
     ggplot2::geom_vline(xintercept = 2012, linetype = "dashed", color = "#0f172a", linewidth = 0.5) +
+    ggplot2::scale_fill_viridis_d(option = "plasma", begin = 0.15, end = 0.85) +
     ggplot2::labs(
       title = decomp_title,
       subtitle = sprintf(
@@ -275,8 +295,7 @@ ntl_gini_plot_decomp <- function(iso3,
       caption = unit_caption,
       x = "Year", y = "Share of Total Gini (%)", fill = NULL
     ) +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(legend.position = "bottom")
+    .theme_ntlgini(base_size = 11)
 
   if (length(unique(long_df$iso3)) > 1L) {
     p <- p + ggplot2::facet_wrap(~iso3)
@@ -331,14 +350,14 @@ ntl_gini_plot_levels <- function(iso3, years = 1992L:2024L) {
     ggplot2::aes(x = .data[["year"]], y = .data[["value"]], color = .data[["series"]])
   ) +
     ggplot2::geom_vline(xintercept = 2012, linetype = "dashed", color = "#64748b", linewidth = 0.5) +
-    ggplot2::geom_line(linewidth = 0.9) +
+    ggplot2::geom_line(linewidth = 1.0) +
+    ggplot2::scale_color_viridis_d(option = "plasma", begin = 0.08, end = 0.88) +
     ggplot2::labs(
       title = "Multi-Scale Inter-Regional Gini Across Administrative Levels",
       subtitle = "Overall spatial Gini vs. inter-regional inequality (differences across units) from ADM1 to ADM4",
       x = "Year", y = "Gini Coefficient", color = NULL
     ) +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(legend.position = "bottom")
+    .theme_ntlgini(base_size = 11)
 
   if (length(unique(plot_df$iso3)) > 1L) {
     p <- p + ggplot2::facet_wrap(~iso3)
@@ -406,7 +425,7 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     top_df,
     ggplot2::aes(x = .data[["label"]], y = .data[[by]])
   ) +
-    ggplot2::geom_col(fill = "#0f766e", width = 0.7) +
+    ggplot2::geom_col(fill = "#721f81", width = 0.7) +
     ggplot2::coord_flip() +
     ggplot2::labs(
       title = sprintf("Top %d %s in %s (%d)", nrow(top_df), unit_pl, iso3, year),
@@ -414,7 +433,7 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
       x = NULL,
       y = by_labels[[by]]
     ) +
-    ggplot2::theme_minimal(base_size = 11)
+    .theme_ntlgini(base_size = 11)
 }
 
 .require_sf <- function() {
@@ -789,11 +808,20 @@ ntl_gini_plot_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     )
   }
   if (color == "none") {
-    p <- p + ggplot2::geom_point(color = "#0f766e", alpha = 0.8, size = 2.2)
+    p <- p + ggplot2::geom_point(color = "#721f81", alpha = 0.85, size = 2.6)
   } else {
     p <- p +
-      ggplot2::geom_point(ggplot2::aes(color = .data[[color]]), alpha = 0.85, size = 2.3) +
-      ggplot2::scale_color_viridis_c(option = "plasma", name = metric_labels[[color]])
+      ggplot2::geom_point(ggplot2::aes(color = .data[[color]]), alpha = 0.85, size = 2.6) +
+      ggplot2::scale_color_viridis_c(
+        option = "plasma",
+        name = metric_labels[[color]],
+        guide = ggplot2::guide_colorbar(
+          barwidth = 14,
+          barheight = 0.55,
+          title.position = "top",
+          title.hjust = 0.5
+        )
+      )
   }
 
   if (!is.null(label_iso3) && length(label_iso3) > 0L) {
@@ -802,10 +830,10 @@ ntl_gini_plot_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4"),
       p <- p + ggplot2::geom_text(
         data = lab_df,
         ggplot2::aes(label = .data[["iso3"]]),
-        size = 3,
+        size = 3.2,
         fontface = "bold",
         color = "#0f172a",
-        vjust = -0.6,
+        vjust = -0.7,
         check_overlap = TRUE
       )
     }
@@ -830,8 +858,7 @@ ntl_gini_plot_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4"),
       x = metric_labels[[x]],
       y = metric_labels[[y]]
     ) +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(legend.position = "bottom")
+    .theme_ntlgini(base_size = 11)
 }
 
 #' Scatter plot of subunit-level radiance vs. internal spatial Gini
@@ -896,11 +923,22 @@ ntl_gini_plot_unit_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4")
 
   p <- ggplot2::ggplot(df, ggplot2::aes(x = .data[[x]], y = .data[[y]]))
   if (color == "none") {
-    p <- p + ggplot2::geom_point(color = "#0f766e", alpha = 0.78, size = 2.2)
+    p <- p + ggplot2::geom_point(color = "#721f81", alpha = 0.82, size = 2.4)
   } else {
+    c_labels <- if (color == "value_share") function(x) paste0(round(x * 100, 2), "%") else ggplot2::waiver()
     p <- p +
-      ggplot2::geom_point(ggplot2::aes(color = .data[[color]]), alpha = 0.85, size = 2.2) +
-      ggplot2::scale_color_viridis_c(option = "plasma", name = metric_labels[[color]])
+      ggplot2::geom_point(ggplot2::aes(color = .data[[color]]), alpha = 0.85, size = 2.4) +
+      ggplot2::scale_color_viridis_c(
+        option = "plasma",
+        name = metric_labels[[color]],
+        labels = c_labels,
+        guide = ggplot2::guide_colorbar(
+          barwidth = 14,
+          barheight = 0.55,
+          title.position = "top",
+          title.hjust = 0.5
+        )
+      )
   }
 
   if (x == "mean_radiance") p <- p + ggplot2::scale_x_log10()
@@ -914,9 +952,10 @@ ntl_gini_plot_unit_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4")
       p <- p + ggplot2::geom_text(
         data = lab_df,
         ggplot2::aes(label = .data[["name"]]),
-        size = 2.8,
+        size = 3.1,
+        fontface = "bold",
         color = "#0f172a",
-        vjust = -0.6,
+        vjust = -0.7,
         check_overlap = TRUE
       )
     }
@@ -935,6 +974,5 @@ ntl_gini_plot_unit_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4")
       x = x_lab,
       y = y_lab
     ) +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(legend.position = "bottom")
+    .theme_ntlgini(base_size = 11)
 }
