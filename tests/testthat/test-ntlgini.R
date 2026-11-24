@@ -171,6 +171,12 @@ test_that("shapefile mapping functions return ggplot objects", {
   p_world <- ntl_gini_map_countries(world_sf, level = "adm1", year = 2024L)
   expect_s3_class(p_world, "ggplot")
 
+  p_globe <- ntl_gini_map_countries(world_sf, level = "adm1", year = 2024L, globe = TRUE)
+  expect_s3_class(p_globe, "ggplot")
+
+  p_bg <- ntl_gini_map_countries(world_sf[1, ], level = "adm1", year = 2024L, bg_sf = world_sf)
+  expect_s3_class(p_bg, "ggplot")
+
   skip_if_not_installed("arrow")
   tmp_dir <- file.path(tempdir(), "ntlgini_map_test")
   dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
@@ -195,6 +201,7 @@ test_that("shapefile mapping functions return ggplot objects", {
   )
   p_units <- ntl_gini_map_units(
     unit_sf, level = "adm1", iso3 = "TUN", year = 2024L,
+    overlay_sf = unit_sf,
     data_dir = tmp_dir, download = FALSE
   )
   expect_s3_class(p_units, "ggplot")

@@ -11,7 +11,10 @@ ntl_gini_map_countries(
   metric = c("between_gini", "total_gini", "within_gini", "between_share",
     "within_share"),
   id_col = NULL,
-  layer = NULL
+  layer = NULL,
+  globe = FALSE,
+  bg_sf = NULL,
+  bg_layer = NULL
 )
 }
 \arguments{
@@ -28,6 +31,15 @@ ntl_gini_map_countries(
 `ISO_A3`, `ADM0_A3`, `GID_0`, `iso3`, `ISO3` if `NULL`).}
 
 \item{layer}{Optional layer name when reading a multi-layer GeoPackage.}
+
+\item{globe}{Logical; if `TRUE`, renders the global map on a curved Equal Earth
+projection globe (adopted by the United Nations) with subtle ocean fill and
+graticule lines (default `FALSE`).}
+
+\item{bg_sf}{Optional background `sf` polygon object (or path) to display surrounding
+unmapped land in neutral grey when mapping a regional subset (e.g. Europe or Africa).}
+
+\item{bg_layer}{Optional layer name if `bg_sf` is a path to a multi-layer GeoPackage.}
 }
 \value{
 A `ggplot` object.

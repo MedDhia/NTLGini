@@ -128,25 +128,27 @@ ntl_gini_plot_unit_scatter(level = "adm3", iso3 = "TUN", year = 2024)
 Pass any `sf` polygon object or path to a `.shp`, `.gpkg`, or `.geojson` file:
 
 ```r
-# Global inter-regional Gini at ADM_1 in 2024 (Robinson projection)
-ntl_gini_map_countries("path/to/world_countries.shp", level = "adm1", year = 2024) +
-  ggplot2::coord_sf(crs = "+proj=robin")
+# Global inter-regional Gini at ADM_1 in 2024 (Equal Earth projection, adopted by the UN)
+ntl_gini_map_countries("path/to/world_countries.shp", level = "adm1", year = 2024, globe = TRUE)
 ```
 
 ![Global inter-regional Gini at ADM1 in 2024](man/figures/map_global_between_adm1.png)
 
 ```r
-# Regional subset (Europe, cropped with coord_sf)
-ntl_gini_map_countries(europe_sf, level = "adm1", year = 2024) +
-  ggplot2::coord_sf(xlim = c(-24, 45), ylim = c(34, 71), expand = FALSE) +
+# Regional subset (Europe in ETRS89 / LAEA projection with background context)
+ntl_gini_map_countries(europe_sf, level = "adm1", year = 2024, bg_sf = world_sf) +
+  ggplot2::coord_sf(crs = 3035, xlim = c(2450000, 6200000), ylim = c(1350000, 5450000), expand = FALSE) +
   ggplot2::labs(title = "Europe: Inter-Regional Gini (ADM1, 2024)")
 ```
 
 ![Europe inter-regional Gini at ADM1 in 2024](man/figures/map_europe_between_adm1.png)
 
 ```r
-# Subnational internal spatial Gini across Tunisia's 2,075 Sectors (ADM_4, 2024)
-ntl_gini_map_units("path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year = 2024)
+# Subnational internal spatial Gini across Tunisia's 2,075 Sectors (ADM_4, 2024) with Governorate overlay
+ntl_gini_map_units(
+  "path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year = 2024,
+  overlay_sf = "path/to/tun_adm2.gpkg"
+)
 ```
 
 ![Subnational Gini at ADM4 in Tunisia in 2024](man/figures/map_tun_adm4_2024.png)

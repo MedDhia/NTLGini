@@ -459,6 +459,11 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
 #' @param id_col Optional column name in `sf_or_path` containing unit IDs matching
 #'   `gid` (auto-detected across `GID_*` and `adm*_pcode` if `NULL`).
 #' @param layer Optional layer name when reading a multi-layer GeoPackage.
+#' @param overlay_sf Optional `sf` object or path to shapefile/GeoPackage to overlay
+#'   on top of the units (e.g. parent administrative boundaries like Governorates or Districts).
+#' @param overlay_layer Optional layer name if `overlay_sf` is a path to a multi-layer GeoPackage.
+#' @param overlay_color Outline color for `overlay_sf` (default `"#0f172a"`).
+#' @param overlay_linewidth Outline line width for `overlay_sf` (default `0.45`).
 #' @param unit_label Optional custom label for the administrative unit (e.g.
 #'   `"Sectors"`). If `NULL`, checks `.adm_unit_table` and `ENGTYPE_*` in `sf_or_path`.
 #' @param ... Additional arguments passed to [ntl_gini_units()].
@@ -477,6 +482,10 @@ ntl_gini_map_units <- function(sf_or_path,
                                metric = c("gini", "mean_radiance", "within_contribution", "value_share"),
                                id_col = NULL,
                                layer = NULL,
+                               overlay_sf = NULL,
+                               overlay_layer = NULL,
+                               overlay_color = "#0f172a",
+                               overlay_linewidth = 0.45,
                                unit_label = NULL,
                                ...) {
   .require_ggplot2()
@@ -537,15 +546,27 @@ ntl_gini_map_units <- function(sf_or_path,
     value_share = sprintf("Percentage of %s's total nighttime light emitted within each %s", iso3, unit_sg)
   )
 
-  ggplot2::ggplot(merged) +
+  p <- ggplot2::ggplot(merged) +
     ggplot2::geom_sf(
       ggplot2::aes(fill = .data[[metric]]),
-      color = "#1e293b",
-      linewidth = 0.07
-    ) +
+      color = "#33415566",
+      linewidth = 0.04
+    )
+
+  if (!is.null(overlay_sf)) {
+    ov <- .read_spatial(overlay_sf, layer = overlay_layer)
+    p <- p + ggplot2::geom_sf(
+      data = ov,
+      fill = NA,
+      color = overlay_color,
+      linewidth = overlay_linewidth
+    )
+  }
+
+  p <- p +
     ggplot2::scale_fill_viridis_c(
       option = "plasma",
-      na.value = "#cbd5e1",
+      na.value = "#e2e8f0",
       name = metric_labels[[metric]],
       guide = ggplot2::guide_colorbar(
         barwidth = 14,
@@ -569,6 +590,7 @@ ntl_gini_map_units <- function(sf_or_path,
       legend.margin = ggplot2::margin(t = 8),
       plot.margin = ggplot2::margin(14, 16, 12, 16)
     )
+  p
 }
 
 #' Map country-level Gini decompositions using a world or regional shapefile
@@ -584,6 +606,12 @@ ntl_gini_map_units <- function(sf_or_path,
 #' @param id_col Optional ISO3 column name in `sf_or_path` (auto-detected across
 #'   `ISO_A3`, `ADM0_A3`, `GID_0`, `iso3`, `ISO3` if `NULL`).
 #' @param layer Optional layer name when reading a multi-layer GeoPackage.
+#' @param globe Logical; if `TRUE`, renders the global map on a curved Equal Earth
+#'   projection globe (adopted by the United Nations) with subtle ocean fill and
+#'   graticule lines (default `FALSE`).
+#' @param bg_sf Optional background `sf` polygon object (or path) to display surrounding
+#'   unmapped land in neutral grey when mapping a regional subset (e.g. Europe or Africa).
+#' @param bg_layer Optional layer name if `bg_sf` is a path to a multi-layer GeoPackage.
 #' @return A `ggplot` object.
 #' @examples
 #' if (interactive() && requireNamespace("sf", quietly = TRUE) &&
@@ -596,7 +624,10 @@ ntl_gini_map_countries <- function(sf_or_path,
                                    year = 2024L,
                                    metric = c("between_gini", "total_gini", "within_gini", "between_share", "within_share"),
                                    id_col = NULL,
-                                   layer = NULL) {
+                                   layer = NULL,
+                                   globe = FALSE,
+                                   bg_sf = NULL,
+                                   bg_layer = NULL) {
   .require_ggplot2()
   .require_sf()
   level <- match.arg(level)
@@ -639,15 +670,31 @@ ntl_gini_map_countries <- function(sf_or_path,
     within_share = sprintf("Share of national spatial inequality occurring inside %s regions", toupper(level))
   )
 
-  ggplot2::ggplot(merged) +
+  p <- ggplot2::ggplot()
+
+  if (isTRUE(globe)) {
+    lons <- c(seq(-180, 180, length.out = 180), rep(180, 90), seq(180, -180, length.out = 180), rep(-180, 90))
+    lats <- c(rep(-89.99, 180), seq(-89.99, 89.99, length.out = 90), rep(89.99, 180), seq(89.99, -89.99, length.out = 90))
+    bb_globe <- sf::st_sfc(sf::st_polygon(list(cbind(c(lons, lons[1]), c(lats, lats[1])))), crs = 4326)
+    grat <- sf::st_graticule(lat = seq(-80, 80, 20), lon = seq(-180, 180, 30))
+    p <- p +
+      ggplot2::geom_sf(data = bb_globe, fill = "#f8fafc", color = "#94a3b8", linewidth = 0.45) +
+      ggplot2::geom_sf(data = grat, color = "#e2e8f0", linewidth = 0.2)
+  } else if (!is.null(bg_sf)) {
+    bg_shp <- .read_spatial(bg_sf, layer = bg_layer)
+    p <- p + ggplot2::geom_sf(data = bg_shp, fill = "#e2e8f0", color = "#cbd5e1", linewidth = 0.2)
+  }
+
+  p <- p +
     ggplot2::geom_sf(
+      data = merged,
       ggplot2::aes(fill = .data[[metric]]),
       color = "#334155",
       linewidth = 0.15
     ) +
     ggplot2::scale_fill_viridis_c(
       option = "plasma",
-      na.value = "#cbd5e1",
+      na.value = "#e2e8f0",
       name = metric_labels[[metric]],
       guide = ggplot2::guide_colorbar(
         barwidth = 16,
@@ -663,7 +710,7 @@ ntl_gini_map_countries <- function(sf_or_path,
     ggplot2::theme_void(base_size = 11) +
     ggplot2::theme(
       plot.background = ggplot2::element_rect(fill = "#ffffff", color = NA),
-      panel.background = ggplot2::element_rect(fill = "#f1f5f9", color = NA),
+      panel.background = ggplot2::element_rect(fill = if (isTRUE(globe)) NA else "#f0f9ff", color = if (isTRUE(globe)) NA else "#94a3b8", linewidth = 0.5),
       plot.title = ggplot2::element_text(face = "bold", size = 13, color = "#0f172a", margin = ggplot2::margin(b = 4)),
       plot.subtitle = ggplot2::element_text(size = 9.5, color = "#475569", margin = ggplot2::margin(b = 10)),
       legend.position = "bottom",
@@ -672,6 +719,12 @@ ntl_gini_map_countries <- function(sf_or_path,
       legend.margin = ggplot2::margin(t = 8),
       plot.margin = ggplot2::margin(14, 16, 12, 16)
     )
+
+  if (isTRUE(globe)) {
+    p <- p + ggplot2::coord_sf(crs = "+proj=eqearth")
+  }
+
+  p
 }
 
 #' Scatter plot comparing two Gini decomposition metrics across countries

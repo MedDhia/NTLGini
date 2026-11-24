@@ -12,6 +12,10 @@ ntl_gini_map_units(
   metric = c("gini", "mean_radiance", "within_contribution", "value_share"),
   id_col = NULL,
   layer = NULL,
+  overlay_sf = NULL,
+  overlay_layer = NULL,
+  overlay_color = "#0f172a",
+  overlay_linewidth = 0.45,
   unit_label = NULL,
   ...
 )
@@ -32,6 +36,15 @@ ntl_gini_map_units(
 `gid` (auto-detected across `GID_*` and `adm*_pcode` if `NULL`).}
 
 \item{layer}{Optional layer name when reading a multi-layer GeoPackage.}
+
+\item{overlay_sf}{Optional `sf` object or path to shapefile/GeoPackage to overlay
+on top of the units (e.g. parent administrative boundaries like Governorates or Districts).}
+
+\item{overlay_layer}{Optional layer name if `overlay_sf` is a path to a multi-layer GeoPackage.}
+
+\item{overlay_color}{Outline color for `overlay_sf` (default `"#0f172a"`).}
+
+\item{overlay_linewidth}{Outline line width for `overlay_sf` (default `0.45`).}
 
 \item{unit_label}{Optional custom label for the administrative unit (e.g.
 `"Sectors"`). If `NULL`, checks `.adm_unit_table` and `ENGTYPE_*` in `sf_or_path`.}
