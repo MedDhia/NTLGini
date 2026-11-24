@@ -46,7 +46,7 @@ ntl_gini_plot_series <- function(iso3,
     overlap_gini = "Cross-region overlap"
   )
   metric_subtitles <- c(
-    total_gini = "Total pixel-level nighttime-light inequality across the entire country",
+    total_gini = "Total inequality in satellite-observed nighttime-light radiance across the entire country",
     between_gini = sprintf("Nighttime-light inequality across %s regions (differences in regional averages)", toupper(level)),
     within_gini = sprintf("Nighttime-light inequality inside %s regions (weighted average of internal disparities)", toupper(level)),
     overlap_gini = sprintf("Inequality from overlapping nighttime-light distributions across %s regions", toupper(level))
@@ -269,8 +269,8 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
   )
   by_subtitles <- c(
     within_contribution = sprintf("Subunits ranked by their contribution to %s's intra-regional nighttime-light inequality", iso3),
-    gini = sprintf("Subunits ranked by internal spatial Gini (pixel-level light inequality inside each %s unit)", toupper(level)),
-    mean_radiance = sprintf("Subunits ranked by average nighttime radiance across pixels in each %s unit", toupper(level)),
+    gini = sprintf("Subunits ranked by internal spatial Gini (inequality in nighttime-light radiance inside each %s unit)", toupper(level)),
+    mean_radiance = sprintf("Subunits ranked by average satellite-observed nighttime radiance in each %s unit", toupper(level)),
     value_share = sprintf("Subunits ranked by percentage share of %s's total national nighttime light", iso3)
   )
 
@@ -386,8 +386,8 @@ ntl_gini_map_units <- function(sf_or_path,
     value_share = "Share of national light"
   )
   metric_subtitles <- c(
-    gini = sprintf("Pixel-level nighttime-light inequality inside each %s administrative unit", toupper(level)),
-    mean_radiance = sprintf("Average nighttime-light intensity per pixel inside each %s unit", toupper(level)),
+    gini = sprintf("Inequality in satellite-observed nighttime-light radiance inside each %s administrative unit", toupper(level)),
+    mean_radiance = sprintf("Average satellite-observed nighttime-light radiance inside each %s unit", toupper(level)),
     within_contribution = sprintf("Each %s unit's contribution to national intra-regional inequality", toupper(level)),
     value_share = sprintf("Percentage of %s's total nighttime light emitted within each %s unit", iso3, toupper(level))
   )
@@ -473,8 +473,8 @@ ntl_gini_map_countries <- function(sf_or_path,
   )
   metric_subtitles <- c(
     between_gini = sprintf("Nighttime-light inequality across %s administrative regions within each country", toupper(level)),
-    total_gini = "Total pixel-level nighttime-light inequality across each country",
-    within_gini = sprintf("Average pixel-level nighttime-light inequality inside %s regions within each country", toupper(level)),
+    total_gini = "Total inequality in satellite-observed nighttime-light radiance across each country",
+    within_gini = sprintf("Average inequality in nighttime-light radiance inside %s regions within each country", toupper(level)),
     between_share = sprintf("Share of national spatial inequality driven by disparities across %s regions", toupper(level)),
     within_share = sprintf("Share of national spatial inequality occurring inside %s regions", toupper(level))
   )
