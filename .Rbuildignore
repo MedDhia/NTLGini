@@ -6,3 +6,4 @@
 ^\.github$
 ^vignettes$
 ^data-raw$
+^man/figures/social_preview\.png$
