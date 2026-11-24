@@ -82,19 +82,75 @@ tun_sectors <- ntl_gini_units(level = "adm4", iso3 = "TUN", years = 2024)
 ntl_gini_top_units(level = "adm3", iso3 = "TUN", year = 2024, n = 10)
 ```
 
-### Monthly Inequality & Raster Extraction (`terra` / `blackmarblepy`-style)
+### Monthly Inequality & Raster Extraction (Tunisia Case Study)
+
+`ntlgini` provides both pre-computed monthly inequality series and BlackMarble-style on-demand raster streaming from **Cheng et al. (2026)**:
+
+#### 1. Analyzing National Monthly Inequality Trends
+
+Query monthly Gini coefficients, Theil indices, and light volume across 2024 for Tunisia:
 
 ```r
-# 1. Query monthly Gini and inequality series (national or ADM_1)
-m_tun <- ntl_gini_monthly("Tunisia", level = "national", years = 2024)
+library(ntlgini)
+library(ggplot2)
 
-# 2. Stream and crop remote monthly NTL rasters on demand (1992-2024)
-# Fetches from Cheng et al. (2026) via GDAL VSI HTTP streaming without full downloads:
-r_jan <- ntl_raster(country = "TUN", year = 2024, month = 1)
+# Query national monthly series for Tunisia (all pixels vs. lit only)
+tun_all <- ntl_gini_monthly("Tunisia", level = "national", years = 2024, zeros = "zeros_included")
+tun_lit <- ntl_gini_monthly("Tunisia", level = "national", years = 2024, zeros = "lit_only")
+tun_monthly <- rbind(tun_all, tun_lit)
 
-# 3. Extract zonal statistics and pixel Gini across custom polygon boundaries (mimics bm_extract)
-# polygons is any sf object:
-stats_monthly <- ntl_extract(polygons, year = 2024, month = 1:12, stat = c("sum", "mean", "gini"))
+# Plot monthly inequality dynamics across 2024
+ggplot(tun_monthly, aes(x = as.Date(date), y = gini, color = zeros)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  scale_color_manual(
+    values = c("zeros_included" = "#f43f5e", "lit_only" = "#38bdf8"),
+    labels = c("zeros_included" = "All Pixels (Spatial Inequality)", "lit_only" = "Lit Pixels Only")
+  ) +
+  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+  labs(
+    title = "Tunisia: Monthly Nighttime-Light Gini Evolution (2024)",
+    subtitle = "Cheng et al. (2026) 500 m harmonized monthly composites",
+    x = "2024 Month", y = "Gini Coefficient", color = "Sample"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
+```
+
+<p align="center">
+  <img src="man/figures/tunisia_monthly_gini_2024.png" width="700" alt="Tunisia Monthly Nighttime Light Gini Evolution 2024" />
+</p>
+
+#### 2. Subnational Governorate Level (ADM_1)
+
+Inspect monthly spatial inequality and radiance across Tunisia's 24 governorates:
+
+```r
+# Query governorate-level (ADM_1) monthly metrics for January 2024
+tun_govs <- ntl_gini_monthly("Tunisia", level = "adm1", years = 2024, months = 1)
+
+# Compare coastal vs. interior/southern governorates:
+# - Monastir:  lit_share = 84.5%, mean_radiance = 7.08 nW, Gini = 0.718
+# - Kebili:    lit_share =  4.3%, mean_radiance = 0.18 nW, Gini = 0.988
+head(tun_govs[, c("name", "pixels", "lit_share", "mean_radiance", "gini")])
+```
+
+#### 3. On-Demand Raster Streaming & Extraction (`blackmarblepy`-style)
+
+Stream and crop monthly 500 m GeoTIFFs directly from the cloud archive without downloading full global files:
+
+```r
+# Stream and crop Tunisia's January 2024 nighttime light raster (returns SpatRaster)
+r_tun_jan <- ntl_raster(country = "TUN", year = 2024, month = 1)
+
+# Extract zonal statistics and pixel Gini across custom polygon boundaries
+# ('polygons' can be any sf polygon layer, e.g. delegation or study area boundaries)
+stats_tun <- ntl_extract(
+  roi = polygons,
+  year = 2024,
+  month = 1:12,
+  stat = c("sum", "mean", "gini", "lit_share")
+)
 ```
 
 ---
