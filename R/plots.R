@@ -84,7 +84,10 @@ utils::globalVariables(".data")
   if (length(known) == 0L || (length(unique(known)) == 1L && length(known) == length(iso3_u))) {
     return(NULL)
   }
-  parts <- paste0(names(known), ": ", unname(known))
+  groups <- split(names(known), unname(known))
+  parts <- vapply(names(groups), function(lbl) {
+    paste0(lbl, " (", paste(groups[[lbl]], collapse = ", "), ")")
+  }, character(1L))
   paste0(toupper(level), " units \u2014 ", paste(parts, collapse = " | "))
 }
 
