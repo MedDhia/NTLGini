@@ -88,66 +88,41 @@ ntl_gini_top_units(level = "adm3", iso3 = "TUN", year = 2024, n = 10)
 
 #### 1. Analyzing Long-Term National Monthly Inequality (1992–2024)
 
-Query monthly Gini coefficients, Theil indices, and light volume across the entire 33-year satellite record (1992–2024, 393 monthly observations) for Tunisia. Researchers can evaluate two complementary dimensions of nighttime light inequality:
-
-- **All Pixels (`zeros_included`, Red Line, ~0.96 Gini):** Total spatial inequality across all physical land surface (871,974 cells). Because ~80% of Tunisia consists of unlit desert or rural territory, this measures the macro-geographic divide and contrast between illuminated human settlements and unlit dark expanses.
-- **Lit Pixels Only (`lit_only`, Blue Line, ~0.81 Gini):** Inter-settlement economic inequality. Excludes zero-radiance cells to isolate disparity and concentration strictly among electrified cities, towns, and villages (e.g., Greater Tunis vs. secondary urban centers).
+Query monthly Gini coefficients, Theil indices, and light volume across the entire 33-year satellite record (1992–2024, 393 monthly observations) for Tunisia. This evaluates the evolution of total spatial inequality across all physical land surface (871,974 cells, including unlit rural and desert territory):
 
 ```r
 library(ntlgini)
 library(ggplot2)
 
-# Query complete 33-year monthly time series (1992-2024) for Tunisia
-tun_all <- ntl_gini_monthly("Tunisia", level = "national", years = 1992:2024, zeros = "zeros_included")
-tun_lit <- ntl_gini_monthly("Tunisia", level = "national", years = 1992:2024, zeros = "lit_only")
-tun_monthly <- rbind(tun_all, tun_lit)
+# Query complete 33-year monthly time series (1992-2024) for Tunisia (zeros included)
+tun_monthly <- ntl_gini_monthly("Tunisia", level = "national", years = 1992:2024, zeros = "zeros_included")
 
-# Set factor ordering so the legend reflects the vertical order of the plot
-tun_monthly$zeros <- factor(tun_monthly$zeros, levels = c("zeros_included", "lit_only"))
-
-# Informative multi-line interpretation caption
+# Caption explaining data source and methodology
 caption_text <- paste(
-  "Interpretation:",
-  "• Red Line (~0.96, All Pixels / Zeros Included): Total spatial inequality across all land (871,974 cells). Measures the macro-contrast",
-  "  between illuminated coastal/urban hubs and vast unlit desert/rural territory (~80% of national land area).",
-  "• Blue Line (~0.81, Lit Pixels Only / Zeros Excluded): Settlement inequality. Excludes dark areas to measure economic and infrastructure disparity",
-  "  strictly among electrified cities, towns, and villages (e.g. Greater Tunis vs. secondary towns).",
+  "Notes: Gini coefficient evaluated across all 871,974 land cells (zeros included), reflecting total spatial inequality across Tunisia.",
+  "Faint line represents raw monthly composite observations (n = 393); solid red curve shows LOESS smoothed trend (span = 0.12).",
   "Data: Cheng et al. (2026) 500 m harmonized DMSP-OLS/VIIRS monthly composites (1992–2024) | Package: ntlgini",
   sep = "\n"
 )
 
-# Plot long-term monthly inequality dynamics across 1992-2024 (393 months)
-ggplot(tun_monthly, aes(x = as.Date(date), y = gini, color = zeros)) +
-  geom_line(alpha = 0.35, linewidth = 0.5) +
-  geom_smooth(method = "loess", span = 0.12, se = FALSE, linewidth = 1.3) +
-  scale_color_manual(
-    name = "Measure / Specification:",
-    values = c("zeros_included" = "#dc2626", "lit_only" = "#0284c7"),
-    labels = c(
-      "zeros_included" = "All Pixels (Zeros Included): Total spatial inequality across all land (contrast between lit hubs and unlit desert)",
-      "lit_only"       = "Lit Pixels Only (Zeros Excluded): Settlement inequality strictly among electrified cities, towns, and villages"
-    )
-  ) +
+# Plot long-term monthly spatial inequality dynamics across 1992-2024 (393 months)
+ggplot(tun_monthly, aes(x = as.Date(date), y = gini)) +
+  geom_line(color = "#dc2626", alpha = 0.35, linewidth = 0.5) +
+  geom_smooth(method = "loess", span = 0.12, se = FALSE, color = "#dc2626", linewidth = 1.3) +
   scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
-  scale_y_continuous(limits = c(0.60, 1.00), breaks = seq(0.60, 1.00, 0.05)) +
+  scale_y_continuous(limits = c(0.92, 1.00), breaks = seq(0.92, 1.00, 0.02)) +
   labs(
     title = "Tunisia: Long-Term Monthly Nighttime-Light Inequality (1992–2024)",
-    subtitle = "Monthly Gini coefficients across 393 satellite composite observations (Cheng et al. 2026, 500 m harmonized DMSP/VIIRS)",
+    subtitle = "National spatial inequality across 393 monthly satellite composite observations (Cheng et al. 2026)",
     x = "Year",
-    y = "Gini Coefficient (Inequality Index)",
+    y = "Spatial Gini Coefficient (All Pixels)",
     caption = caption_text
   ) +
   theme_minimal(base_size = 11) +
   theme(
     plot.title = element_text(face = "bold", size = 14, margin = margin(b = 4)),
-    plot.subtitle = element_text(size = 10.5, color = "grey30", margin = margin(b = 10)),
-    plot.caption = element_text(size = 8.5, color = "grey25", hjust = 0, lineheight = 1.3, margin = margin(t = 12)),
-    legend.position = "bottom",
-    legend.direction = "vertical",
-    legend.title = element_text(face = "bold", size = 10),
-    legend.text = element_text(size = 9.5),
-    legend.background = element_rect(fill = "#f8fafc", color = "#e2e8f0", linewidth = 0.5),
-    legend.margin = margin(t = 6, r = 10, b = 6, l = 10),
+    plot.subtitle = element_text(size = 10.5, color = "grey30", margin = margin(b = 12)),
+    plot.caption = element_text(size = 8.5, color = "grey30", hjust = 0, lineheight = 1.3, margin = margin(t = 12)),
     panel.grid.minor = element_blank(),
     panel.grid.major = element_line(color = "#f1f5f9"),
     plot.margin = margin(15, 15, 15, 15)
