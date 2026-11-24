@@ -294,20 +294,20 @@ ntl_raster <- function(country = NULL,
 
   if (!is.null(roi)) {
     if (is.numeric(roi) && length(roi) == 4L) {
-      ext_target <- roi
+      ext_target <- unname(roi)
       names(ext_target) <- c("xmin", "ymin", "xmax", "ymax")
     } else if (inherits(roi, c("sf", "sfc"))) {
       if (!requireNamespace("sf", quietly = TRUE)) {
         stop("Package 'sf' is required to extract bbox from sf objects.", call. = FALSE)
       }
       bb <- sf::st_bbox(roi)
-      ext_target <- c(xmin = unname(bb[["xmin"]]), ymin = unname(bb[["ymin"]]), xmax = unname(bb[["xmax"]]), ymax = unname(bb[["ymax"]]))
+      ext_target <- c(xmin = as.numeric(bb["xmin"]), ymin = as.numeric(bb["ymin"]), xmax = as.numeric(bb["xmax"]), ymax = as.numeric(bb["ymax"]))
     } else if (inherits(roi, "SpatVector")) {
       if (!requireNamespace("terra", quietly = TRUE)) {
         stop("Package 'terra' is required for SpatVector.", call. = FALSE)
       }
       e <- terra::ext(roi)
-      ext_target <- c(xmin = e$xmin, ymin = e$ymin, xmax = e$xmax, ymax = e$ymax)
+      ext_target <- c(xmin = as.numeric(e$xmin), ymin = as.numeric(e$ymin), xmax = as.numeric(e$xmax), ymax = as.numeric(e$ymax))
     } else {
       stop("Unsupported roi class: ", paste(class(roi), collapse = ", "), call. = FALSE)
     }

@@ -308,16 +308,11 @@ ntl_gini_monthly <- function(iso3 = NULL,
   target_path <- NULL
   if (file.exists(path)) {
     target_path <- path
-  } else if (!identical(data_dir, tools::R_user_dir("ntlgini", which = "cache"))) {
-    # Custom directory specified by user
-    if (!download) {
-      stop(fname, " not found in ", data_dir, " and download = FALSE.", call. = FALSE)
-    }
-  } else if (nzchar(bundled) && file.exists(bundled)) {
+  } else if (identical(data_dir, tools::R_user_dir("ntlgini", which = "cache")) && nzchar(bundled) && file.exists(bundled)) {
     target_path <- bundled
   } else {
     if (!download) {
-      stop(fname, " not found in ", data_dir, " or package extdata, and download = FALSE.", call. = FALSE)
+      stop(fname, " not found in ", data_dir, " and download = FALSE.", call. = FALSE)
     }
     dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
     url <- paste0(
