@@ -67,15 +67,25 @@ utils::globalVariables(".data")
     if (!is.null(entry) && level %in% names(entry)) entry[[level]] else NA_character_
   }, character(1L))
   known <- mapped[!is.na(mapped)]
-  if (length(known) == 0L) return(paste0(toupper(level), " regions"))
-  if (length(unique(known)) == 1L && length(known) == length(iso3_u)) {
+  if (length(known) > 0L && length(unique(known)) == 1L && length(known) == length(iso3_u)) {
     return(unique(known))
   }
-  if (length(iso3_u) <= 6L) {
-    parts <- paste0(names(known), ": ", unname(known))
-    return(paste0(toupper(level), " units (", paste(parts, collapse = ", "), ")"))
-  }
   paste0(toupper(level), " regions")
+}
+
+.format_unit_caption <- function(iso3_vec, level) {
+  iso3_u <- unique(toupper(iso3_vec))
+  if (length(iso3_u) <= 1L || length(iso3_u) > 8L) return(NULL)
+  mapped <- vapply(iso3_u, function(code) {
+    entry <- .adm_unit_table[[code]]
+    if (!is.null(entry) && level %in% names(entry)) entry[[level]] else NA_character_
+  }, character(1L))
+  known <- mapped[!is.na(mapped)]
+  if (length(known) == 0L || (length(unique(known)) == 1L && length(known) == length(iso3_u))) {
+    return(NULL)
+  }
+  parts <- paste0(names(known), ": ", unname(known))
+  paste0(toupper(level), " units \u2014 ", paste(parts, collapse = " | "))
 }
 
 #' Plot Gini decomposition series over time (1992-2024)
@@ -111,6 +121,7 @@ ntl_gini_plot_series <- function(iso3,
   if (nrow(df) == 0L) stop("No rows match the requested iso3/level/years.", call. = FALSE)
 
   scope_lbl <- .format_unit_scope(df$iso3, level, unit_label)
+  unit_caption <- .format_unit_caption(df$iso3, level)
   single_iso <- length(unique(df$iso3)) == 1L
 
   metrics <- c(
@@ -148,6 +159,7 @@ ntl_gini_plot_series <- function(iso3,
         ggplot2::labs(
           title = title_str,
           subtitle = metric_subtitles[[metric]],
+          caption = unit_caption,
           x = "Year", y = metrics[[metric]], color = "Country"
         ) +
         ggplot2::theme_minimal(base_size = 11) +
@@ -184,6 +196,7 @@ ntl_gini_plot_series <- function(iso3,
         "Overall spatial Gini split into inter-regional (across %s), intra-regional (inside %s), and overlap",
         scope_lbl, scope_lbl
       ),
+      caption = unit_caption,
       x = "Year", y = "Gini Coefficient", color = NULL
     ) +
     ggplot2::theme_minimal(base_size = 11) +
@@ -220,6 +233,7 @@ ntl_gini_plot_decomp <- function(iso3,
   if (nrow(df) == 0L) stop("No rows match the requested iso3/level/years.", call. = FALSE)
 
   scope_lbl <- .format_unit_scope(df$iso3, level, unit_label)
+  unit_caption <- .format_unit_caption(df$iso3, level)
   single_iso <- length(unique(df$iso3)) == 1L
 
   shares <- c(
@@ -255,6 +269,7 @@ ntl_gini_plot_decomp <- function(iso3,
         "Share of overall spatial Gini across %s from inter-regional disparities, intra-regional disparities, and overlap",
         scope_lbl
       ),
+      caption = unit_caption,
       x = "Year", y = "Share of Total Gini (%)", fill = NULL
     ) +
     ggplot2::theme_minimal(base_size = 11) +
