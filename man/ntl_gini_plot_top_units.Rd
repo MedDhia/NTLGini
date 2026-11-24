@@ -11,6 +11,7 @@ ntl_gini_plot_top_units(
   n = 10L,
   by = c("within_contribution", "gini", "mean_radiance", "value_share"),
   decreasing = TRUE,
+  unit_label = NULL,
   ...
 )
 }
@@ -27,6 +28,8 @@ ntl_gini_plot_top_units(
 `"mean_radiance"`, or `"value_share"`.}
 
 \item{decreasing}{Logical; `TRUE` plots highest values, `FALSE` lowest.}
+
+\item{unit_label}{Optional custom label for the administrative unit.}
 
 \item{...}{Additional arguments passed to [ntl_gini_top_units()].}
 }

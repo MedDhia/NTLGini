@@ -7,7 +7,8 @@
 ntl_gini_plot_decomp(
   iso3,
   level = c("adm1", "adm2", "adm3", "adm4"),
-  years = 1992L:2024L
+  years = 1992L:2024L,
+  unit_label = NULL
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ ntl_gini_plot_decomp(
 \item{level}{Single administrative level (`"adm1"`..`"adm4"`).}
 
 \item{years}{Integer vector of years to plot (default `1992:2024`).}
+
+\item{unit_label}{Optional custom label for the administrative unit.}
 }
 \value{
 A `ggplot` object.

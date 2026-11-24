@@ -9,9 +9,10 @@ ntl_gini_map_units(
   level = c("adm1", "adm2", "adm3", "adm4"),
   iso3,
   year = 2024L,
-  metric = c("gini", "mean_radiance", "within_contribution", "value_share", "n_pixels"),
+  metric = c("gini", "mean_radiance", "within_contribution", "value_share"),
   id_col = NULL,
   layer = NULL,
+  unit_label = NULL,
   ...
 )
 }
@@ -25,12 +26,15 @@ ntl_gini_map_units(
 \item{year}{Single calendar year (default `2024L`).}
 
 \item{metric}{Metric to map: `"gini"`, `"mean_radiance"`,
-`"within_contribution"`, `"value_share"`, or `"n_pixels"`.}
+`"within_contribution"`, or `"value_share"`.}
 
 \item{id_col}{Optional column name in `sf_or_path` containing unit IDs matching
 `gid` (auto-detected across `GID_*` and `adm*_pcode` if `NULL`).}
 
 \item{layer}{Optional layer name when reading a multi-layer GeoPackage.}
+
+\item{unit_label}{Optional custom label for the administrative unit (e.g.
+`"Sectors"`). If `NULL`, checks `.adm_unit_table` and `ENGTYPE_*` in `sf_or_path`.}
 
 \item{...}{Additional arguments passed to [ntl_gini_units()].}
 }

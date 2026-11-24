@@ -8,7 +8,8 @@ ntl_gini_plot_series(
   iso3,
   level = c("adm1", "adm2", "adm3", "adm4"),
   years = 1992L:2024L,
-  metric = c("all", "between_gini", "within_gini", "total_gini", "overlap_gini")
+  metric = c("all", "between_gini", "within_gini", "total_gini", "overlap_gini"),
+  unit_label = NULL
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ ntl_gini_plot_series(
 \item{metric}{`"all"` to facet by country with all four components, or one
 of `"between_gini"`, `"within_gini"`, `"total_gini"`, `"overlap_gini"` to
 compare countries on a single panel.}
+
+\item{unit_label}{Optional custom label for the administrative unit (e.g.
+`"Governorates"`). If `NULL`, uses country-specific unit names when known.}
 }
 \value{
 A `ggplot` object.
