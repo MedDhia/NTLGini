@@ -45,6 +45,12 @@ ntl_gini_plot_series <- function(iso3,
     within_gini = "Intra-regional Gini",
     overlap_gini = "Cross-region overlap"
   )
+  metric_subtitles <- c(
+    total_gini = "Total pixel-level nighttime-light inequality across the entire country",
+    between_gini = sprintf("Nighttime-light inequality across %s regions (differences in regional averages)", toupper(level)),
+    within_gini = sprintf("Nighttime-light inequality inside %s regions (weighted average of internal disparities)", toupper(level)),
+    overlap_gini = sprintf("Inequality from overlapping nighttime-light distributions across %s regions", toupper(level))
+  )
 
   if (metric != "all") {
     plot_df <- data.frame(
@@ -62,6 +68,7 @@ ntl_gini_plot_series <- function(iso3,
         ggplot2::geom_line(linewidth = 0.95) +
         ggplot2::labs(
           title = sprintf("%s (%s, 1992-2024)", metrics[[metric]], toupper(level)),
+          subtitle = metric_subtitles[[metric]],
           x = "Year", y = metrics[[metric]], color = "Country"
         ) +
         ggplot2::theme_minimal(base_size = 11) +
@@ -88,6 +95,10 @@ ntl_gini_plot_series <- function(iso3,
     ggplot2::scale_y_continuous(limits = c(0, 1)) +
     ggplot2::labs(
       title = sprintf("Nighttime-Light Gini Decomposition (%s)", toupper(level)),
+      subtitle = sprintf(
+        "Overall spatial Gini split into inter-regional (across %s), intra-regional (inside %s), and overlap",
+        toupper(level), toupper(level)
+      ),
       x = "Year", y = "Gini Coefficient", color = NULL
     ) +
     ggplot2::theme_minimal(base_size = 11) +
@@ -144,6 +155,10 @@ ntl_gini_plot_decomp <- function(iso3,
     ggplot2::geom_vline(xintercept = 2012, linetype = "dashed", color = "#0f172a", linewidth = 0.5) +
     ggplot2::labs(
       title = sprintf("Gini Decomposition Shares (%s)", toupper(level)),
+      subtitle = sprintf(
+        "Share of overall spatial Gini at %s from inter-regional disparities, intra-regional disparities, and overlap",
+        toupper(level)
+      ),
       x = "Year", y = "Share of Total Gini (%)", fill = NULL
     ) +
     ggplot2::theme_minimal(base_size = 11) +
@@ -195,6 +210,7 @@ ntl_gini_plot_levels <- function(iso3, years = 1992L:2024L) {
     ggplot2::geom_line(linewidth = 0.9) +
     ggplot2::labs(
       title = "Multi-Scale Inter-Regional Gini Across Administrative Levels",
+      subtitle = "Overall spatial Gini vs. inter-regional inequality (differences across units) from ADM1 to ADM4",
       x = "Year", y = "Gini Coefficient", color = NULL
     ) +
     ggplot2::theme_minimal(base_size = 11) +
@@ -245,6 +261,19 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
 
   top_df$label <- factor(top_df$name, levels = rev(unique(top_df$name)))
 
+  by_labels <- c(
+    within_contribution = "Local contribution to inequality",
+    gini = "Internal spatial Gini",
+    mean_radiance = "Mean nighttime radiance",
+    value_share = "Share of national light"
+  )
+  by_subtitles <- c(
+    within_contribution = sprintf("Subunits ranked by their contribution to %s's intra-regional nighttime-light inequality", iso3),
+    gini = sprintf("Subunits ranked by internal spatial Gini (pixel-level light inequality inside each %s unit)", toupper(level)),
+    mean_radiance = sprintf("Subunits ranked by average nighttime radiance across pixels in each %s unit", toupper(level)),
+    value_share = sprintf("Subunits ranked by percentage share of %s's total national nighttime light", iso3)
+  )
+
   ggplot2::ggplot(
     top_df,
     ggplot2::aes(x = .data[["label"]], y = .data[[by]])
@@ -253,8 +282,9 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     ggplot2::coord_flip() +
     ggplot2::labs(
       title = sprintf("Top %d %s Units in %s (%d)", nrow(top_df), toupper(level), iso3, year),
+      subtitle = by_subtitles[[by]],
       x = NULL,
-      y = by
+      y = by_labels[[by]]
     ) +
     ggplot2::theme_minimal(base_size = 11)
 }
@@ -355,6 +385,12 @@ ntl_gini_map_units <- function(sf_or_path,
     within_contribution = "Local contribution to inequality",
     value_share = "Share of national light"
   )
+  metric_subtitles <- c(
+    gini = sprintf("Pixel-level nighttime-light inequality inside each %s administrative unit", toupper(level)),
+    mean_radiance = sprintf("Average nighttime-light intensity per pixel inside each %s unit", toupper(level)),
+    within_contribution = sprintf("Each %s unit's contribution to national intra-regional inequality", toupper(level)),
+    value_share = sprintf("Percentage of %s's total nighttime light emitted within each %s unit", iso3, toupper(level))
+  )
 
   ggplot2::ggplot(merged) +
     ggplot2::geom_sf(
@@ -369,7 +405,8 @@ ntl_gini_map_units <- function(sf_or_path,
       name = metric_labels[[metric]]
     ) +
     ggplot2::labs(
-      title = sprintf("%s (%s, %s %d)", metric_labels[[metric]], iso3, toupper(level), year)
+      title = sprintf("%s (%s, %s %d)", metric_labels[[metric]], iso3, toupper(level), year),
+      subtitle = metric_subtitles[[metric]]
     ) +
     ggplot2::theme_void(base_size = 11)
 }
@@ -434,6 +471,13 @@ ntl_gini_map_countries <- function(sf_or_path,
     between_share = "Inter-regional share",
     within_share = "Intra-regional share"
   )
+  metric_subtitles <- c(
+    between_gini = sprintf("Nighttime-light inequality across %s administrative regions within each country", toupper(level)),
+    total_gini = "Total pixel-level nighttime-light inequality across each country",
+    within_gini = sprintf("Average pixel-level nighttime-light inequality inside %s regions within each country", toupper(level)),
+    between_share = sprintf("Share of national spatial inequality driven by disparities across %s regions", toupper(level)),
+    within_share = sprintf("Share of national spatial inequality occurring inside %s regions", toupper(level))
+  )
 
   ggplot2::ggplot(merged) +
     ggplot2::geom_sf(
@@ -447,7 +491,8 @@ ntl_gini_map_countries <- function(sf_or_path,
       name = metric_labels[[metric]]
     ) +
     ggplot2::labs(
-      title = sprintf("Global %s (%s, %d)", metric_labels[[metric]], toupper(level), year)
+      title = sprintf("Global %s (%s, %d)", metric_labels[[metric]], toupper(level), year),
+      subtitle = metric_subtitles[[metric]]
     ) +
     ggplot2::theme_void(base_size = 11)
 }
