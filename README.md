@@ -9,7 +9,7 @@
 
 `ntlgini` provides harmonized annual nighttime-light Gini coefficients and **Pyatt (1976) / Dagum (1997)** within-, between-, and overlap-component decompositions across administrative levels (`ADM_1` through `ADM_4`) for **228 countries and territories** from **1992 to 2024**.
 
-The dataset is derived from **Cheng et al. (2026)** 500 m-resolution VIIRS-like nighttime lights ([*Earth System Science Data*](https://doi.org/10.5194/essd-18-3449-2026)) intersected with **GADM 4.1** administrative boundaries (and **HDX COD-AB** `ADM_1`–`ADM_4` boundaries for Tunisia).
+The dataset is derived from **Cheng et al. (2026)** 500 m-resolution VIIRS-like nighttime lights ([*Earth System Science Data*](https://doi.org/10.5194/essd-18-3449-2026)) intersected with **GADM 4.1** administrative boundaries (`195` countries) and **HDX COD-AB** boundaries (`33` countries where HDX offers deeper administrative tiers).
 
 ---
 
@@ -35,12 +35,12 @@ Country-level decompositions (`ntl_gini_global`) and coverage metadata (`ntl_gin
 
 | Object / Function | Scope | Rows | Countries | Size |
 |---|---|---:|---:|---:|
-| `ntl_gini_global` / `ntl_gini_decomp()` | Country × year × level (`adm1`–`adm4`) | 16,203 | 228 | 0.74 MB (bundled) |
+| `ntl_gini_global` / `ntl_gini_decomp()` | Country × year × level (`adm1`–`adm4`) | 17,553 | 228 | 0.80 MB (bundled) |
 | `ntl_gini_countries` | Country metadata & max admin level | 228 | 228 | < 0.01 MB (bundled) |
-| `ntl_gini_units("adm1")` | `ADM_1` subunits × year | 120,021 | 228 | 3.49 MB (cached) |
-| `ntl_gini_units("adm2")` | `ADM_2` subunits × year | 1,549,614 | 171 | 44.83 MB (cached) |
-| `ntl_gini_units("adm3")` | `ADM_3` subunits × year | 4,680,753 | 70 | 102.06 MB (cached) |
-| `ntl_gini_units("adm4")` | `ADM_4` subunits × year | 5,114,736 | 22 | 101.16 MB (cached) |
+| `ntl_gini_units("adm1")` | `ADM_1` subunits × year | 113,173 | 228 | 3.28 MB (cached) |
+| `ntl_gini_units("adm2")` | `ADM_2` subunits × year | 1,502,072 | 183 | 43.36 MB (cached) |
+| `ntl_gini_units("adm3")` | `ADM_3` subunits × year | 4,194,077 | 92 | 102.86 MB (cached) |
+| `ntl_gini_units("adm4")` | `ADM_4` subunits × year | 7,418,928 | 29 | 136.35 MB (cached) |
 
 ---
 

@@ -4,7 +4,7 @@
 #' nighttime lights across administrative levels `adm1` to `adm4` for 228
 #' countries and territories.
 #'
-#' @format A tibble with 16,203 rows and 13 variables:
+#' @format A tibble with 17,553 rows and 13 variables:
 #' \describe{
 #'   \item{iso3}{ISO 3166-1 alpha-3 country/territory code.}
 #'   \item{year}{Calendar year (`1992` to `2024`).}

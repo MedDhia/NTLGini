@@ -1,7 +1,7 @@
 test_that("bundled ntl_gini_global dataset schema and completeness", {
   data("ntl_gini_global", package = "ntlgini")
   expect_s3_class(ntl_gini_global, "tbl_df")
-  expect_equal(nrow(ntl_gini_global), 16203)
+  expect_equal(nrow(ntl_gini_global), 17553)
   expect_equal(ncol(ntl_gini_global), 13)
   expect_equal(length(unique(ntl_gini_global$iso3)), 228)
   expect_true(all(c("TUN", "MAR", "USA", "RUS") %in% ntl_gini_global$iso3))
@@ -21,6 +21,9 @@ test_that("bundled ntl_gini_countries metadata matches ntl_gini_global", {
   expect_equal(tun$max_level, 4L)
   expect_equal(tun$boundary_source, "HDX COD-AB")
   expect_equal(tun$n_adm4, 2075L)
+  egy <- ntl_gini_countries[ntl_gini_countries$iso3 == "EGY", ]
+  expect_equal(egy$max_level, 3L)
+  expect_equal(egy$boundary_source, "HDX COD-AB")
 })
 
 test_that("Pyatt/Dagum identities hold across all 16,203 rows", {
@@ -46,7 +49,7 @@ test_that("between_gini increases monotonically with finer admin levels", {
 
 test_that("ntl_gini_decomp handles full, filtered, and empty queries", {
   all_rows <- ntl_gini_decomp()
-  expect_equal(nrow(all_rows), 16203)
+  expect_equal(nrow(all_rows), 17553)
 
   res <- ntl_gini_decomp(iso3 = c("TUN", "MAR"), level = "adm1", years = 2020:2024)
   expect_s3_class(res, "tbl_df")
