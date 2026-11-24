@@ -95,22 +95,16 @@ ntl_gini_top_units(level = "adm3", iso3 = "TUN", year = 2024, n = 10)
 ### 3. Built-In Visualizations (Requires `ggplot2`)
 
 ```r
-# Decomposition series over 1992-2024 (marks the 2012 sensor transition)
-ntl_gini_plot_series(c("TUN", "MAR"), level = "adm1")
-
-# Stacked area chart of between / within / overlap shares
-ntl_gini_plot_decomp("TUN", level = "adm2")
-
-# Multi-scale between-unit Gini across ADM_1 to ADM_4
-ntl_gini_plot_levels(c("TUN", "MAR"))
+# Between-unit Gini at ADM_3 across Egypt, Iraq, Syria, and Tunisia (1992-2024)
+ntl_gini_plot_series(c("EGY", "IRQ", "SYR", "TUN"), level = "adm3", metric = "between_gini")
 
 # Top 10 ADM_2 subunits by within-unit contribution in 2024
 ntl_gini_plot_top_units("adm2", iso3 = "TUN", year = 2024, n = 10)
 ```
 
-![Multi-Scale Between-Unit Gini Across Administrative Levels](man/figures/levels_tun_mar.png)
+![Between-unit Gini at ADM3 across Egypt, Iraq, Syria, and Tunisia](man/figures/between_adm3_comparison.png)
 
-![Nighttime-Light Gini Decomposition in Egypt and Syria (ADM3)](man/figures/series_egy_syr.png)
+![Top 10 ADM2 Units in Tunisia by Within-Unit Contribution (2024)](man/figures/top_adm2_tun.png)
 
 ---
 

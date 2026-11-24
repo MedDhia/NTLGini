@@ -12,24 +12,30 @@ utils::globalVariables(".data")
 
 #' Plot Gini decomposition series over time (1992-2024)
 #'
-#' Plots `total_gini`, `between_gini`, `within_gini`, and `overlap_gini` for
-#' one or more countries at a chosen administrative level, marking the 2012
-#' DMSP-simulated to VIIRS transition.
+#' Plots either all four Pyatt/Dagum components (`metric = "all"`) or a single
+#' Gini component (`"between_gini"`, `"within_gini"`, `"total_gini"`, or
+#' `"overlap_gini"`) across one or more countries at a chosen administrative
+#' level, marking the 2012 DMSP-simulated to VIIRS transition.
 #'
 #' @param iso3 Character vector of ISO3 country codes.
 #' @param level Single administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).
 #' @param years Integer vector of years to plot (default `1992:2024`).
+#' @param metric `"all"` to facet by country with all four components, or one
+#'   of `"between_gini"`, `"within_gini"`, `"total_gini"`, `"overlap_gini"` to
+#'   compare countries on a single panel.
 #' @return A `ggplot` object.
 #' @examples
 #' if (requireNamespace("ggplot2", quietly = TRUE)) {
-#'   ntl_gini_plot_series(c("TUN", "MAR"), level = "adm1")
+#'   ntl_gini_plot_series(c("EGY", "SYR", "TUN"), level = "adm3", metric = "between_gini")
 #' }
 #' @export
 ntl_gini_plot_series <- function(iso3,
                                  level = c("adm1", "adm2", "adm3", "adm4"),
-                                 years = 1992L:2024L) {
+                                 years = 1992L:2024L,
+                                 metric = c("all", "between_gini", "within_gini", "total_gini", "overlap_gini")) {
   .require_ggplot2()
   level <- match.arg(level)
+  metric <- match.arg(metric)
   df <- ntl_gini_decomp(iso3 = iso3, level = level, years = years)
   if (nrow(df) == 0L) stop("No rows match the requested iso3/level/years.", call. = FALSE)
 
@@ -39,6 +45,31 @@ ntl_gini_plot_series <- function(iso3,
     within_gini = "Within-unit Gini",
     overlap_gini = "Overlap residual"
   )
+
+  if (metric != "all") {
+    plot_df <- data.frame(
+      iso3 = df$iso3,
+      year = df$year,
+      value = df[[metric]],
+      stringsAsFactors = FALSE
+    )
+    return(
+      ggplot2::ggplot(
+        plot_df,
+        ggplot2::aes(x = .data[["year"]], y = .data[["value"]], color = .data[["iso3"]])
+      ) +
+        ggplot2::geom_vline(xintercept = 2012, linetype = "dashed", color = "#64748b", linewidth = 0.5) +
+        ggplot2::geom_line(linewidth = 0.95) +
+        ggplot2::labs(
+          title = sprintf("%s (%s, 1992-2024)", metrics[[metric]], toupper(level)),
+          subtitle = "Dashed line marks 2012 DMSP-simulated to VIIRS transition",
+          x = "Year", y = metrics[[metric]], color = "Country"
+        ) +
+        ggplot2::theme_minimal(base_size = 11) +
+        ggplot2::theme(legend.position = "bottom")
+    )
+  }
+
   long_df <- do.call(rbind, lapply(names(metrics), function(col) {
     data.frame(
       iso3 = df$iso3,

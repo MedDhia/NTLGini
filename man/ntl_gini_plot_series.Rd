@@ -7,7 +7,8 @@
 ntl_gini_plot_series(
   iso3,
   level = c("adm1", "adm2", "adm3", "adm4"),
-  years = 1992L:2024L
+  years = 1992L:2024L,
+  metric = c("all", "between_gini", "within_gini", "total_gini", "overlap_gini")
 )
 }
 \arguments{
@@ -16,17 +17,22 @@ ntl_gini_plot_series(
 \item{level}{Single administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).}
 
 \item{years}{Integer vector of years to plot (default `1992:2024`).}
+
+\item{metric}{`"all"` to facet by country with all four components, or one
+of `"between_gini"`, `"within_gini"`, `"total_gini"`, `"overlap_gini"` to
+compare countries on a single panel.}
 }
 \value{
 A `ggplot` object.
 }
 \description{
-Plots `total_gini`, `between_gini`, `within_gini`, and `overlap_gini` for
-one or more countries at a chosen administrative level, marking the 2012
-DMSP-simulated to VIIRS transition.
+Plots either all four Pyatt/Dagum components (`metric = "all"`) or a single
+Gini component (`"between_gini"`, `"within_gini"`, `"total_gini"`, or
+`"overlap_gini"`) across one or more countries at a chosen administrative
+level, marking the 2012 DMSP-simulated to VIIRS transition.
 }
 \examples{
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  ntl_gini_plot_series(c("TUN", "MAR"), level = "adm1")
+  ntl_gini_plot_series(c("EGY", "SYR", "TUN"), level = "adm3", metric = "between_gini")
 }
 }
