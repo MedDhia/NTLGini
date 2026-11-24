@@ -165,6 +165,130 @@ test_that("plotting functions return ggplot objects", {
   expect_true(grepl("Regions \\(Madagascar, Slovakia\\)", p_series$labels$caption))
 })
 
+test_that("global mathematical consistency and Dagum decomposition invariants", {
+  data("ntl_gini_global", package = "ntlgini")
+  # Subsetting valid non-zero rows
+  valid <- ntl_gini_global[!is.na(ntl_gini_global$total_gini) & ntl_gini_global$total_gini > 0, ]
+
+  # 1. Dagum additive components
+  dagum_diff <- abs(valid$total_gini - (valid$within_gini + valid$between_gini + valid$overlap_gini))
+  expect_lt(max(dagum_diff), 1e-5)
+
+  # 2. Shares sum to unity
+  share_diff <- abs(1.0 - (valid$within_share + valid$between_share + valid$overlap_share))
+  expect_lt(max(share_diff), 1e-5)
+
+  # 3. Component bounds [0, 1] (with epsilon tolerance for floating-point precision)
+  expect_true(all(valid$total_gini >= 0 & valid$total_gini <= 1))
+  expect_true(all(valid$between_gini >= 0 & valid$between_gini <= 1))
+  expect_true(all(valid$within_gini >= 0 & valid$within_gini <= 1))
+  expect_true(all(valid$overlap_gini >= -1e-12 & valid$overlap_gini <= 1))
+  expect_true(all(valid$between_share >= 0 & valid$between_share <= 1))
+  expect_true(all(valid$within_share >= 0 & valid$within_share <= 1))
+  expect_true(all(valid$overlap_share >= -1e-12 & valid$overlap_share <= 1))
+
+  # 4. Within and between cannot exceed total
+  expect_true(all(valid$between_gini <= valid$total_gini + 1e-6))
+  expect_true(all(valid$within_gini <= valid$total_gini + 1e-6))
+
+  # 5. Metadata integrity
+  data("ntl_gini_countries", package = "ntlgini")
+  expect_true(all(ntl_gini_countries$max_level %in% 1:4))
+  expect_true(all(ntl_gini_countries$n_pixels > 0))
+  expect_true(all(ntl_gini_countries$n_years >= 32L))
+})
+
+test_that("input validation, case insensitivity, and country name resolvers", {
+  # Lowercase and mixed case
+  res_lower <- ntl_gini_decomp(iso3 = c("tun", "Mar"), years = 2024L)
+  expect_equal(sort(unique(res_lower$iso3)), c("MAR", "TUN"))
+
+  # Resolving full country names
+  res_name <- ntl_gini_decomp(iso3 = c("Tunisia", "Morocco"), years = 2024L)
+  expect_equal(sort(unique(res_name$iso3)), c("MAR", "TUN"))
+
+  # Redundant duplicates handled cleanly
+  res_dups <- ntl_gini_decomp(iso3 = c("TUN", "tun", "Tunisia"), years = 2024L)
+  expect_equal(unique(res_dups$iso3), "TUN")
+
+  # Non-existent country returns empty tibble without error
+  res_none <- ntl_gini_decomp(iso3 = "Atlantis")
+  expect_s3_class(res_none, "tbl_df")
+  expect_equal(nrow(res_none), 0)
+
+  # Out of range years return empty tibble
+  res_year <- ntl_gini_decomp(iso3 = "TUN", years = c(1850L, 2100L))
+  expect_equal(nrow(res_year), 0)
+})
+
+test_that("ntl_gini_trends resilience under edge cases and window selections", {
+  # All three window modes
+  tr_full <- ntl_gini_trends(iso3 = "TUN", level = "adm1", window = "full")
+  expect_equal(tr_full$n_years, 33L)
+  expect_equal(tr_full$first_year, 1992L)
+  expect_equal(tr_full$last_year, 2024L)
+
+  tr_dmsp <- ntl_gini_trends(iso3 = "TUN", level = "adm1", window = "dmsp")
+  expect_equal(tr_dmsp$n_years, 20L)
+  expect_equal(tr_dmsp$first_year, 1992L)
+  expect_equal(tr_dmsp$last_year, 2011L)
+
+  tr_viirs <- ntl_gini_trends(iso3 = "TUN", level = "adm1", window = "viirs")
+  expect_equal(tr_viirs$n_years, 13L)
+  expect_equal(tr_viirs$first_year, 2012L)
+  expect_equal(tr_viirs$last_year, 2024L)
+
+  # Custom metric trends
+  tr_within <- ntl_gini_trends(iso3 = "TUN", level = "adm1", metric = "within_gini")
+  expect_equal(unique(tr_within$metric), "within_gini")
+
+  tr_total <- ntl_gini_trends(iso3 = "TUN", level = "adm1", metric = "total_gini")
+  expect_equal(unique(tr_total$metric), "total_gini")
+
+  # Non-existent country returns clean empty schema
+  tr_none <- ntl_gini_trends(iso3 = "Atlantis")
+  expect_equal(nrow(tr_none), 0)
+
+  # Invalid window throws error
+  expect_error(ntl_gini_trends(window = "invalid_window"))
+})
+
+test_that("plotting functions handle varied inputs and options cleanly", {
+  skip_if_not_installed("ggplot2")
+
+  # Single country plot
+  p_single <- ntl_gini_plot_series("TUN", level = "adm2", metric = "between_gini")
+  expect_s3_class(p_single, "ggplot")
+  expect_true(grepl("Tunisia", p_single$labels$title))
+
+  # Plot with metric = 'all' and single country
+  p_all_single <- ntl_gini_plot_series("TUN", level = "adm1", metric = "all")
+  expect_s3_class(p_all_single, "ggplot")
+
+  # Custom unit_label override
+  p_custom <- ntl_gini_plot_series(c("TUN", "DZA"), level = "adm1", unit_label = "Provinces")
+  expect_s3_class(p_custom, "ggplot")
+  expect_true(grepl("Provinces", p_custom$labels$subtitle))
+
+  # ntl_gini_plot_decomp
+  p_decomp_multi <- ntl_gini_plot_decomp(c("TUN", "MAR"), level = "adm1")
+  expect_s3_class(p_decomp_multi, "ggplot")
+
+  # ntl_gini_plot_scatter variations
+  p_scat_nodag <- ntl_gini_plot_scatter(level = "adm1", year = 2024L, diag = FALSE, color = "none")
+  expect_s3_class(p_scat_nodag, "ggplot")
+
+  p_scat_shares <- ntl_gini_plot_scatter(
+    level = "adm1", year = 2024L,
+    x = "between_share", y = "within_share",
+    color = "total_gini"
+  )
+  expect_s3_class(p_scat_shares, "ggplot")
+
+  # Error handling on missing iso3 in plot
+  expect_error(ntl_gini_plot_series("NON_EXISTENT_COUNTRY"), "No rows match")
+})
+
 test_that("shapefile mapping functions return ggplot objects", {
   skip_if_not_installed("ggplot2")
   skip_if_not_installed("sf")

@@ -10,7 +10,10 @@
 #' @export
 ntl_gini_decomp <- function(iso3 = NULL, level = NULL, years = NULL) {
   df <- ntlgini::ntl_gini_global
-  if (!is.null(iso3)) df <- df[df$iso3 %in% iso3, , drop = FALSE]
+  if (!is.null(iso3)) {
+    iso3_clean <- .to_iso3(iso3)
+    df <- df[df$iso3 %in% iso3_clean, , drop = FALSE]
+  }
   if (!is.null(level)) df <- df[df$level %in% level, , drop = FALSE]
   if (!is.null(years)) df <- df[df$year %in% years, , drop = FALSE]
   tibble::as_tibble(df)
