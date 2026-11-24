@@ -27,8 +27,8 @@ remotes::install_github("MedDhia/NTLGini")
 # Optional: for subunit-level Parquet tables (ntl_gini_units, ntl_gini_top_units)
 install.packages("arrow")
 
-# Optional: for built-in visualizations and shapefile maps
-install.packages(c("ggplot2", "sf"))
+# Optional: for built-in visualizations, shapefile maps, and SpatRaster output
+install.packages(c("ggplot2", "sf", "terra"))
 ```
 
 ---
@@ -45,6 +45,7 @@ Country-level decompositions (`ntl_gini_global`) and coverage metadata (`ntl_gin
 | `ntl_gini_units("adm2")` | `ADM_2` subunits × year | 1,502,072 | 183 | 43.36 MB (cached) |
 | `ntl_gini_units("adm3")` | `ADM_3` subunits × year | 4,194,077 | 92 | 102.86 MB (cached) |
 | `ntl_gini_units("adm4")` | `ADM_4` subunits × year | 7,418,928 | 29 | 136.35 MB (cached) |
+| `ntl_gini_pixels()` | `0.125°` (`30 × 30` pixel) grid cells × year | ~31 M | 228 | < 1 GB (cached) |
 
 ---
 
@@ -159,6 +160,9 @@ ntl_gini_map_units("path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year =
 | **Data & Trends** | `ntl_gini_decomp()` | Filter bundled country-year Gini decompositions by `iso3`, `level`, and `years` |
 | | `ntl_gini_trends()` | Fit log-linear `%/yr` trends & $R^2$ over `full` (1992–2024), `dmsp` (1992–2011), or `viirs` (2012–2024) |
 | | `ntl_gini_units()` | Query subunit-level Parquet tables (`adm1`–`adm4`) with `arrow` pushdown filtering |
+| | `ntl_gini_pixels()` | Query `0.125°` (`30 × 30` pixel) grid-cell Parquet data (`gini_by_pixel.parquet`) |
+| | `ntl_gini_extract()` | Zonal statistics over ROI polygons (`blackmarblepy::bm_extract` style) |
+| | `ntl_gini_raster()` | Multi-layer `terra::SpatRaster` over an ROI (`blackmarblepy::bm_raster` style) |
 | | `ntl_gini_top_units()` | Rank top or bottom `n` subunits by `within_contribution`, `gini`, `mean_radiance`, or `value_share` |
 | **Plots** | `ntl_gini_plot_series()` | Plot `total_gini`, `between_gini`, `within_gini`, and `overlap_gini` over time |
 | | `ntl_gini_plot_decomp()` | Plot stacked area shares (`between_share`, `within_share`, `overlap_share`) |
@@ -168,6 +172,7 @@ ntl_gini_map_units("path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year =
 | | `ntl_gini_plot_top_units()` | Horizontal bar chart of top/bottom subunits from `ntl_gini_top_units()` |
 | **Maps** | `ntl_gini_map_countries()` | Choropleth map of country-level decompositions from a world/regional shapefile |
 | | `ntl_gini_map_units()` | Choropleth map of subunit-level Gini or radiance from a shapefile / `sf` object |
+| | `ntl_gini_map_pixels()` | Tile map of `0.125°` grid-cell Gini or radiance over an ROI |
 | **Cache** | `ntl_gini_cache_info()` / `ntl_gini_clear_cache()` | Inspect or clear locally cached `.parquet` files |
 
 ---

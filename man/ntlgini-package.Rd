@@ -36,6 +36,9 @@ For each country, year, and administrative level, total inequality across
   \item [ntl_gini_decomp()]: Filter bundled country-year decompositions.
   \item [ntl_gini_trends()]: Fit log-linear `%/yr` trends over `full`, `dmsp`, or `viirs` eras.
   \item [ntl_gini_units()]: Query subunit-level Parquet tables (`adm1`-`adm4`) with `arrow`.
+  \item [ntl_gini_pixels()]: Query 0.125-deg (`30 x 30` pixel) grid-cell Parquet data.
+  \item [ntl_gini_extract()]: Zonal statistics over ROI polygons (`blackmarblepy::bm_extract` style).
+  \item [ntl_gini_raster()]: Multi-layer `SpatRaster` over an ROI (`blackmarblepy::bm_raster` style).
   \item [ntl_gini_top_units()]: Rank top or bottom subunits by inequality or radiance.
 }
 
@@ -49,6 +52,7 @@ For each country, year, and administrative level, total inequality across
   \item [ntl_gini_plot_top_units()]: Horizontal bar chart of top/bottom subunits.
   \item [ntl_gini_map_countries()]: Choropleth map of country-level decompositions.
   \item [ntl_gini_map_units()]: Choropleth map of subunit-level Gini or radiance.
+  \item [ntl_gini_map_pixels()]: Tile map of 0.125-deg grid-cell Gini or radiance.
 }
 
 \strong{Cache Management}

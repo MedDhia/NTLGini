@@ -200,3 +200,49 @@ test_that("shapefile mapping functions return ggplot objects", {
   expect_s3_class(p_units, "ggplot")
   unlink(tmp_dir, recursive = TRUE)
 })
+
+test_that("pixel-grid and blackmarblepy-style functions work", {
+  skip_if_not_installed("arrow")
+  skip_if_not_installed("sf")
+
+  tmp_dir <- file.path(tempdir(), "ntlgini_pixel_test")
+  dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
+  px_df <- data.frame(
+    iso3 = c("TUN", "TUN", "TUN", "TUN"),
+    year = c(2023L, 2023L, 2024L, 2024L),
+    cell_id = c("r01_c01", "r01_c02", "r01_c01", "r01_c02"),
+    lon = c(0.25, 0.75, 0.25, 0.75),
+    lat = c(0.25, 0.75, 0.25, 0.75),
+    n_pixels = c(900L, 900L, 900L, 900L),
+    mean_radiance = c(2.0, 4.0, 3.0, 5.0),
+    gini = c(0.3, 0.5, 0.35, 0.55),
+    stringsAsFactors = FALSE
+  )
+  arrow::write_parquet(px_df, file.path(tmp_dir, "gini_by_pixel.parquet"))
+
+  res <- ntl_gini_pixels(iso3 = "TUN", years = 2024L, data_dir = tmp_dir, download = FALSE)
+  expect_equal(nrow(res), 2)
+
+  poly1 <- sf::st_polygon(list(rbind(c(0, 0), c(1, 0), c(1, 1), c(0, 1), c(0, 0))))
+  roi_sf <- sf::st_sf(region = "Test", geometry = sf::st_sfc(poly1, crs = 4326))
+
+  ext <- ntl_gini_extract(
+    roi_sf, years = 2023:2024, metric = "mean_radiance",
+    aggfunc = c("mean", "sum"), data_dir = tmp_dir, download = FALSE
+  )
+  expect_equal(nrow(ext), 2)
+  expect_equal(ext$mean_radiance_mean, c(3.0, 4.0))
+  expect_equal(ext$mean_radiance_sum, c(6.0, 8.0))
+
+  if (requireNamespace("terra", quietly = TRUE)) {
+    r <- ntl_gini_raster(roi_sf, years = 2023:2024, metric = "gini", data_dir = tmp_dir, download = FALSE)
+    expect_s4_class(r, "SpatRaster")
+    expect_equal(terra::nlyr(r), 2L)
+  }
+
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+    p_px <- ntl_gini_map_pixels(roi_sf, year = 2024L, metric = "gini", data_dir = tmp_dir, download = FALSE)
+    expect_s3_class(p_px, "ggplot")
+  }
+  unlink(tmp_dir, recursive = TRUE)
+})
