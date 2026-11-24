@@ -156,6 +156,13 @@ test_that("plotting functions return ggplot objects", {
   expect_s3_class(ntl_gini_plot_decomp("TUN", level = "adm2"), "ggplot")
   expect_s3_class(ntl_gini_plot_levels(c("TUN", "MAR")), "ggplot")
   expect_s3_class(ntl_gini_plot_scatter(level = "adm1", year = 2024L, label_iso3 = c("TUN", "MAR")), "ggplot")
+
+  p_series <- ntl_gini_plot_series(c("MDG", "SVK", "BLR", "BGD", "AGO"), level = "adm1")
+  expect_equal(levels(p_series$data$country), c("Madagascar", "Slovakia", "Belarus", "Bangladesh", "Angola"))
+  expect_true(grepl("Divisions \\(Bangladesh\\)", p_series$labels$caption))
+  expect_true(grepl("Oblasts \\(Belarus\\)", p_series$labels$caption))
+  expect_true(grepl("Provinces \\(Angola\\)", p_series$labels$caption))
+  expect_true(grepl("Regions \\(Madagascar, Slovakia\\)", p_series$labels$caption))
 })
 
 test_that("shapefile mapping functions return ggplot objects", {

@@ -10,8 +10,266 @@ utils::globalVariables(".data")
   }
 }
 
+.country_name_table <- c(
+  AFG = "Afghanistan",
+  AGO = "Angola",
+  AIA = "Anguilla",
+  ALA = "<U+00C5>land Islands",
+  ALB = "Albania",
+  AND = "Andorra",
+  ARE = "United Arab Emirates",
+  ARG = "Argentina",
+  ARM = "Armenia",
+  ASM = "American Samoa",
+  ATG = "Antigua & Barbuda",
+  AUS = "Australia",
+  AUT = "Austria",
+  AZE = "Azerbaijan",
+  BDI = "Burundi",
+  BEL = "Belgium",
+  BEN = "Benin",
+  BES = "Caribbean Netherlands",
+  BFA = "Burkina Faso",
+  BGD = "Bangladesh",
+  BGR = "Bulgaria",
+  BHR = "Bahrain",
+  BHS = "Bahamas",
+  BIH = "Bosnia & Herzegovina",
+  BLM = "St. Barth<U+00E9>lemy",
+  BLR = "Belarus",
+  BLZ = "Belize",
+  BMU = "Bermuda",
+  BOL = "Bolivia",
+  BRA = "Brazil",
+  BRB = "Barbados",
+  BRN = "Brunei",
+  BTN = "Bhutan",
+  BWA = "Botswana",
+  CAF = "Central African Republic",
+  CAN = "Canada",
+  CHE = "Switzerland",
+  CHL = "Chile",
+  CHN = "China",
+  CIV = "C<U+00F4>te d<U+2019>Ivoire",
+  CMR = "Cameroon",
+  COD = "Congo - Kinshasa",
+  COG = "Congo - Brazzaville",
+  COK = "Cook Islands",
+  COL = "Colombia",
+  COM = "Comoros",
+  CPV = "Cape Verde",
+  CRI = "Costa Rica",
+  CUB = "Cuba",
+  CYM = "Cayman Islands",
+  CYP = "Cyprus",
+  CZE = "Czechia",
+  DEU = "Germany",
+  DJI = "Djibouti",
+  DMA = "Dominica",
+  DNK = "Denmark",
+  DOM = "Dominican Republic",
+  DZA = "Algeria",
+  ECU = "Ecuador",
+  EGY = "Egypt",
+  ERI = "Eritrea",
+  ESH = "Western Sahara",
+  ESP = "Spain",
+  EST = "Estonia",
+  ETH = "Ethiopia",
+  FIN = "Finland",
+  FJI = "Fiji",
+  FRA = "France",
+  FRO = "Faroe Islands",
+  FSM = "Micronesia (Federated States of)",
+  GAB = "Gabon",
+  GBR = "United Kingdom",
+  GEO = "Georgia",
+  GGY = "Guernsey",
+  GHA = "Ghana",
+  GIN = "Guinea",
+  GLP = "Guadeloupe",
+  GMB = "Gambia",
+  GNB = "Guinea-Bissau",
+  GNQ = "Equatorial Guinea",
+  GRC = "Greece",
+  GRD = "Grenada",
+  GRL = "Greenland",
+  GTM = "Guatemala",
+  GUF = "French Guiana",
+  GUM = "Guam",
+  GUY = "Guyana",
+  HND = "Honduras",
+  HRV = "Croatia",
+  HTI = "Haiti",
+  HUN = "Hungary",
+  IDN = "Indonesia",
+  IMN = "Isle of Man",
+  IND = "India",
+  IRL = "Ireland",
+  IRN = "Iran",
+  IRQ = "Iraq",
+  ISL = "Iceland",
+  ISR = "Israel",
+  ITA = "Italy",
+  JAM = "Jamaica",
+  JEY = "Jersey",
+  JOR = "Jordan",
+  JPN = "Japan",
+  KAZ = "Kazakhstan",
+  KEN = "Kenya",
+  KGZ = "Kyrgyzstan",
+  KHM = "Cambodia",
+  KNA = "St. Kitts & Nevis",
+  KOR = "South Korea",
+  KWT = "Kuwait",
+  LAO = "Laos",
+  LBN = "Lebanon",
+  LBR = "Liberia",
+  LBY = "Libya",
+  LCA = "St. Lucia",
+  LIE = "Liechtenstein",
+  LKA = "Sri Lanka",
+  LSO = "Lesotho",
+  LTU = "Lithuania",
+  LUX = "Luxembourg",
+  LVA = "Latvia",
+  MAR = "Morocco",
+  MDA = "Moldova",
+  MDG = "Madagascar",
+  MEX = "Mexico",
+  MHL = "Marshall Islands",
+  MKD = "North Macedonia",
+  MLI = "Mali",
+  MLT = "Malta",
+  MMR = "Myanmar (Burma)",
+  MNE = "Montenegro",
+  MNG = "Mongolia",
+  MNP = "Northern Mariana Islands",
+  MOZ = "Mozambique",
+  MRT = "Mauritania",
+  MSR = "Montserrat",
+  MTQ = "Martinique",
+  MUS = "Mauritius",
+  MWI = "Malawi",
+  MYS = "Malaysia",
+  MYT = "Mayotte",
+  NAM = "Namibia",
+  NCL = "New Caledonia",
+  NER = "Niger",
+  NGA = "Nigeria",
+  NIC = "Nicaragua",
+  NLD = "Netherlands",
+  NOR = "Norway",
+  NPL = "Nepal",
+  NRU = "Nauru",
+  NZL = "New Zealand",
+  OMN = "Oman",
+  PAK = "Pakistan",
+  PAN = "Panama",
+  PER = "Peru",
+  PHL = "Philippines",
+  PLW = "Palau",
+  PNG = "Papua New Guinea",
+  POL = "Poland",
+  PRI = "Puerto Rico",
+  PRK = "North Korea",
+  PRT = "Portugal",
+  PRY = "Paraguay",
+  PSE = "Palestinian Territories",
+  PYF = "French Polynesia",
+  QAT = "Qatar",
+  REU = "R<U+00E9>union",
+  ROU = "Romania",
+  RUS = "Russia",
+  RWA = "Rwanda",
+  SAU = "Saudi Arabia",
+  SDN = "Sudan",
+  SEN = "Senegal",
+  SGP = "Singapore",
+  SHN = "St. Helena",
+  SLB = "Solomon Islands",
+  SLE = "Sierra Leone",
+  SLV = "El Salvador",
+  SMR = "San Marino",
+  SOM = "Somalia",
+  SPM = "St. Pierre & Miquelon",
+  SRB = "Serbia",
+  SSD = "South Sudan",
+  STP = "S<U+00E3>o Tom<U+00E9> & Pr<U+00ED>ncipe",
+  SUR = "Suriname",
+  SVK = "Slovakia",
+  SVN = "Slovenia",
+  SWE = "Sweden",
+  SWZ = "Eswatini",
+  SYC = "Seychelles",
+  SYR = "Syria",
+  TCA = "Turks & Caicos Islands",
+  TCD = "Chad",
+  TGO = "Togo",
+  THA = "Thailand",
+  TJK = "Tajikistan",
+  TKL = "Tokelau",
+  TKM = "Turkmenistan",
+  TLS = "Timor-Leste",
+  TON = "Tonga",
+  TTO = "Trinidad & Tobago",
+  TUN = "Tunisia",
+  TUR = "Turkey",
+  TUV = "Tuvalu",
+  TWN = "Taiwan",
+  TZA = "Tanzania",
+  UGA = "Uganda",
+  UKR = "Ukraine",
+  UMI = "United States Minor Outlying Islands (the)",
+  URY = "Uruguay",
+  USA = "United States",
+  UZB = "Uzbekistan",
+  VCT = "St. Vincent & Grenadines",
+  VEN = "Venezuela",
+  VGB = "British Virgin Islands",
+  VIR = "U.S. Virgin Islands",
+  VNM = "Vietnam",
+  VUT = "Vanuatu",
+  WLF = "Wallis & Futuna",
+  WSM = "Samoa",
+  XAD = "Akrotiri and Dhekelia",
+  XKO = "Kosovo",
+  YEM = "Yemen",
+  ZAF = "South Africa",
+  ZMB = "Zambia",
+  ZNC = "Northern Cyprus",
+  ZWE = "Zimbabwe"
+)
+
+.get_country_name <- function(iso3) {
+  if (is.null(iso3) || length(iso3) == 0L) return(character(0L))
+  iso3_char <- as.character(iso3)
+  iso3_u <- toupper(iso3_char)
+  res <- .country_name_table[iso3_u]
+  missing <- is.na(res)
+  if (any(missing)) {
+    m_idx <- match(tolower(iso3_char[missing]), tolower(.country_name_table))
+    res[missing] <- ifelse(!is.na(m_idx), .country_name_table[m_idx], iso3_char[missing])
+  }
+  unname(res)
+}
+
+.to_iso3 <- function(x) {
+  if (is.null(x) || length(x) == 0L) return(character(0L))
+  x_char <- as.character(x)
+  x_u <- toupper(x_char)
+  is_code <- x_u %in% names(.country_name_table)
+  res <- ifelse(is_code, x_u, NA_character_)
+  missing <- is.na(res)
+  if (any(missing)) {
+    m_idx <- match(tolower(x_char[missing]), tolower(.country_name_table))
+    res[missing] <- ifelse(!is.na(m_idx), names(.country_name_table)[m_idx], x_char[missing])
+  }
+  unname(res)
+}
+
 .adm_unit_table <- list(
-  ARE = c(adm1 = "Emirates", adm2 = "Municipalities", adm3 = "Subdistricts"),
+   ARE = c(adm1 = "Emirates", adm2 = "Municipalities", adm3 = "Subdistricts"),
   BRA = c(adm1 = "States", adm2 = "Municipalities"),
   CHN = c(adm1 = "Provinces", adm2 = "Prefectures", adm3 = "Counties"),
   DEU = c(adm1 = "States", adm2 = "Districts", adm3 = "Municipalities"),
@@ -28,8 +286,52 @@ utils::globalVariables(".data")
   SYR = c(adm1 = "Governorates", adm2 = "Districts", adm3 = "Subdistricts"),
   TCD = c(adm1 = "Regions", adm2 = "Departments", adm3 = "Sub-prefectures"),
   TUN = c(adm1 = "Districts", adm2 = "Governorates", adm3 = "Delegations", adm4 = "Sectors"),
-  USA = c(adm1 = "States", adm2 = "Counties")
+  USA = c(adm1 = "States", adm2 = "Counties"),
+  AGO = c(adm1 = "Provinces", adm2 = "Municipalities", adm3 = "Communes"),
+  BGD = c(adm1 = "Divisions", adm2 = "Districts", adm3 = "Upazilas"),
+  BLR = c(adm1 = "Oblasts", adm2 = "Raions"),
+  CRI = c(adm1 = "Provinces", adm2 = "Cantons", adm3 = "Districts"),
+  GRC = c(adm1 = "Regions", adm2 = "Prefectures", adm3 = "Municipalities"),
+  JAM = c(adm1 = "Parishes"),
+  MDG = c(adm1 = "Regions", adm2 = "Districts"),
+  SVK = c(adm1 = "Regions", adm2 = "Districts"),
+  TUR = c(adm1 = "Provinces", adm2 = "Districts"),
+  TWN = c(adm1 = "Counties", adm2 = "Districts"),
+  CAN = c(adm1 = "Provinces/Territories", adm2 = "Census Divisions"),
+  MEX = c(adm1 = "States", adm2 = "Municipalities"),
+  ARG = c(adm1 = "Provinces", adm2 = "Departments"),
+  COL = c(adm1 = "Departments", adm2 = "Municipalities"),
+  CHL = c(adm1 = "Regions", adm2 = "Provinces", adm3 = "Communes"),
+  PER = c(adm1 = "Departments", adm2 = "Provinces", adm3 = "Districts"),
+  ESP = c(adm1 = "Autonomous Communities", adm2 = "Provinces", adm3 = "Municipalities"),
+  ITA = c(adm1 = "Regions", adm2 = "Provinces", adm3 = "Municipalities"),
+  POL = c(adm1 = "Voivodeships", adm2 = "Powiaty", adm3 = "Gminy"),
+  UKR = c(adm1 = "Oblasts", adm2 = "Raions"),
+  RUS = c(adm1 = "Federal Subjects", adm2 = "Districts"),
+  JPN = c(adm1 = "Prefectures", adm2 = "Subprefectures/Counties", adm3 = "Municipalities"),
+  KOR = c(adm1 = "Provinces/Special Cities", adm2 = "Municipalities"),
+  IDN = c(adm1 = "Provinces", adm2 = "Regencies/Cities", adm3 = "Districts"),
+  PHL = c(adm1 = "Provinces", adm2 = "Municipalities/Cities", adm3 = "Barangays"),
+  VNM = c(adm1 = "Provinces", adm2 = "Districts", adm3 = "Communes"),
+  THA = c(adm1 = "Provinces", adm2 = "Districts", adm3 = "Sub-districts"),
+  PAK = c(adm1 = "Provinces", adm2 = "Divisions", adm3 = "Districts"),
+  NGA = c(adm1 = "States", adm2 = "Local Government Areas"),
+  ZAF = c(adm1 = "Provinces", adm2 = "Districts", adm3 = "Municipalities"),
+  KEN = c(adm1 = "Counties", adm2 = "Sub-counties"),
+  ETH = c(adm1 = "Regions", adm2 = "Zones", adm3 = "Woredas"),
+  GHA = c(adm1 = "Regions", adm2 = "Districts"),
+  AUS = c(adm1 = "States/Territories", adm2 = "Local Government Areas"),
+  NZL = c(adm1 = "Regions", adm2 = "Territorial Authorities"),
+  SWE = c(adm1 = "Counties", adm2 = "Municipalities"),
+  NOR = c(adm1 = "Counties", adm2 = "Municipalities"),
+  FIN = c(adm1 = "Regions", adm2 = "Sub-regions", adm3 = "Municipalities"),
+  PRT = c(adm1 = "Districts/Autonomous Regions", adm2 = "Municipalities"),
+  AUT = c(adm1 = "States", adm2 = "Districts", adm3 = "Municipalities"),
+  CHE = c(adm1 = "Cantons", adm2 = "Districts", adm3 = "Municipalities"),
+  BEL = c(adm1 = "Regions", adm2 = "Provinces", adm3 = "Arrondissements"),
+  NLD = c(adm1 = "Provinces", adm2 = "Municipalities") 
 )
+
 
 .singularize_unit <- function(label) {
   if (grepl("ies$", label)) return(sub("ies$", "y", label))
@@ -81,12 +383,16 @@ utils::globalVariables(".data")
     if (!is.null(entry) && level %in% names(entry)) entry[[level]] else NA_character_
   }, character(1L))
   known <- mapped[!is.na(mapped)]
-  if (length(known) == 0L || (length(unique(known)) == 1L && length(known) == length(iso3_u))) {
-    return(NULL)
+  if (length(known) == 0L) return(NULL)
+
+  if (length(unique(known)) == 1L && length(known) == length(iso3_u)) {
+    return(paste0(toupper(level), " units : ", unique(known)))
   }
+
   groups <- split(names(known), unname(known))
   parts <- vapply(names(groups), function(lbl) {
-    paste0(lbl, " (", paste(groups[[lbl]], collapse = ", "), ")")
+    c_names <- .get_country_name(groups[[lbl]])
+    paste0(lbl, " (", paste(c_names, collapse = ", "), ")")
   }, character(1L))
   paste0(toupper(level), " units : ", paste(parts, collapse = " | "))
 }
@@ -139,7 +445,8 @@ ntl_gini_plot_series <- function(iso3,
   .require_ggplot2()
   level <- match.arg(level)
   metric <- match.arg(metric)
-  df <- ntl_gini_decomp(iso3 = iso3, level = level, years = years)
+  clean_iso3 <- .to_iso3(iso3)
+  df <- ntl_gini_decomp(iso3 = clean_iso3, level = level, years = years)
   if (nrow(df) == 0L) stop("No rows match the requested iso3/level/years.", call. = FALSE)
 
   scope_lbl <- .format_unit_scope(df$iso3, level, unit_label)
@@ -162,19 +469,23 @@ ntl_gini_plot_series <- function(iso3,
   if (metric != "all") {
     plot_df <- data.frame(
       iso3 = df$iso3,
+      country = .get_country_name(df$iso3),
       year = df$year,
       value = df[[metric]],
       stringsAsFactors = FALSE
     )
+    c_levels <- unique(.get_country_name(iso3))
+    plot_df$country <- factor(plot_df$country, levels = c_levels)
+
     title_str <- if (single_iso) {
-      sprintf("%s (%s, %s, 1992-2024)", metrics[[metric]], unique(df$iso3), scope_lbl)
+      sprintf("%s (%s, %s, 1992-2024)", metrics[[metric]], .get_country_name(unique(df$iso3)), scope_lbl)
     } else {
       sprintf("%s (%s, 1992-2024)", metrics[[metric]], toupper(level))
     }
     return(
       ggplot2::ggplot(
         plot_df,
-        ggplot2::aes(x = .data[["year"]], y = .data[["value"]], color = .data[["iso3"]])
+        ggplot2::aes(x = .data[["year"]], y = .data[["value"]], color = .data[["country"]])
       ) +
         ggplot2::geom_vline(xintercept = 2012, linetype = "dashed", color = "#64748b", linewidth = 0.5) +
         ggplot2::geom_line(linewidth = 1.05) +
@@ -192,6 +503,7 @@ ntl_gini_plot_series <- function(iso3,
   long_df <- do.call(rbind, lapply(names(metrics), function(col) {
     data.frame(
       iso3 = df$iso3,
+      country = .get_country_name(df$iso3),
       year = df$year,
       component = factor(metrics[[col]], levels = unname(metrics)),
       value = df[[col]],
@@ -200,10 +512,13 @@ ntl_gini_plot_series <- function(iso3,
   }))
 
   all_title <- if (single_iso) {
-    sprintf("Nighttime-Light Gini Decomposition (%s, %s)", unique(df$iso3), scope_lbl)
+    sprintf("Nighttime-Light Gini Decomposition (%s, %s)", .get_country_name(unique(df$iso3)), scope_lbl)
   } else {
     sprintf("Nighttime-Light Gini Decomposition (%s)", toupper(level))
   }
+
+  c_levels <- unique(.get_country_name(iso3))
+  long_df$country <- factor(long_df$country, levels = c_levels)
 
   p <- ggplot2::ggplot(
     long_df,
@@ -225,7 +540,7 @@ ntl_gini_plot_series <- function(iso3,
     .theme_ntlgini(base_size = 11)
 
   if (length(unique(long_df$iso3)) > 1L) {
-    p <- p + ggplot2::facet_wrap(~iso3)
+    p <- p + ggplot2::facet_wrap(~country)
   }
   p
 }
@@ -251,7 +566,8 @@ ntl_gini_plot_decomp <- function(iso3,
                                  unit_label = NULL) {
   .require_ggplot2()
   level <- match.arg(level)
-  df <- ntl_gini_decomp(iso3 = iso3, level = level, years = years)
+  clean_iso3 <- .to_iso3(iso3)
+  df <- ntl_gini_decomp(iso3 = clean_iso3, level = level, years = years)
   if (nrow(df) == 0L) stop("No rows match the requested iso3/level/years.", call. = FALSE)
 
   scope_lbl <- .format_unit_scope(df$iso3, level, unit_label)
@@ -266,6 +582,7 @@ ntl_gini_plot_decomp <- function(iso3,
   long_df <- do.call(rbind, lapply(names(shares), function(col) {
     data.frame(
       iso3 = df$iso3,
+      country = .get_country_name(df$iso3),
       year = df$year,
       component = factor(shares[[col]], levels = rev(unname(shares))),
       share = df[[col]] * 100,
@@ -274,10 +591,13 @@ ntl_gini_plot_decomp <- function(iso3,
   }))
 
   decomp_title <- if (single_iso) {
-    sprintf("Gini Decomposition Shares (%s, %s)", unique(df$iso3), scope_lbl)
+    sprintf("Gini Decomposition Shares (%s, %s)", .get_country_name(unique(df$iso3)), scope_lbl)
   } else {
     sprintf("Gini Decomposition Shares (%s)", toupper(level))
   }
+
+  c_levels <- unique(.get_country_name(iso3))
+  long_df$country <- factor(long_df$country, levels = c_levels)
 
   p <- ggplot2::ggplot(
     long_df,
@@ -298,7 +618,7 @@ ntl_gini_plot_decomp <- function(iso3,
     .theme_ntlgini(base_size = 11)
 
   if (length(unique(long_df$iso3)) > 1L) {
-    p <- p + ggplot2::facet_wrap(~iso3)
+    p <- p + ggplot2::facet_wrap(~country)
   }
   p
 }
@@ -318,7 +638,8 @@ ntl_gini_plot_decomp <- function(iso3,
 #' @export
 ntl_gini_plot_levels <- function(iso3, years = 1992L:2024L) {
   .require_ggplot2()
-  df <- ntl_gini_decomp(iso3 = iso3, years = years)
+  clean_iso3 <- .to_iso3(iso3)
+  df <- ntl_gini_decomp(iso3 = clean_iso3, years = years)
   if (nrow(df) == 0L) stop("No rows match the requested iso3/years.", call. = FALSE)
 
   tot_df <- unique(df[, c("iso3", "year", "total_gini")])
@@ -344,6 +665,8 @@ ntl_gini_plot_levels <- function(iso3, years = 1992L:2024L) {
     stringsAsFactors = FALSE
   )
   plot_df <- rbind(tot_df, lv_df)
+  c_levels <- unique(.get_country_name(iso3))
+  plot_df$country <- factor(.get_country_name(plot_df$iso3), levels = c_levels)
 
   p <- ggplot2::ggplot(
     plot_df,
@@ -360,7 +683,7 @@ ntl_gini_plot_levels <- function(iso3, years = 1992L:2024L) {
     .theme_ntlgini(base_size = 11)
 
   if (length(unique(plot_df$iso3)) > 1L) {
-    p <- p + ggplot2::facet_wrap(~iso3)
+    p <- p + ggplot2::facet_wrap(~country)
   }
   p
 }
@@ -398,15 +721,18 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
   level <- match.arg(level)
   by <- match.arg(by)
 
+  clean_iso3 <- .to_iso3(iso3)[1L]
+  c_name <- .get_country_name(clean_iso3)
+
   top_df <- ntl_gini_top_units(
-    level = level, iso3 = iso3, year = year, n = n,
+    level = level, iso3 = clean_iso3, year = year, n = n,
     by = by, decreasing = decreasing, ...
   )
   if (nrow(top_df) == 0L) stop("No non-missing units found.", call. = FALSE)
 
   top_df$label <- factor(top_df$name, levels = rev(unique(top_df$name)))
-  unit_pl <- .get_unit_label(iso3, level, unit_label, plural = TRUE)
-  unit_sg <- .get_unit_label(iso3, level, unit_label, plural = FALSE)
+  unit_pl <- .get_unit_label(clean_iso3, level, unit_label, plural = TRUE)
+  unit_sg <- .get_unit_label(clean_iso3, level, unit_label, plural = FALSE)
 
   by_labels <- c(
     within_contribution = "Local contribution to inequality",
@@ -415,10 +741,10 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     value_share = "Share of national light"
   )
   by_subtitles <- c(
-    within_contribution = sprintf("%s ranked by their contribution to %s's intra-regional nighttime-light inequality", unit_pl, iso3),
+    within_contribution = sprintf("%s ranked by their contribution to %s's intra-regional nighttime-light inequality", unit_pl, c_name),
     gini = sprintf("%s ranked by internal spatial Gini (nighttime-light inequality across 250,000 m^2 grid cells in each %s)", unit_pl, unit_sg),
     mean_radiance = sprintf("%s ranked by average nighttime-light radiance per 250,000 m^2 grid cell in each %s", unit_pl, unit_sg),
-    value_share = sprintf("%s ranked by percentage share of %s's total national nighttime light", unit_pl, iso3)
+    value_share = sprintf("%s ranked by percentage share of %s's total national nighttime light", unit_pl, c_name)
   )
 
   ggplot2::ggplot(
@@ -428,7 +754,7 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     ggplot2::geom_col(fill = "#721f81", width = 0.7) +
     ggplot2::coord_flip() +
     ggplot2::labs(
-      title = sprintf("Top %d %s in %s (%d)", nrow(top_df), unit_pl, iso3, year),
+      title = sprintf("Top %d %s in %s (%d)", nrow(top_df), unit_pl, c_name, year),
       subtitle = by_subtitles[[by]],
       x = NULL,
       y = by_labels[[by]]
@@ -825,12 +1151,14 @@ ntl_gini_plot_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4"),
   }
 
   if (!is.null(label_iso3) && length(label_iso3) > 0L) {
-    lab_df <- df[df$iso3 %in% toupper(label_iso3), , drop = FALSE]
+    df$country <- .get_country_name(df$iso3)
+    target_codes <- toupper(.to_iso3(label_iso3))
+    lab_df <- df[toupper(df$iso3) %in% target_codes | toupper(df$country) %in% toupper(label_iso3), , drop = FALSE]
     if (nrow(lab_df) > 0L) {
       p <- p + ggplot2::geom_text(
         data = lab_df,
-        ggplot2::aes(label = .data[["iso3"]]),
-        size = 3.2,
+        ggplot2::aes(label = .data[["country"]]),
+        size = 3.0,
         fontface = "bold",
         color = "#0f172a",
         vjust = -0.7,
