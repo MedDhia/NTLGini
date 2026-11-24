@@ -96,11 +96,32 @@ ntl_gini_plot_series(c("EGY", "IRQ", "SYR", "TUN"), level = "adm3", metric = "be
 ![Inter-regional Gini at ADM3 across Egypt, Iraq, Syria, and Tunisia](man/figures/between_adm3_comparison.png)
 
 ```r
-# Intra-regional Gini at ADM_2 across Chad, Niger, Mauritania, Libya, and UAE (1992-2024)
-ntl_gini_plot_series(c("TCD", "NER", "MRT", "LBY", "ARE"), level = "adm2", metric = "within_gini")
+# Fastest increase in inter-regional spatial inequality across ADM_1 (1992-2024)
+ntl_gini_plot_series(
+  c("MDG", "SVK", "BLR", "BGD", "AGO"),
+  level = "adm1", metric = "between_gini"
+) +
+  ggplot2::labs(
+    title = "Fastest Increase in Inter-Regional Spatial Inequality (ADM1, 1992-2024)",
+    subtitle = "Countries with the steepest multi-decade rise in nighttime-light Gini across ADM1 regions"
+  )
 ```
 
-![Intra-regional Gini at ADM2 across Chad, Niger, Mauritania, Libya, and UAE](man/figures/within_adm2_global.png)
+![Fastest Increase in Inter-Regional Spatial Inequality at ADM1](man/figures/fastest_increase_between_adm1.png)
+
+```r
+# Fastest decrease in inter-regional spatial inequality across ADM_1 (1992-2024)
+ntl_gini_plot_series(
+  c("CRI", "TUR", "GRC", "JAM", "TWN"),
+  level = "adm1", metric = "between_gini"
+) +
+  ggplot2::labs(
+    title = "Fastest Decrease in Inter-Regional Spatial Inequality (ADM1, 1992-2024)",
+    subtitle = "Countries with the steepest multi-decade decline in nighttime-light Gini across ADM1 regions"
+  )
+```
+
+![Fastest Decrease in Inter-Regional Spatial Inequality at ADM1](man/figures/fastest_decrease_between_adm1.png)
 
 ### 2. Scatter Plots (`ggplot2`)
 
