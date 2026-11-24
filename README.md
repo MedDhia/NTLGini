@@ -3,8 +3,12 @@
 **Global Subnational Nighttime-Light Gini Evolution (1992–2024)**
 
 [![R-CMD-check](https://github.com/MedDhia/NTLGini/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MedDhia/NTLGini/actions/workflows/R-CMD-check.yaml)
+[![Test coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MedDhia/NTLGini/badges/coverage.json)](https://github.com/MedDhia/NTLGini/actions/workflows/test-coverage.yaml)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![GitHub release](https://img.shields.io/github/v/release/MedDhia/NTLGini)](https://github.com/MedDhia/NTLGini/releases/tag/v0.1.0)
+[![Downloads](https://img.shields.io/github/downloads/MedDhia/NTLGini/total)](https://github.com/MedDhia/NTLGini/releases)
+[![Last commit](https://img.shields.io/github/last-commit/MedDhia/NTLGini)](https://github.com/MedDhia/NTLGini/commits/main)
+[![Open issues](https://img.shields.io/github/issues/MedDhia/NTLGini)](https://github.com/MedDhia/NTLGini/issues)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 `ntlgini` provides harmonized annual nighttime-light Gini coefficients and **Pyatt (1976) / Dagum (1997)** decompositions—splitting overall spatial inequality into **inter-regional**, **intra-regional**, and **cross-region overlap** components—across administrative levels (`ADM_1` through `ADM_4`) for **228 countries and territories** from **1992 to 2024**.
