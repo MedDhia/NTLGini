@@ -164,7 +164,7 @@ names(r_df)[3] <- "gini"
 ggplot2::ggplot(r_df) +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = gini), width = 0.125, height = 0.125) +
   ggplot2::geom_sf(data = tun_gov_sf, fill = NA, color = "#0f172a", linewidth = 0.25) +
-  ggplot2::scale_fill_viridis_c(option = "inferno", direction = -1, name = "Grid-cell Gini") +
+  ggplot2::scale_fill_viridis_c(option = "plasma", name = "Grid-cell Gini") +
   ggplot2::theme_void()
 ```
 

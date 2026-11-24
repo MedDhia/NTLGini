@@ -544,8 +544,7 @@ ntl_gini_map_units <- function(sf_or_path,
       linewidth = 0.12
     ) +
     ggplot2::scale_fill_viridis_c(
-      option = "inferno",
-      direction = -1,
+      option = "plasma",
       na.value = "#cbd5e1",
       name = metric_labels[[metric]]
     ) +
@@ -815,7 +814,7 @@ ntl_gini_plot_unit_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4")
   } else {
     p <- p +
       ggplot2::geom_point(ggplot2::aes(color = .data[[color]]), alpha = 0.85, size = 2.2) +
-      ggplot2::scale_color_viridis_c(option = "inferno", direction = -1, name = metric_labels[[color]])
+      ggplot2::scale_color_viridis_c(option = "plasma", name = metric_labels[[color]])
   }
 
   if (x == "mean_radiance") p <- p + ggplot2::scale_x_log10()

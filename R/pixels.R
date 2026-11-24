@@ -347,8 +347,7 @@ ntl_gini_map_pixels <- function(roi_sf,
     ) +
     ggplot2::geom_sf(data = roi, fill = NA, color = "#0f172a", linewidth = 0.25) +
     ggplot2::scale_fill_viridis_c(
-      option = "inferno",
-      direction = -1,
+      option = "plasma",
       na.value = "#cbd5e1",
       name = metric_labels[[metric]]
     ) +
