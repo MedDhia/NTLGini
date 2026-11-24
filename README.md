@@ -122,6 +122,9 @@ ntl_gini_map_countries(europe_sf, level = "adm1", year = 2024) +
 
 # Subnational within-unit Gini at ADM_4 in Tunisia (2024)
 ntl_gini_map_units("path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year = 2024)
+
+# Count of 250,000 m² (500 m × 500 m) grid cells per ADM_2 département in France (2024)
+ntl_gini_map_units("path/to/gadm41_FRA.gpkg", level = "adm2", iso3 = "FRA", year = 2024, metric = "n_pixels", layer = "ADM_ADM_2")
 ```
 
 ![Global between-unit Gini at ADM1 in 2024](man/figures/map_global_between_adm1.png)
@@ -129,6 +132,8 @@ ntl_gini_map_units("path/to/tun_adm4.gpkg", level = "adm4", iso3 = "TUN", year =
 ![Europe between-unit Gini at ADM1 in 2024](man/figures/map_europe_between_adm1.png)
 
 ![Subnational Gini at ADM4 in Tunisia in 2024](man/figures/map_tun_adm4_2024.png)
+
+![France 500 m grid cells at ADM2 in 2024](man/figures/map_fra_adm2_npixels.png)
 
 ---
 
