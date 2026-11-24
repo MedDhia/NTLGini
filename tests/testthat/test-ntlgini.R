@@ -140,6 +140,12 @@ test_that("ntl_gini_units validates arguments and filters Parquet with arrow", {
       data_dir = tmp_dir, download = FALSE
     )
     expect_s3_class(p_top, "ggplot")
+
+    p_uscat <- ntl_gini_plot_unit_scatter(
+      level = "adm1", iso3 = "TUN", year = 2024L, label_top = 1L,
+      data_dir = tmp_dir, download = FALSE
+    )
+    expect_s3_class(p_uscat, "ggplot")
   }
   unlink(tmp_dir, recursive = TRUE)
 })

@@ -748,3 +748,108 @@ ntl_gini_plot_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     ggplot2::theme_minimal(base_size = 11) +
     ggplot2::theme(legend.position = "bottom")
 }
+
+#' Scatter plot of subunit-level radiance vs. internal spatial Gini
+#'
+#' Queries [ntl_gini_units()] for a single country and year, and plots
+#' subunit-level metrics against each other (by default, average nighttime
+#' radiance on a log10 scale vs. internal spatial Gini, colored by share of
+#' national light).
+#'
+#' @param level Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).
+#' @param iso3 Single ISO3 country code (e.g., `"TUN"`).
+#' @param year Single calendar year (default `2024L`).
+#' @param x Horizontal-axis metric (`"mean_radiance"`, `"gini"`,
+#'   `"within_contribution"`, or `"value_share"`).
+#' @param y Vertical-axis metric (`"gini"`, `"mean_radiance"`,
+#'   `"within_contribution"`, or `"value_share"`).
+#' @param color Point color metric (`"value_share"`, `"within_contribution"`,
+#'   `"gini"`, `"mean_radiance"`, or `"none"`).
+#' @param label_top Integer number of extreme units (by `y` or `color`) to label
+#'   on the plot (default `8L`; `0L` for no labels).
+#' @param unit_label Optional custom label for the administrative unit.
+#' @param ... Additional arguments passed to [ntl_gini_units()].
+#' @return A `ggplot` object.
+#' @examples
+#' if (interactive() && requireNamespace("arrow", quietly = TRUE) &&
+#'     requireNamespace("ggplot2", quietly = TRUE)) {
+#'   ntl_gini_plot_unit_scatter(level = "adm3", iso3 = "TUN", year = 2024)
+#' }
+#' @export
+ntl_gini_plot_unit_scatter <- function(level = c("adm1", "adm2", "adm3", "adm4"),
+                                       iso3,
+                                       year = 2024L,
+                                       x = c("mean_radiance", "gini", "within_contribution", "value_share"),
+                                       y = c("gini", "mean_radiance", "within_contribution", "value_share"),
+                                       color = c("value_share", "within_contribution", "gini", "mean_radiance", "none"),
+                                       label_top = 8L,
+                                       unit_label = NULL,
+                                       ...) {
+  .require_ggplot2()
+  level <- match.arg(level)
+  x <- match.arg(x)
+  y <- match.arg(y)
+  color <- match.arg(color)
+  if (length(iso3) != 1L) stop("iso3 must be a single country code.", call. = FALSE)
+  if (length(year) != 1L) stop("year must be a single calendar year.", call. = FALSE)
+
+  df <- ntl_gini_units(level = level, iso3 = iso3, years = as.integer(year), ...)
+  df <- df[!is.na(df[[x]]) & !is.na(df[[y]]), , drop = FALSE]
+  if (x == "mean_radiance") df <- df[df[[x]] > 0, , drop = FALSE]
+  if (y == "mean_radiance") df <- df[df[[y]] > 0, , drop = FALSE]
+  if (nrow(df) == 0L) stop("No non-missing subunits match the requested iso3/level/year.", call. = FALSE)
+
+  unit_pl <- .get_unit_label(iso3, level, unit_label, plural = TRUE)
+  unit_sg <- .get_unit_label(iso3, level, unit_label, plural = FALSE)
+
+  metric_labels <- c(
+    mean_radiance = "Mean nighttime radiance",
+    gini = "Internal spatial Gini",
+    within_contribution = "Local contribution to inequality",
+    value_share = "Share of national light"
+  )
+
+  p <- ggplot2::ggplot(df, ggplot2::aes(x = .data[[x]], y = .data[[y]]))
+  if (color == "none") {
+    p <- p + ggplot2::geom_point(color = "#0f766e", alpha = 0.78, size = 2.2)
+  } else {
+    p <- p +
+      ggplot2::geom_point(ggplot2::aes(color = .data[[color]]), alpha = 0.85, size = 2.2) +
+      ggplot2::scale_color_viridis_c(option = "inferno", direction = -1, name = metric_labels[[color]])
+  }
+
+  if (x == "mean_radiance") p <- p + ggplot2::scale_x_log10()
+  if (y == "mean_radiance") p <- p + ggplot2::scale_y_log10()
+
+  if (is.numeric(label_top) && label_top > 0L) {
+    rank_col <- if (color != "none") color else y
+    ord <- order(df[[rank_col]], decreasing = TRUE, na.last = NA)
+    lab_df <- df[utils::head(ord, as.integer(label_top)), , drop = FALSE]
+    if (nrow(lab_df) > 0L) {
+      p <- p + ggplot2::geom_text(
+        data = lab_df,
+        ggplot2::aes(label = .data[["name"]]),
+        size = 2.8,
+        color = "#0f172a",
+        vjust = -0.6,
+        check_overlap = TRUE
+      )
+    }
+  }
+
+  x_lab <- if (x == "mean_radiance") paste(metric_labels[[x]], "(log10 scale)") else metric_labels[[x]]
+  y_lab <- if (y == "mean_radiance") paste(metric_labels[[y]], "(log10 scale)") else metric_labels[[y]]
+
+  p +
+    ggplot2::labs(
+      title = sprintf("%s vs. %s (%s, %s, %d)", metric_labels[[x]], metric_labels[[y]], iso3, unit_pl, year),
+      subtitle = sprintf(
+        "Each point is a %s in %s: comparing average brightness and inequality across 250,000 m\u00b2 (500 m) grid cells",
+        unit_sg, iso3
+      ),
+      x = x_lab,
+      y = y_lab
+    ) +
+    ggplot2::theme_minimal(base_size = 11) +
+    ggplot2::theme(legend.position = "bottom")
+}

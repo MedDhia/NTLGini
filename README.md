@@ -56,6 +56,7 @@ Country-level decompositions (`ntl_gini_global`) and coverage metadata (`ntl_gin
 | `ntl_gini_plot_decomp()` | Plot stacked area shares (`between_share`, `within_share`, `overlap_share`) |
 | `ntl_gini_plot_levels()` | Compare `between_gini` across all available `adm1`–`adm4` levels |
 | `ntl_gini_plot_scatter()` | Scatter plot comparing two Gini decomposition metrics across countries |
+| `ntl_gini_plot_unit_scatter()` | Scatter plot of subunit-level radiance vs. internal spatial Gini |
 | `ntl_gini_plot_top_units()` | Horizontal bar chart of top/bottom subunits from `ntl_gini_top_units()` |
 | `ntl_gini_map_units()` | Choropleth map of subunit-level Gini or radiance from a shapefile / `sf` object |
 | `ntl_gini_map_countries()` | Choropleth map of country-level decompositions from a world/regional shapefile |
@@ -109,6 +110,9 @@ ntl_gini_plot_scatter(
   level = "adm1", year = 2024,
   label_iso3 = c("TUN", "EGY", "SYR", "IRQ", "TCD", "NER", "ARE", "USA", "CHN", "FRA", "BRA")
 )
+
+# Subunit-level radiance vs. internal spatial Gini across Tunisia's Delegations (ADM_3, 2024)
+ntl_gini_plot_unit_scatter(level = "adm3", iso3 = "TUN", year = 2024)
 ```
 
 ![Between-unit Gini at ADM3 across Egypt, Iraq, Syria, and Tunisia](man/figures/between_adm3_comparison.png)
@@ -116,6 +120,8 @@ ntl_gini_plot_scatter(
 ![Within-unit Gini at ADM2 across Chad, Niger, Mauritania, Libya, and UAE](man/figures/within_adm2_global.png)
 
 ![Inter-regional vs. intra-regional Gini across countries at ADM1 in 2024](man/figures/scatter_adm1_2024.png)
+
+![Mean nighttime radiance vs. internal spatial Gini across Tunisia's Delegations in 2024](man/figures/scatter_tun_delegations_2024.png)
 
 ### 4. Choropleth Mapping with Shapefiles (Requires `sf` and `ggplot2`)
 
