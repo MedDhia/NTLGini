@@ -327,7 +327,7 @@ ntl_gini_plot_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
 #' @param iso3 Single ISO3 country code (e.g., `"TUN"`).
 #' @param year Single calendar year (default `2024L`).
 #' @param metric Metric to map: `"gini"`, `"mean_radiance"`,
-#'   `"within_contribution"`, or `"value_share"`.
+#'   `"within_contribution"`, `"value_share"`, or `"n_pixels"`.
 #' @param id_col Optional column name in `sf_or_path` containing unit IDs matching
 #'   `gid` (auto-detected across `GID_*` and `adm*_pcode` if `NULL`).
 #' @param layer Optional layer name when reading a multi-layer GeoPackage.
@@ -344,7 +344,7 @@ ntl_gini_map_units <- function(sf_or_path,
                                level = c("adm1", "adm2", "adm3", "adm4"),
                                iso3,
                                year = 2024L,
-                               metric = c("gini", "mean_radiance", "within_contribution", "value_share"),
+                               metric = c("gini", "mean_radiance", "within_contribution", "value_share", "n_pixels"),
                                id_col = NULL,
                                layer = NULL,
                                ...) {
@@ -383,13 +383,15 @@ ntl_gini_map_units <- function(sf_or_path,
     gini = "Internal spatial Gini",
     mean_radiance = "Mean nighttime radiance",
     within_contribution = "Local contribution to inequality",
-    value_share = "Share of national light"
+    value_share = "Share of national light",
+    n_pixels = "500 m grid cells"
   )
   metric_subtitles <- c(
     gini = sprintf("Nighttime-light inequality across 250,000 m\u00b2 (500 m) grid cells inside each %s unit", toupper(level)),
     mean_radiance = sprintf("Average nighttime-light radiance per 250,000 m\u00b2 (500 m) grid cell inside each %s unit", toupper(level)),
     within_contribution = sprintf("Each %s unit's contribution to national intra-regional inequality", toupper(level)),
-    value_share = sprintf("Percentage of %s's total nighttime light emitted within each %s unit", iso3, toupper(level))
+    value_share = sprintf("Percentage of %s's total nighttime light emitted within each %s unit", iso3, toupper(level)),
+    n_pixels = sprintf("Count of 250,000 m\u00b2 (500 m x 500 m) grid cells inside each %s unit", toupper(level))
   )
 
   ggplot2::ggplot(merged) +
@@ -493,6 +495,266 @@ ntl_gini_map_countries <- function(sf_or_path,
     ggplot2::labs(
       title = sprintf("Global %s (%s, %d)", metric_labels[[metric]], toupper(level), year),
       subtitle = metric_subtitles[[metric]]
+    ) +
+    ggplot2::theme_void(base_size = 11)
+}
+
+.require_terra <- function() {
+  if (!requireNamespace("terra", quietly = TRUE)) {
+    stop(
+      "Package 'terra' is required for 500 m grid-cell raster mapping. ",
+      "Install with install.packages('terra').",
+      call. = FALSE
+    )
+  }
+}
+
+.read_raster <- function(raster_or_path) {
+  if (inherits(raster_or_path, "SpatRaster")) return(raster_or_path)
+  if (!is.character(raster_or_path) || length(raster_or_path) != 1L || !file.exists(raster_or_path)) {
+    stop("raster_or_path must be a 'SpatRaster' object or an existing GeoTIFF/raster file path.", call. = FALSE)
+  }
+  terra::rast(raster_or_path)
+}
+
+.prepare_grid_df <- function(r, shp = NULL, transform = c("log1p", "linear"), max_cells = 500000L) {
+  transform <- match.arg(transform)
+  if (!is.null(shp)) {
+    shp_proj <- sf::st_transform(shp, terra::crs(r))
+    v <- terra::vect(shp_proj)
+    r <- terra::crop(r, v)
+    r <- terra::mask(r, v)
+  }
+  nc <- terra::ncell(r)
+  if (nc > max_cells) {
+    fact <- max(2L, as.integer(ceiling(sqrt(nc / max_cells))))
+    r <- terra::aggregate(r, fact = fact, fun = "mean", na.rm = TRUE)
+  }
+  df <- terra::as.data.frame(r, xy = TRUE, na.rm = TRUE)
+  names(df)[3L] <- "radiance"
+  df$fill_val <- if (transform == "log1p") log1p(pmax(df$radiance, 0)) else df$radiance
+  df
+}
+
+#' Map 500 m (250,000 m2) grid-cell nighttime-light radiance with administrative units
+#'
+#' Reads a 500 m-resolution nighttime-light raster (`SpatRaster` or GeoTIFF path),
+#' optionally crops and masks it to administrative unit polygons (`sf_or_path`),
+#' and renders a `ggplot2` grid-cell map with unit borders overlaid.
+#'
+#' @param raster_or_path A `terra::SpatRaster` object or path to a GeoTIFF/raster file.
+#' @param sf_or_path Optional `sf` polygon object or path to a shapefile/GeoPackage/GeoJSON
+#'   for cropping, masking, and overlaying administrative unit borders.
+#' @param unit_id Optional character vector of unit IDs (matched against `id_col` or
+#'   auto-detected `GID_*`/`adm*_pcode` columns) to zoom into specific units.
+#' @param id_col Optional column name in `sf_or_path` containing unit IDs.
+#' @param layer Optional layer name when reading a multi-layer GeoPackage.
+#' @param transform Value scale: `"log1p"` (default) or `"linear"`.
+#' @param max_cells Maximum number of grid cells to plot before aggregating (default `500000L`).
+#' @param border_color Color for administrative unit borders (default `"#e2e8f0"`).
+#' @param border_width Line width for administrative unit borders (default `0.25`).
+#' @param title Optional plot title.
+#' @param subtitle Optional plot subtitle.
+#' @return A `ggplot` object.
+#' @examples
+#' if (interactive() && requireNamespace("terra", quietly = TRUE) &&
+#'     requireNamespace("sf", quietly = TRUE) &&
+#'     requireNamespace("ggplot2", quietly = TRUE)) {
+#'   # ntl_gini_map_grid("path/to/ntl_500m_2024.tif", sf_or_path = "path/to/adm2.gpkg")
+#' }
+#' @export
+ntl_gini_map_grid <- function(raster_or_path,
+                              sf_or_path = NULL,
+                              unit_id = NULL,
+                              id_col = NULL,
+                              layer = NULL,
+                              transform = c("log1p", "linear"),
+                              max_cells = 500000L,
+                              border_color = "#e2e8f0",
+                              border_width = 0.25,
+                              title = NULL,
+                              subtitle = NULL) {
+  .require_ggplot2()
+  .require_terra()
+  transform <- match.arg(transform)
+
+  r <- .read_raster(raster_or_path)
+  shp <- NULL
+  if (!is.null(sf_or_path)) {
+    .require_sf()
+    shp <- .read_spatial(sf_or_path, layer = layer)
+    if (!is.null(unit_id)) {
+      if (is.null(id_col)) {
+        id_col <- .detect_id_col(
+          names(shp),
+          c("GID_4", "GID_3", "GID_2", "GID_1", "adm4_pcode", "adm3_pcode",
+            "adm2_pcode", "adm1_pcode", "gid", "shapeID", "pcode")
+        )
+        if (is.null(id_col)) {
+          stop("Could not auto-detect unit ID column; please specify `id_col`.", call. = FALSE)
+        }
+      }
+      shp <- shp[as.character(shp[[id_col]]) %in% as.character(unit_id), , drop = FALSE]
+      if (nrow(shp) == 0L) stop("No polygons match the requested `unit_id`.", call. = FALSE)
+    }
+  }
+
+  grid_df <- .prepare_grid_df(r, shp = shp, transform = transform, max_cells = max_cells)
+  fill_name <- if (transform == "log1p") "log(1 + radiance)" else "Radiance"
+  if (is.null(title)) title <- "500 m Grid-Cell Nighttime-Light Radiance"
+  if (is.null(subtitle)) {
+    subtitle <- if (is.null(shp)) {
+      "Satellite-observed nighttime-light radiance at 250,000 m\u00b2 (500 m x 500 m) grid-cell resolution"
+    } else {
+      sprintf("250,000 m\u00b2 (500 m x 500 m) grid-cell radiance overlaid with %d administrative unit(s)", nrow(shp))
+    }
+  }
+
+  p <- ggplot2::ggplot() +
+    ggplot2::geom_raster(
+      data = grid_df,
+      ggplot2::aes(x = .data[["x"]], y = .data[["y"]], fill = .data[["fill_val"]])
+    ) +
+    ggplot2::scale_fill_viridis_c(option = "inferno", name = fill_name)
+
+  if (!is.null(shp)) {
+    shp_plot <- sf::st_transform(shp, terra::crs(r))
+    p <- p + ggplot2::geom_sf(
+      data = shp_plot,
+      fill = NA,
+      color = border_color,
+      linewidth = border_width
+    )
+  }
+
+  p +
+    ggplot2::labs(title = title, subtitle = subtitle) +
+    ggplot2::theme_void(base_size = 11)
+}
+
+#' Map 500 m (250,000 m2) grid-cell radiance with administrative unit Gini labels
+#'
+#' Combines a 500 m-resolution nighttime-light raster (`raster_or_path`),
+#' administrative unit polygons (`sf_or_path`), and `ntl_gini_units()` statistics
+#' to map 250,000 m2 grid cells alongside administrative unit boundaries and
+#' internal spatial Gini annotations.
+#'
+#' @param raster_or_path A `terra::SpatRaster` object or path to a GeoTIFF/raster file.
+#' @param sf_or_path An `sf` polygon object or path to a shapefile/GeoPackage/GeoJSON.
+#' @param level Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).
+#' @param iso3 Single ISO3 country code (e.g., `"TUN"`).
+#' @param year Single calendar year (default `2024L`).
+#' @param unit_id Optional character vector of unit IDs (`gid`) to zoom into specific units.
+#' @param id_col Optional column name in `sf_or_path` matching `gid`.
+#' @param layer Optional layer name when reading a multi-layer GeoPackage.
+#' @param transform Value scale: `"log1p"` (default) or `"linear"`.
+#' @param label_units Logical; whether to label units with name and internal Gini
+#'   (defaults to `TRUE` when 25 or fewer units are plotted).
+#' @param max_cells Maximum number of grid cells to plot before aggregating (default `500000L`).
+#' @param ... Additional arguments passed to [ntl_gini_units()].
+#' @return A `ggplot` object.
+#' @examples
+#' if (interactive() && requireNamespace("terra", quietly = TRUE) &&
+#'     requireNamespace("sf", quietly = TRUE) &&
+#'     requireNamespace("arrow", quietly = TRUE) &&
+#'     requireNamespace("ggplot2", quietly = TRUE)) {
+#'   # ntl_gini_map_grid_units("ntl_2024.tif", "adm1.gpkg", level = "adm1", iso3 = "TUN")
+#' }
+#' @export
+ntl_gini_map_grid_units <- function(raster_or_path,
+                                    sf_or_path,
+                                    level = c("adm1", "adm2", "adm3", "adm4"),
+                                    iso3,
+                                    year = 2024L,
+                                    unit_id = NULL,
+                                    id_col = NULL,
+                                    layer = NULL,
+                                    transform = c("log1p", "linear"),
+                                    label_units = NULL,
+                                    max_cells = 500000L,
+                                    ...) {
+  .require_ggplot2()
+  .require_sf()
+  .require_terra()
+  level <- match.arg(level)
+  transform <- match.arg(transform)
+  if (length(iso3) != 1L) stop("iso3 must be a single country code.", call. = FALSE)
+  if (length(year) != 1L) stop("year must be a single calendar year.", call. = FALSE)
+
+  r <- .read_raster(raster_or_path)
+  shp <- .read_spatial(sf_or_path, layer = layer)
+  if (is.null(id_col)) {
+    lv_num <- sub("^adm", "", level)
+    id_col <- .detect_id_col(
+      names(shp),
+      c(
+        paste0("GID_", lv_num),
+        paste0("adm", lv_num, "_pcode"),
+        paste0("ADM", lv_num, "_PCODE"),
+        "gid", "shapeID", "pcode"
+      )
+    )
+    if (is.null(id_col)) {
+      stop("Could not auto-detect join ID column; please specify `id_col`.", call. = FALSE)
+    }
+  }
+
+  df <- ntl_gini_units(level = level, iso3 = iso3, years = as.integer(year), ...)
+  if (nrow(df) == 0L) stop("No subunit data found for the requested iso3/level/year.", call. = FALSE)
+
+  shp$.join_key <- as.character(shp[[id_col]])
+  df$.join_key <- as.character(df$gid)
+  if (!is.null(unit_id)) {
+    shp <- shp[shp$.join_key %in% as.character(unit_id), , drop = FALSE]
+    if (nrow(shp) == 0L) stop("No polygons match the requested `unit_id`.", call. = FALSE)
+  }
+  merged <- merge(shp, df, by = ".join_key", all.x = TRUE, sort = FALSE)
+
+  grid_df <- .prepare_grid_df(r, shp = merged, transform = transform, max_cells = max_cells)
+  fill_name <- if (transform == "log1p") "log(1 + radiance)" else "Radiance"
+
+  merged_proj <- sf::st_transform(merged, terra::crs(r))
+  p <- ggplot2::ggplot() +
+    ggplot2::geom_raster(
+      data = grid_df,
+      ggplot2::aes(x = .data[["x"]], y = .data[["y"]], fill = .data[["fill_val"]])
+    ) +
+    ggplot2::scale_fill_viridis_c(option = "inferno", name = fill_name) +
+    ggplot2::geom_sf(
+      data = merged_proj,
+      fill = NA,
+      color = "#e2e8f0",
+      linewidth = 0.3
+    )
+
+  if (is.null(label_units)) label_units <- nrow(merged_proj) <= 25L
+  if (isTRUE(label_units) && "gini" %in% names(merged_proj)) {
+    pts <- suppressWarnings(sf::st_point_on_surface(sf::st_geometry(merged_proj)))
+    coords <- sf::st_coordinates(pts)
+    lbl_df <- data.frame(
+      x = coords[, 1L],
+      y = coords[, 2L],
+      label = sprintf("%s\nGini=%.2f", merged_proj$name, merged_proj$gini),
+      stringsAsFactors = FALSE
+    )
+    lbl_df <- lbl_df[!is.na(merged_proj$gini), , drop = FALSE]
+    if (nrow(lbl_df) > 0L) {
+      p <- p + ggplot2::geom_label(
+        data = lbl_df,
+        ggplot2::aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]]),
+        size = 2.6,
+        alpha = 0.78
+      )
+    }
+  }
+
+  p +
+    ggplot2::labs(
+      title = sprintf("500 m Grid-Cell Radiance & %s Units (%s, %d)", toupper(level), iso3, year),
+      subtitle = sprintf(
+        "250,000 m\u00b2 (500 m x 500 m) satellite grid cells overlaid with %d %s unit(s)",
+        nrow(merged_proj), toupper(level)
+      )
     ) +
     ggplot2::theme_void(base_size = 11)
 }

@@ -27,5 +27,6 @@ Suggests:
     arrow,
     ggplot2,
     sf,
+    terra,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

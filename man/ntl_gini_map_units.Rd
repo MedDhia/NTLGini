@@ -9,7 +9,7 @@ ntl_gini_map_units(
   level = c("adm1", "adm2", "adm3", "adm4"),
   iso3,
   year = 2024L,
-  metric = c("gini", "mean_radiance", "within_contribution", "value_share"),
+  metric = c("gini", "mean_radiance", "within_contribution", "value_share", "n_pixels"),
   id_col = NULL,
   layer = NULL,
   ...
@@ -25,7 +25,7 @@ ntl_gini_map_units(
 \item{year}{Single calendar year (default `2024L`).}
 
 \item{metric}{Metric to map: `"gini"`, `"mean_radiance"`,
-`"within_contribution"`, or `"value_share"`.}
+`"within_contribution"`, `"value_share"`, or `"n_pixels"`.}
 
 \item{id_col}{Optional column name in `sf_or_path` containing unit IDs matching
 `gid` (auto-detected across `GID_*` and `adm*_pcode` if `NULL`).}
