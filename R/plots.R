@@ -62,7 +62,6 @@ ntl_gini_plot_series <- function(iso3,
         ggplot2::geom_line(linewidth = 0.95) +
         ggplot2::labs(
           title = sprintf("%s (%s, 1992-2024)", metrics[[metric]], toupper(level)),
-          subtitle = "Dashed line marks 2012 DMSP-simulated to VIIRS transition",
           x = "Year", y = metrics[[metric]], color = "Country"
         ) +
         ggplot2::theme_minimal(base_size = 11) +
@@ -89,7 +88,6 @@ ntl_gini_plot_series <- function(iso3,
     ggplot2::scale_y_continuous(limits = c(0, 1)) +
     ggplot2::labs(
       title = sprintf("Nighttime-Light Gini Decomposition (%s)", toupper(level)),
-      subtitle = "Dashed line marks 2012 DMSP-simulated to VIIRS transition",
       x = "Year", y = "Gini Coefficient", color = NULL
     ) +
     ggplot2::theme_minimal(base_size = 11) +
