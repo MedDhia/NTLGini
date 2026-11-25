@@ -2,7 +2,6 @@
 
 **Global Subnational Nighttime-Light Gini Evolution (1992–2024)**
 
-[![R-CMD-check](https://github.com/MedDhia/NTLGini/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MedDhia/NTLGini/actions/workflows/R-CMD-check.yaml)
 [![Test coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/MedDhia/NTLGini/main/.github/badges/coverage.json)](https://github.com/MedDhia/NTLGini/actions/workflows/test-coverage.yaml)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![GitHub release](https://img.shields.io/github/v/release/MedDhia/NTLGini)](https://github.com/MedDhia/NTLGini/releases/tag/v0.1.0)
