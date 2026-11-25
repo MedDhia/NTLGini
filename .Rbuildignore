@@ -8,3 +8,4 @@
 ^data-raw$
 ^man/figures/social_preview\.png$
 ^cran_submission\.Rmd$
+^CRAN-SUBMISSION$
