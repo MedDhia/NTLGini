@@ -116,7 +116,8 @@ ntl_gini_trends <- function(iso3 = NULL,
 #' `gini_by_unit_adm4.parquet`) using `arrow` predicate pushdown when filtering
 #' by `iso3` or `years`. If the file is not yet present in `data_dir`, it is
 #' downloaded from the `ntlgini` GitHub release (`v0.1.0`) and cached in
-#' `tools::R_user_dir("ntlgini", "cache")`.
+#' `tools::R_user_dir("ntlgini", "cache")`. Repeated queries within the same
+#' session are served instantaneously from an in-memory session cache.
 #'
 #' @param level Administrative level (`"adm1"`, `"adm2"`, `"adm3"`, or `"adm4"`).
 #' @param iso3 Optional character vector of ISO3 country codes to filter.
@@ -124,6 +125,8 @@ ntl_gini_trends <- function(iso3 = NULL,
 #' @param data_dir Directory where Parquet files are cached.
 #' @param download Logical; whether to download missing Parquet files from
 #'   GitHub Releases.
+#' @param quiet Logical; whether to suppress download progress messages.
+#'   Default `!interactive()`.
 #' @return A tibble of subunit-year Gini coefficients and within-contributions.
 #' @seealso [ntl_gini_top_units()], [ntl_gini_plot_unit_scatter()], [ntl_gini_map_units()], [ntl_gini_cache_info()]
 #' @examples
@@ -135,7 +138,8 @@ ntl_gini_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
                            iso3 = NULL,
                            years = NULL,
                            data_dir = tools::R_user_dir("ntlgini", which = "cache"),
-                           download = TRUE) {
+                           download = TRUE,
+                           quiet = !interactive()) {
   level <- match.arg(level)
   if (!requireNamespace("arrow", quietly = TRUE)) {
     stop(
@@ -143,6 +147,21 @@ ntl_gini_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
       "Install with install.packages('arrow').",
       call. = FALSE
     )
+  }
+
+  iso3_clean <- if (!is.null(iso3)) .to_iso3(iso3) else NULL
+  years_int <- if (!is.null(years)) as.integer(years) else NULL
+
+  # In-memory session cache lookup (instantaneous repeated queries)
+  cache_key <- sprintf(
+    "%s_%s_%s_%s",
+    level,
+    data_dir,
+    if (is.null(iso3_clean)) "all" else paste(sort(iso3_clean), collapse = ","),
+    if (is.null(years_int)) "all" else paste(sort(years_int), collapse = ",")
+  )
+  if (!is.null(.ntlgini_env$units[[cache_key]])) {
+    return(.ntlgini_env$units[[cache_key]])
   }
 
   fname <- sprintf("gini_by_unit_%s.parquet", level)
@@ -157,10 +176,13 @@ ntl_gini_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
       "https://github.com/MedDhia/NTLGini/releases/download/v0.1.0/",
       fname
     )
+    if (!quiet) {
+      message("Downloading ", fname, " from GitHub Releases (one-time setup)...")
+    }
     tmp <- paste0(path, ".tmp")
     status <- tryCatch(
       suppressWarnings(
-        utils::download.file(url, destfile = tmp, mode = "wb", quiet = TRUE)
+        utils::download.file(url, destfile = tmp, mode = "wb", quiet = quiet)
       ),
       error = function(e) 1L
     )
@@ -177,18 +199,20 @@ ntl_gini_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
     Reduce("|", lapply(vals, function(v) arrow::Expression$field_ref(col) == v))
   }
   expr <- NULL
-  if (!is.null(iso3)) {
-    expr <- or_eq("iso3", as.character(iso3))
+  if (!is.null(iso3_clean)) {
+    expr <- or_eq("iso3", as.character(iso3_clean))
   }
-  if (!is.null(years)) {
-    e_yr <- or_eq("year", as.integer(years))
+  if (!is.null(years_int)) {
+    e_yr <- or_eq("year", as.integer(years_int))
     expr <- if (is.null(expr)) e_yr else (expr & e_yr)
   }
   scan <- ds$NewScan()
   if (!is.null(expr)) {
     scan$Filter(expr)
   }
-  tibble::as_tibble(as.data.frame(scan$Finish()$ToTable()))
+  res <- tibble::as_tibble(as.data.frame(scan$Finish()$ToTable()))
+  .ntlgini_env$units[[cache_key]] <- res
+  res
 }
 
 #' Inspect cached ntlgini Parquet files
@@ -221,6 +245,8 @@ ntl_gini_cache_info <- function(data_dir = tools::R_user_dir("ntlgini", which = 
 #' ntl_gini_clear_cache(data_dir = tempdir())
 #' @export
 ntl_gini_clear_cache <- function(data_dir = tools::R_user_dir("ntlgini", which = "cache")) {
+  .ntlgini_env$monthly <- list()
+  .ntlgini_env$units <- list()
   if (!dir.exists(data_dir)) return(invisible(0L))
   files <- list.files(data_dir, pattern = "\\.parquet$", full.names = TRUE)
   if (length(files) > 0) unlink(files)
@@ -290,6 +316,8 @@ ntl_gini_top_units <- function(level = c("adm1", "adm2", "adm3", "adm4"),
 #'   or `"lit_only"`.
 #' @param data_dir Directory where Parquet files are cached.
 #' @param download Logical; whether to download missing Parquet files.
+#' @param quiet Logical; whether to suppress download progress messages.
+#'   Default `!interactive()`.
 #' @return A tibble with columns: `iso3`, `country`, `level`, `gid`, `name`,
 #'   `year`, `month`, `date`, `zeros`, `pixels`, `sum_of_lights`, `lit_pixels`,
 #'   `lit_share`, `mean_radiance`, and `gini`.
@@ -306,7 +334,8 @@ ntl_gini_monthly <- function(iso3 = NULL,
                              months = NULL,
                              zeros = c("zeros_included", "lit_only"),
                              data_dir = tools::R_user_dir("ntlgini", which = "cache"),
-                             download = TRUE) {
+                             download = TRUE,
+                             quiet = !interactive()) {
   level <- match.arg(level)
   zeros <- match.arg(zeros)
 
@@ -336,10 +365,13 @@ ntl_gini_monthly <- function(iso3 = NULL,
       "https://github.com/MedDhia/NTLGini/releases/download/v0.1.0/",
       fname
     )
+    if (!quiet) {
+      message("Downloading ", fname, " from GitHub Releases (one-time setup)...")
+    }
     tmp <- paste0(path, ".tmp")
     status <- tryCatch(
       suppressWarnings(
-        utils::download.file(url, destfile = tmp, mode = "wb", quiet = TRUE)
+        utils::download.file(url, destfile = tmp, mode = "wb", quiet = quiet)
       ),
       error = function(e) 1L
     )

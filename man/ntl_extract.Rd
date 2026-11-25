@@ -10,7 +10,9 @@ ntl_extract(
   month = NULL,
   stat = c("sum", "mean", "gini", "lit_share", "pixels"),
   output_dir = tools::R_user_dir("ntlgini", which = "cache"),
-  drop_geom = TRUE
+  drop_geom = TRUE,
+  cores = 1L,
+  quiet = !interactive()
 )
 }
 \arguments{
@@ -26,6 +28,11 @@ ntl_extract(
 \item{output_dir}{Directory where intermediate cropped rasters are cached.}
 
 \item{drop_geom}{Logical; if `TRUE` (default), returns a standard `tibble` without geometry.}
+
+\item{cores}{Number of CPU cores for parallel raster fetching across periods (Unix/macOS only).
+Default `1L`.}
+
+\item{quiet}{Logical; whether to suppress progress messages. Default `!interactive()`.}
 }
 \value{
 A `tibble` or `sf` data frame with extracted metrics joined to the input polygons.

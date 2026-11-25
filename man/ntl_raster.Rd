@@ -11,7 +11,8 @@ ntl_raster(
   month = NULL,
   output_dir = tools::R_user_dir("ntlgini", which = "cache"),
   overwrite = FALSE,
-  return_raster = TRUE
+  return_raster = TRUE,
+  quiet = !interactive()
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ fetches the annual composite.}
 
 \item{return_raster}{Logical; if `TRUE` and `terra` is installed, returns a
 `SpatRaster`. If `FALSE`, returns the local file path.}
+
+\item{quiet}{Logical; whether to suppress download/streaming messages.
+Default `!interactive()`.}
 }
 \value{
 A `terra::SpatRaster` object or character file path to the cropped GeoTIFF.

@@ -259,6 +259,8 @@
 #' @param overwrite Logical; whether to re-download if file already exists in cache.
 #' @param return_raster Logical; if `TRUE` and `terra` is installed, returns a
 #'   `SpatRaster`. If `FALSE`, returns the local file path.
+#' @param quiet Logical; whether to suppress download/streaming messages.
+#'   Default `!interactive()`.
 #' @return A `terra::SpatRaster` object or character file path to the cropped GeoTIFF.
 #' @seealso [ntl_extract()], [ntl_gini_monthly()]
 #' @examples
@@ -275,7 +277,8 @@ ntl_raster <- function(country = NULL,
                        month = NULL,
                        output_dir = tools::R_user_dir("ntlgini", which = "cache"),
                        overwrite = FALSE,
-                       return_raster = TRUE) {
+                       return_raster = TRUE,
+                       quiet = !interactive()) {
   year <- as.integer(year)
   if (length(year) != 1L || is.na(year) || year < 1992L || year > 2024L) {
     stop("year must be an integer between 1992 and 2024.", call. = FALSE)
@@ -359,14 +362,19 @@ ntl_raster <- function(country = NULL,
     remote_vsi <- sprintf("/vsizip//vsicurl/%s/raw/%d/%d.zip/%d/%s", base_url, year, year, year, fname)
   }
 
-  # Configure GDAL for HTTP streaming, multiplexing, and multi-threaded decompression
+  # Configure GDAL for HTTP streaming, multiplexing, large chunk prefetching, and multi-threaded decompression
   terra::setGDALconfig("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
   terra::setGDALconfig("CPL_VSIL_CURL_ALLOWED_EXTENSIONS", ".tif,.zip")
   terra::setGDALconfig("VSI_CACHE", "TRUE")
   terra::setGDALconfig("GDAL_HTTP_MERGE_CONSECUTIVE_RANGES", "YES")
   terra::setGDALconfig("GDAL_HTTP_MULTIPLEX", "YES")
-  terra::setGDALconfig("VSI_CACHE_SIZE", "67108864")
+  terra::setGDALconfig("VSI_CACHE_SIZE", "268435456")
+  terra::setGDALconfig("CPL_VSIL_CURL_CHUNK_SIZE", "1048576")
   terra::setGDALconfig("GDAL_NUM_THREADS", "ALL_CPUS")
+
+  if (!quiet) {
+    message(sprintf("Streaming and cropping %s %d%s from Cheng et al. archive...", country_tag, year, m_str))
+  }
 
   r_remote <- tryCatch(
     terra::rast(remote_vsi),
@@ -399,6 +407,9 @@ ntl_raster <- function(country = NULL,
 #'   `"gini"`, `"lit_share"`, `"pixels"`.
 #' @param output_dir Directory where intermediate cropped rasters are cached.
 #' @param drop_geom Logical; if `TRUE` (default), returns a standard `tibble` without geometry.
+#' @param cores Number of CPU cores for parallel raster fetching across periods (Unix/macOS only).
+#'   Default `1L`.
+#' @param quiet Logical; whether to suppress progress messages. Default `!interactive()`.
 #' @return A `tibble` or `sf` data frame with extracted metrics joined to the input polygons.
 #' @seealso [ntl_raster()], [ntl_gini_monthly()]
 #' @examples
@@ -413,7 +424,9 @@ ntl_extract <- function(roi,
                         month = NULL,
                         stat = c("sum", "mean", "gini", "lit_share", "pixels"),
                         output_dir = tools::R_user_dir("ntlgini", which = "cache"),
-                        drop_geom = TRUE) {
+                        drop_geom = TRUE,
+                        cores = 1L,
+                        quiet = !interactive()) {
   if (!requireNamespace("sf", quietly = TRUE)) {
     stop("Package 'sf' is required for ntl_extract.", call. = FALSE)
   }
@@ -450,17 +463,36 @@ ntl_extract <- function(roi,
     return(if (drop_geom) tibble::as_tibble(roi_base) else roi_base)
   }
 
-  # Fetch or crop each layer
-  r_list <- vector("list", n_periods)
-  for (k in seq_len(n_periods)) {
-    p <- periods[[k]]
-    r_list[[k]] <- ntl_raster(
-      roi = roi,
-      year = p$year,
-      month = p$month,
-      output_dir = output_dir,
-      return_raster = TRUE
-    )
+  if (!quiet && n_periods > 1L) {
+    message(sprintf("Processing %d raster period(s) for zonal extraction across %d features...", n_periods, n_units))
+  }
+
+  # Fetch or crop each layer (with optional multi-core parallelism across periods)
+  r_list <- if (cores > 1L && .Platform$OS.type == "unix" && n_periods > 1L) {
+    n_c <- min(as.integer(cores), n_periods)
+    parallel::mclapply(seq_len(n_periods), function(k) {
+      p <- periods[[k]]
+      ntl_raster(
+        roi = roi,
+        year = p$year,
+        month = p$month,
+        output_dir = output_dir,
+        return_raster = TRUE,
+        quiet = TRUE
+      )
+    }, mc.cores = n_c)
+  } else {
+    lapply(seq_len(n_periods), function(k) {
+      p <- periods[[k]]
+      ntl_raster(
+        roi = roi,
+        year = p$year,
+        month = p$month,
+        output_dir = output_dir,
+        return_raster = TRUE,
+        quiet = quiet
+      )
+    })
   }
 
   # Multi-layer raster stacking:
@@ -470,8 +502,22 @@ ntl_extract <- function(roi,
   ext_df <- terra::extract(r_stack, v_roi, ID = TRUE, raw = TRUE, touches = TRUE)
 
   n_extracted <- nrow(ext_df)
-  by_id_rows <- if (n_extracted > 0L) split(seq_len(n_extracted), ext_df[, 1L]) else list()
   layer_mat <- if (n_extracted > 0L) ext_df[, -1L, drop = FALSE] else matrix(numeric(0), nrow = 0, ncol = n_periods)
+
+  # Ultra-fast contiguous range grouping: terra::extract guarantees ID is ordered 1..n_units
+  unit_ranges <- vector("list", n_units)
+  if (n_extracted > 0L) {
+    id_col <- as.integer(ext_df[, 1L])
+    rle_id <- rle(id_col)
+    end_indices <- cumsum(rle_id$lengths)
+    start_indices <- c(1L, end_indices[-length(end_indices)] + 1L)
+    for (idx in seq_along(rle_id$values)) {
+      u_id <- rle_id$values[idx]
+      if (u_id >= 1L && u_id <= n_units) {
+        unit_ranges[[u_id]] <- start_indices[idx]:end_indices[idx]
+      }
+    }
+  }
 
   out_rows <- vector("list", n_periods)
 
@@ -488,9 +534,8 @@ ntl_extract <- function(roi,
     gini_vals <- numeric(n_units)
 
     for (i in seq_len(n_units)) {
-      id_str <- as.character(i)
-      if (id_str %in% names(by_id_rows)) {
-        rows_i <- by_id_rows[[id_str]]
+      rows_i <- unit_ranges[[i]]
+      if (!is.null(rows_i)) {
         vals <- vals_k[rows_i]
         vals_ok <- vals[!is.na(vals)]
         n_p <- length(vals_ok)

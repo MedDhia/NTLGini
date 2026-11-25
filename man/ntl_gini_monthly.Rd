@@ -11,7 +11,8 @@ ntl_gini_monthly(
   months = NULL,
   zeros = c("zeros_included", "lit_only"),
   data_dir = tools::R_user_dir("ntlgini", which = "cache"),
-  download = TRUE
+  download = TRUE,
+  quiet = !interactive()
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ or `"lit_only"`.}
 \item{data_dir}{Directory where Parquet files are cached.}
 
 \item{download}{Logical; whether to download missing Parquet files.}
+
+\item{quiet}{Logical; whether to suppress download progress messages.
+Default `!interactive()`.}
 }
 \value{
 A tibble with columns: `iso3`, `country`, `level`, `gid`, `name`,

@@ -9,7 +9,8 @@ ntl_gini_units(
   iso3 = NULL,
   years = NULL,
   data_dir = tools::R_user_dir("ntlgini", which = "cache"),
-  download = TRUE
+  download = TRUE,
+  quiet = !interactive()
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ ntl_gini_units(
 
 \item{download}{Logical; whether to download missing Parquet files from
 GitHub Releases.}
+
+\item{quiet}{Logical; whether to suppress download progress messages.
+Default `!interactive()`.}
 }
 \value{
 A tibble of subunit-year Gini coefficients and within-contributions.
@@ -32,7 +36,8 @@ Reads subunit-level Parquet tables (`gini_by_unit_adm1.parquet` through
 `gini_by_unit_adm4.parquet`) using `arrow` predicate pushdown when filtering
 by `iso3` or `years`. If the file is not yet present in `data_dir`, it is
 downloaded from the `ntlgini` GitHub release (`v0.1.0`) and cached in
-`tools::R_user_dir("ntlgini", "cache")`.
+`tools::R_user_dir("ntlgini", "cache")`. Repeated queries within the same
+session are served instantaneously from an in-memory session cache.
 }
 \examples{
 if (interactive() && requireNamespace("arrow", quietly = TRUE)) {
