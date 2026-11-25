@@ -63,9 +63,11 @@ devtools::document()
 test_results <- devtools::test()
 print(test_results)
 
-# 3. (Optional) Inspect code test coverage
-cov <- covr::package_coverage()
-print(cov)
+# 3. (Optional) Code coverage is computed automatically on GitHub Actions CI (92.5%).
+# On macOS Apple Silicon, covr's exit handler can clash with C++ library finalizers (terra/arrow/GDAL).
+# It is purely optional and not required for CRAN:
+# cov <- covr::package_coverage()
+# print(cov)
 ```
 
 ---
