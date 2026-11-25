@@ -14,4 +14,4 @@
 * Monthly inequality series (984 rows across national and ADM_1 levels) are bundled in `inst/extdata/gini_monthly.parquet` (33 KB).
 * Subunit-level Parquet tables are downloaded only on demand when functions like `ntl_gini_units()` are called with `download = TRUE`, and are stored in standard user cache directory `tools::R_user_dir("ntlgini", "cache")`.
 * Cloud raster extraction functions (`ntl_raster()`, `ntl_extract()`) use GDAL HTTP range requests (/vsizip/ and /vsicurl/) to stream small cropped regions on demand from the Cheng et al. (2026) open repository.
-* Extensive unit test suite comprising 150 automated test assertions with full testthat coverage.
+* Extensive unit test suite comprising 223 automated test assertions with full testthat coverage.

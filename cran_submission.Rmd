@@ -1,0 +1,197 @@
+---
+title: "CRAN Submission Workflow for ntlgini"
+author: "Mohamed Dhia Hammami"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    theme: readable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  eval = FALSE, # Set to TRUE or run chunk-by-chunk interactively
+  message = TRUE,
+  warning = TRUE
+)
+```
+
+# CRAN Submission Guide for `ntlgini`
+
+This R Markdown document automates the pre-submission checks, platform testing, and final submission of `ntlgini` to the **Comprehensive R Archive Network (CRAN)**.
+
+---
+
+## 1. Prerequisites & Environment Setup
+
+Ensure the required development and submission tools are installed.
+
+```{r install-tools}
+req_pkgs <- c("devtools", "rcmdcheck", "urlchecker", "spelling", "rhub", "covr", "knitr", "rmarkdown")
+missing_pkgs <- req_pkgs[!req_pkgs %in% installed.packages()[, "Package"]]
+if (length(missing_pkgs) > 0) {
+  install.packages(missing_pkgs)
+}
+```
+
+Verify package directory and git repository status:
+
+```{r git-status}
+stopifnot(file.exists("DESCRIPTION"))
+status <- system("git status --porcelain", intern = TRUE)
+if (length(status) > 0) {
+  warning("Git working tree is not clean! Commit or stash changes before proceeding.")
+  print(status)
+} else {
+  message("Git working tree is clean. Ready to proceed.")
+}
+```
+
+---
+
+## 2. Generate Documentation & Run Tests
+
+Rebuild `.Rd` documentation, namespace, and execute the complete test suite.
+
+```{r document-and-test}
+# 1. Update roxygen documentation and NAMESPACE
+devtools::document()
+
+# 2. Run all unit tests (expect 223/223 passed)
+test_results <- devtools::test()
+print(test_results)
+
+# 3. (Optional) Inspect code test coverage
+cov <- covr::package_coverage()
+print(cov)
+```
+
+---
+
+## 3. Package Hygiene & Policy Checks
+
+CRAN strictly enforces URL validity, spellings, and file size limits.
+
+### 3.1 URL Check
+Checks all URLs across documentation, vignettes, and `README.md`.
+
+```{r url-check}
+url_results <- urlchecker::url_check()
+print(url_results)
+```
+
+### 3.2 Spelling Check
+Identifies possible spelling errors across manual pages and metadata.
+
+```{r spell-check}
+spelling::spell_check_package()
+# If new valid technical words are flagged, you can whitelist them with:
+# spelling::update_wordlist()
+```
+
+### 3.3 Tarball Build & Size Verification
+CRAN strictly requires package tarballs to be under **5.0 MB**.
+
+```{r build-check-size}
+tarball <- devtools::build(args = "--compact-vignettes=both")
+file_size_mb <- file.info(tarball)$size / (1024^2)
+message(sprintf("Built tarball: %s (%.2f MB)", basename(tarball), file_size_mb))
+
+if (file_size_mb >= 5.0) {
+  stop("Tarball size exceeds 5.0 MB! Must reduce bundled assets before submission.")
+} else {
+  message("Tarball size is well within CRAN limits (< 5.0 MB).")
+}
+```
+
+---
+
+## 4. Local CRAN Check (`R CMD check --as-cran`)
+
+Run full rigorous CRAN checks locally. You must have **0 errors** and **0 warnings**.
+
+```{r local-check}
+chk <- rcmdcheck::rcmdcheck(
+  args = c("--no-manual", "--as-cran"),
+  error_on = "warning"
+)
+print(chk)
+```
+
+---
+
+## 5. Remote Platform Testing (Win-builder & R-hub)
+
+Before submitting, CRAN requires verifying that your package compiles and passes checks cleanly on Windows and various Linux flavors.
+
+### 5.1 Win-builder Checks
+Submits your package to CRAN's dedicated Windows testing servers. You will receive an email confirmation and report within ~15 minutes at `med.dhia.hammami@gmail.com`.
+
+```{r win-builder}
+# Test on Windows R-devel (CRAN requirement)
+devtools::check_win_devel()
+
+# Test on Windows R-release
+devtools::check_win_release()
+
+# Test on Windows R-oldrelease (optional)
+devtools::check_win_oldrelease()
+```
+
+### 5.2 R-hub Checks
+Checks across Linux architectures (Ubuntu, Fedora, etc.):
+
+```{r rhub-check}
+# Using rhub v2
+if (requireNamespace("rhub", quietly = TRUE)) {
+  rhub::rhub_check()
+}
+```
+
+---
+
+## 6. Review `cran-comments.md`
+
+Verify that `cran-comments.md` accurately describes the test results and data handling policies.
+
+```{r review-comments}
+comments_path <- "cran-comments.md"
+if (file.exists(comments_path)) {
+  cat(readLines(comments_path), sep = "\n")
+} else {
+  stop("cran-comments.md is missing! Create it with devtools::use_cran_comments().")
+}
+```
+
+---
+
+## 7. Submit to CRAN
+
+Once all local and remote checks have completed with **0 errors and 0 warnings**:
+
+### Option A: Direct Automated Submission (`devtools::submit_cran`)
+Directly uploads the tarball and `cran-comments.md` to the CRAN submission queue.
+
+```{r submit-cran}
+# Submit to CRAN
+devtools::submit_cran()
+```
+
+### Option B: Interactive Release Wizard (`devtools::release`)
+Walks through a step-by-step interactive confirmation questionnaire before submitting.
+
+```{r release-wizard}
+devtools::release()
+```
+
+---
+
+## 8. Post-Submission Confirmation
+
+1. **Email Confirmation:** Within a few minutes of submitting, you will receive an automated email from `CRAN-submissions@r-project.org` with the subject:
+   `CRAN submission ntlgini 0.1.0`
+2. **Action Required:** You **MUST click the verification link** in that email to confirm submission. Unconfirmed packages are automatically purged after 48 hours.
+3. **Tracking:** You can monitor incoming submissions on CRAN at:
+   https://cran.r-project.org/incoming/
