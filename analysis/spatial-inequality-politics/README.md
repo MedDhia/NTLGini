@@ -290,6 +290,59 @@ here:
 Two tests would discriminate: event-time public investment or energy data, and
 light in the leader's home region versus the capital region.
 
+### Spatial distribution of light after democratization and autocratization (`11_spatial_distribution_events.R`)
+
+The same event designs as above are run symmetrically on four event sets: RoW
+democratization (45, vs always-autocracies), RoW autocratization (32, vs
+always-democracies), and LIED transitions and breakdowns (44 / 33). They use
+the Sun & Abraham estimator with country + region×year FE and no time-varying
+controls.
+
+**Country level.** Gini measures are in Gini points × 100. Shares are each
+country's light in its baseline-brightest ADM1 (core) or in its darkest third
+of ADM1 regions (by 1992–94 radiance).
+
+| Outcome | Democratization RoW | Autocratization RoW | Democratization LIED | Autocratization LIED |
+|---|---|---|---|---|
+| Total Gini (base ≈ 95) | −0.36 (p = .02) | −0.22 (.24) | −0.29 (.16) | +0.72 (.07) |
+| Between-region Gini ADM1 | −0.80 (.32) | −0.35 (.64) | −0.28 (.75) | −1.48 (.27) |
+| Within-region Gini ADM1 | +0.03 (.87) | −0.09 (.51) | −0.22 (.43) | +0.53 (.28) |
+| Between-region Gini ADM2 | −0.73 (.26) | −0.56 (.30)† | −0.35 (.66) | −0.45 (.67) |
+| Core-region share (pp) | +0.54 (.63) | **+1.66 (.02)**; years 5–9: +2.0 (.02) | +1.41 (.23) | +0.32 (.86) |
+| Darkest-third share (pp) | −0.11 (.84) | −1.25 (.01)† | 0.00 (1.0) | −2.53 (< .001)† |
+
+† marks a pre-trend at p < .05. The event-time paths show that both negative
+dark-share estimates come from the reference year: the share sits 1–2.5 pp
+below its t−1 level both before and after the event, with no break at the event.
+
+**ADM1-unit triple difference.** The outcome is log light of each ADM1 unit
+(1,183–1,735 units). FE are unit, country×year (absorbing every national shock,
+including growth) and baseline-tercile×year (absorbing global convergence of
+dark regions). The bright tercile is the reference. Estimates for dark regions
+relative to bright ones:
+
+| | Pre (−6..−2) | Early (0..4) | Late (5..10) |
+|---|---|---|---|
+| Democratization RoW | −2.4 (.56) | +5.0 (.48) | +7.9 (.47) |
+| Autocratization RoW | −4.7 (.15) | +3.6 (.27) | +11.3 (.13) |
+| Democratization LIED | −3.1 (.55) | +4.2 (.43) | +16.8 (.13) |
+| Autocratization LIED | **−13.1 (< .001)** | +1.7 (.71) | +7.6 (.44) |
+
+Dark regions keep catching up after *both* kinds of regime change. The pre-period
+coefficients point the same way: dark regions were already gaining relative to
+the reference year. That pattern is an ongoing convergence trend in treated
+countries, not a break caused by the regime change.
+
+**Verdict.**
+- Neither democratization nor autocratization detectably redistributes light
+  toward or away from the periphery. Gini changes are below 1 Gini point, and the
+  one significant estimate is −0.36 points against a base of 95.
+- The only clean distributional signal is a **temporary concentration of light
+  in the core region after RoW-dated (incumbent-led) autocratization**. The
+  core share rises ≈ 3 pp in years 3–7, then returns to baseline, with flat
+  pre-trends. This matches the breakdown deep dive. It doesn't appear under
+  LIED dating, consistent with LIED dating those events later.
+
 ![Coefficient plot](output/coefplot.png)
 
 ## Specification grid (`02_models.R`)
@@ -331,6 +384,7 @@ Rscript analysis/spatial-inequality-politics/07_reverse_direction.R
 Rscript analysis/spatial-inequality-politics/08_democracy_light_levels.R
 Rscript analysis/spatial-inequality-politics/09_breakdown_deep_dive.R   # downloads the ADM1 unit table via ntl_gini_units()
 Rscript analysis/spatial-inequality-politics/10_breakdown_figure.R      # needs patchwork
+Rscript analysis/spatial-inequality-politics/11_spatial_distribution_events.R
 ```
 
 `vdemdata` and `democracyData` are GitHub-only packages. `00_get_data.R` fetches
@@ -348,4 +402,5 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `reverse_crosslag.csv`, `reverse_event_study.csv`, `reverse_events.csv`, `reverse_mechanism.csv`, `reverse_within_sd.csv`: reverse-direction tests
 - `levels_event_study.csv`, `levels_anrr_dynamic_panel.csv`, `levels_light_gdp_elasticity.csv`: democracy and light levels
 - `breakdown_events.csv`, `breakdown_events_lied.csv`, `breakdown_paths.csv`, `breakdown_jackknife.csv`, `breakdown_heterogeneity.csv`, `breakdown_heterogeneity_paths.csv`, `breakdown_paths.png`: breakdown deep dive
+- `spatial_events_country.csv`, `spatial_events_unit_ddd.csv`: spatial distribution after regime change
 - `predictor_correlations.csv`, `coefplot.png`
