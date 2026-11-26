@@ -1,0 +1,5 @@
+"model","term","est","se","p","nobs"
+"Polyarchy(t) -> rural elec. access(t+3)","v2x_polyarchy_z",-0.236820771493845,0.670094455745213,0.724229216034595,4172
+"Rural elec. access(t) -> within Gini(t)","elec_rural",-0.000469128667559454,0.000476535290139085,0.326332049612573,4231
+"Polyarchy(t) -> within Gini(t+3), same sample","v2x_polyarchy_z",-0.00696965855385222,0.00936674293741909,0.457883029013718,4172
+"... + change in rural elec. access","v2x_polyarchy_z",-0.00647203793107829,0.0093051977569684,0.487702069097067,4172

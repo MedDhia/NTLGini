@@ -20,31 +20,31 @@ R packages:
 outcomes once you account for how developed a country is.**
 
 1. **Bivariate associations are strong and point the way theory expects.**
-   More spatially unequal countries have more urban–rural political exclusion,
-   less democracy, more conflict and political violence, more corruption, and
-   weaker rule of law and fiscal capacity. 52 of 76 predictor × outcome pairs
-   are significant (49 after Benjamini–Hochberg correction). The pattern holds
-   on the main-spec sample too (47/76), so sample composition doesn't explain it.
+ also needs WDI electrification (cached by first run) More spatially unequal countries have more urban–rural political exclusion,
+ also needs WDI electrification (cached by first run) less democracy, more conflict and political violence, more corruption, and
+ also needs WDI electrification (cached by first run) weaker rule of law and fiscal capacity. 52 of 76 predictor × outcome pairs
+ also needs WDI electrification (cached by first run) are significant (49 after Benjamini–Hochberg correction). The pattern holds
+ also needs WDI electrification (cached by first run) on the main-spec sample too (47/76), so sample composition doesn't explain it.
 2. **These associations go away with standard controls.** With controls plus
-   year and region fixed effects, 3 of 76 pairs are p < .05 and **0 of 76 survive
-   FDR correction**. Under the main specification **no pair counts as robust**
-   (robust here means BH p < .05 in the main spec and same-sign p < .05 in at
-   least 75% of the 10–12 non-bivariate specifications).
+ also needs WDI electrification (cached by first run) year and region fixed effects, 3 of 76 pairs are p < .05 and **0 of 76 survive
+ also needs WDI electrification (cached by first run) FDR correction**. Under the main specification **no pair counts as robust**
+ also needs WDI electrification (cached by first run) (robust here means BH p < .05 in the main spec and same-sign p < .05 in at
+ also needs WDI electrification (cached by first run) least 75% of the 10–12 non-bivariate specifications).
 3. **The confounder is development.** Log GDP per capita on its own removes about
-   75% of the bivariate coefficient. The light Ginis correlate at −0.55 to −0.76
-   with log GDP pc and mean radiance: poor countries have many unlit cells, and
-   that mechanically pushes the Gini toward 1. Total Gini has a median of 0.96
-   at ADM1.
+ also needs WDI electrification (cached by first run) 75% of the bivariate coefficient. The light Ginis correlate at −0.55 to −0.76
+ also needs WDI electrification (cached by first run) with log GDP pc and mean radiance: poor countries have many unlit cells, and
+ also needs WDI electrification (cached by first run) that mechanically pushes the Gini toward 1. Total Gini has a median of 0.96
+ also needs WDI electrification (cached by first run) at ADM1.
 4. **Adding the inequality measures does not improve prediction.** With 10×
-   repeated, country-blocked 10-fold CV, adding all four measures to the control
-   model *lowers* out-of-sample R² for 15 of 19 outcomes (median −0.018). The
-   gains are tiny: conflict-incidence AUC +0.013, fiscal capacity R² +0.009, and
-   territorial authority and exclusion each under +0.015.
+ also needs WDI electrification (cached by first run) repeated, country-blocked 10-fold CV, adding all four measures to the control
+ also needs WDI electrification (cached by first run) model *lowers* out-of-sample R² for 15 of 19 outcomes (median −0.018). The
+ also needs WDI electrification (cached by first run) gains are tiny: conflict-incidence AUC +0.013, fiscal capacity R² +0.009, and
+ also needs WDI electrification (cached by first run) territorial authority and exclusion each under +0.015.
 5. **Within countries, nothing systematic shows up.** Country + year FE estimates
-   are near zero and mixed in sign. Within-region (ADM1) Gini is the exception:
-   it is negatively associated with every regime measure within countries
-   (e.g., polyarchy −0.26 SD, p < .001). That result is not significant in the
-   main pooled spec, though, and only 1 of 76 within-FE tests survives FDR.
+ also needs WDI electrification (cached by first run) are near zero and mixed in sign. Within-region (ADM1) Gini is the exception:
+ also needs WDI electrification (cached by first run) it is negatively associated with every regime measure within countries
+ also needs WDI electrification (cached by first run) (e.g., polyarchy −0.26 SD, p < .001). That result is not significant in the
+ also needs WDI electrification (cached by first run) main pooled spec, though, and only 1 of 76 within-FE tests survives FDR.
 
 ### One lead worth pursuing: between-region Gini at **ADM2**
 
@@ -54,13 +54,13 @@ controls (≈ −0.18 SD per SD, BH p < .05 for all six). The follow-up checks
 (`04_adm2_followup.R`) show:
 
 - **It comes from the measure, not the sample.** ADM1 between-Gini on the same
-  140 countries is null (≈ −0.05).
+ also needs WDI electrification (cached by first run)140 countries is null (≈ −0.05).
 - It gets **stronger** when ADM1 between-Gini and total Gini are also controlled
-  (≈ −0.30 to −0.41). The relevant variation is the inequality *across districts
-  within provinces*.
+ also needs WDI electrification (cached by first run)(≈ −0.30 to −0.41). The relevant variation is the inequality *across districts
+ also needs WDI electrification (cached by first run)within provinces*.
 - It holds up in the country-means cross-section (n = 140, ≈ −0.28), without
-  region FE, when each of the six world regions is dropped in turn, and in a
-  country jackknife (range −0.23 to −0.35).
+ also needs WDI electrification (cached by first run)region FE, when each of the six world regions is dropped in turn, and in a
+ also needs WDI electrification (cached by first run)country jackknife (range −0.23 to −0.35).
 - **It is zero within countries** (country + year FE ≈ 0).
 
 So this is a persistent **cross-sectional** difference, not a dynamic predictor.
@@ -74,15 +74,15 @@ zones, which the subunit Parquet tables would allow.
 ### Other things to note
 
 - **Total Gini → state authority over territory** is *positive* (+0.38 SD,
-  BH p = .07, 7/10 specs), which is the opposite of the "harmful" hypothesis.
-  The most likely cause is large, mostly empty but state-controlled territories
-  such as deserts and the Gulf.
+ also needs WDI electrification (cached by first run)BH p = .07, 7/10 specs), which is the opposite of the "harmful" hypothesis.
+ also needs WDI electrification (cached by first run)The most likely cause is large, mostly empty but state-controlled territories
+ also needs WDI electrification (cached by first run)such as deserts and the Gulf.
 - **Within-region Gini → lower fiscal capacity** (−0.26 SD, BH p = .07, 7/12
-  specs) is the closest any ADM1 measure comes to robustness.
+ also needs WDI electrification (cached by first run)specs) is the closest any ADM1 measure comes to robustness.
 - **There is a visible DMSP→VIIRS seam around 2012.** Germany's total Gini, for
-  example, jumps from 0.72 to 0.84. Results are similar in DMSP-only and
-  VIIRS-only subsamples and with country×era FE. Still, users of the package's
-  within-country time series should be aware of it.
+ also needs WDI electrification (cached by first run)example, jumps from 0.72 to 0.84. Results are similar in DMSP-only and
+ also needs WDI electrification (cached by first run)VIIRS-only subsamples and with country×era FE. Still, users of the package's
+ also needs WDI electrification (cached by first run)within-country time series should be aware of it.
 
 ### Fixed-effects battery (`06_fixed_effects.R`)
 
@@ -105,27 +105,82 @@ between-Gini) × 19 outcomes under 9 FE designs:
 | BH-significant | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
 
 - **There is little within-country variation to use.** After country and year
-  FE, only 1.4% (within-region Gini) to 9% (ADM2 between Gini) of each
-  measure's variance is left. A large share of that residual likely reflects
-  sensor noise and the 2012 seam rather than real redistribution of activity.
+ also needs WDI electrification (cached by first run)FE, only 1.4% (within-region Gini) to 9% (ADM2 between Gini) of each
+ also needs WDI electrification (cached by first run)measure's variance is left. A large share of that residual likely reflects
+ also needs WDI electrification (cached by first run)sensor noise and the 2012 seam rather than real redistribution of activity.
 - **There is still enough power for moderate effects.** The median F2 SE is
-  0.045 outcome-SD per pooled SD of inequality, so the minimum detectable effect
-  at 80% power is ≈ 0.13. The nulls are not just noise.
+ also needs WDI electrification (cached by first run)0.045 outcome-SD per pooled SD of inequality, so the minimum detectable effect
+ also needs WDI electrification (cached by first run)at 80% power is ≈ 0.13. The nulls are not just noise.
 - **The significant results don't point one way.** Of the 20 F2 hits, 8 are in
-  the "inequality is harmful" direction and 12 go the other way.
+ also needs WDI electrification (cached by first run)the "inequality is harmful" direction and 12 go the other way.
 - **The only BH-significant within-country result fails the identification
-  checks.** Within-region Gini → lower polyarchy (−0.26 SD, BH p = .04) is
-  stable across F1–F3, F5 and F9. But it vanishes with country trends
-  (F4: −0.07), and the *future* value of inequality predicts current democracy
-  about as well (F8: −0.21, p = .03). That pattern means slow co-moving trends
-  (democratic erosion coinciding with secular lighting trends), not inequality
-  preceding political change.
+ also needs WDI electrification (cached by first run)checks.** Within-region Gini → lower polyarchy (−0.26 SD, BH p = .04) is
+ also needs WDI electrification (cached by first run)stable across F1–F3, F5 and F9. But it vanishes with country trends
+ also needs WDI electrification (cached by first run)(F4: −0.07), and the *future* value of inequality predicts current democracy
+ also needs WDI electrification (cached by first run)about as well (F8: −0.21, p = .03). That pattern means slow co-moving trends
+ also needs WDI electrification (cached by first run)(democratic erosion coinciding with secular lighting trends), not inequality
+ also needs WDI electrification (cached by first run)preceding political change.
 - **The coup associations fail the placebo too.** Future between-region
-  inequality "predicts" today's coups (p ≈ .001), which points to reverse
-  causation: political shocks change the light distribution.
+ also needs WDI electrification (cached by first run)inequality "predicts" today's coups (p ≈ .001), which points to reverse
+ also needs WDI electrification (cached by first run)causation: political shocks change the light distribution.
 - **No predictor × outcome pair is robust within countries.** Robust here means
-  BH p < .05 in F2, same-sign p < .05 in at least 6 of the 7 non-placebo
-  alternatives, and a null placebo.
+ also needs WDI electrification (cached by first run)BH p < .05 in F2, same-sign p < .05 in at least 6 of the 7 non-placebo
+ also needs WDI electrification (cached by first run)alternatives, and a null placebo.
+
+### Reverse-direction test (`07_reverse_direction.R`)
+
+The question here is whether regime change reshapes how light is distributed.
+The prior is the democracy-and-electrification argument (Brown & Mobarak 2009;
+Min 2015).
+
+**A. Cross-lagged panel.** Both directions are estimated in the same FE models:
+4 inequality measures × 5 democracy measures × horizons of 1, 3 and 5 years.
+Effects are in within-country SD units, using the residual SDs after country
+and year FE, so the two directions are comparable.
+
+| Polyarchy × within-region Gini, k = 1 | Democracy → future inequality | Inequality → future democracy |
+|---|---|---|
+| TWFE + controls | −0.093 (p = .002) | −0.090 (p = .001) |
+| + lagged dependent variable | −0.034 (p = .04) | −0.007 (p = .47) |
+| + lagged DV + country trends | −0.008 (p = .57) | −0.018 (p = .21) |
+
+- In plain TWFE the association is the same size in both directions. That is
+ also needs WDI electrification (cached by first run)what a shared trend produces, not one variable driving the other.
+- With a lagged dependent variable, a small democracy → inequality effect
+ also needs WDI electrification (cached by first run)remains at one year only. It is no longer significant at 3 or 5 years.
+- With country trends, both directions are null.
+- Across all 20 measure pairs, the share of p < .05 results stays near chance
+ also needs WDI electrification (cached by first run)in every variant and direction (0–6 of 20), and almost nothing survives BH.
+
+**B. Event studies** (Sun & Abraham 2021 estimator; window −6 to +8; controls
+include GDP pc, population, % urban and resource rents). Events are the first
+sustained crossing of the Regimes of the World (RoW) democracy threshold in
+1995–2021: 45 democratizations against 58 always-autocracies, and 32
+breakdowns against 52 always-democracies. LIED transitions are used as a
+robustness check (44 events).
+
+- There are no pre-trends: the average t−6 to t−2 deviation has p > .1 for
+ also needs WDI electrification (cached by first run)every outcome.
+- **No distribution measure moves** after democratization or breakdown. For
+ also needs WDI electrification (cached by first run)example, the ATT of RoW democratization on within-region Gini is −0.007
+ also needs WDI electrification (cached by first run)(SE 0.017); for LIED it is −0.028 (SE 0.026).
+- The design can rule out effects larger than about 0.4 within-country SD of
+ also needs WDI electrification (cached by first run)within-region Gini.
+- The only near-signal is a *level* effect: mean radiance rises after
+ also needs WDI electrification (cached by first run)breakdowns (+0.064 log points, p = .07).
+
+**C. Mechanism.** Polyarchy doesn't predict WDI rural electricity access 3 years
+later (−0.24 pp, SE 0.67). Rural access doesn't predict within-region Gini, and
+controlling for its change leaves the democracy coefficient unchanged. WDI
+access figures are partly modelled and smoothed, so this is a weak test.
+
+**Verdict.** Country-level regime change doesn't reshape the distribution of
+light measured by these area-weighted Ginis, in either direction. The
+within-country co-movement is best read as country-specific trends. The
+electrification mechanism may still operate at a scale these measures can't
+see, such as villages in competitive constituencies. Testing that needs
+population-weighted or unit-level (ADM2/ADM3) outcomes matched to subnational
+electoral data.
 
 ![Coefficient plot](output/coefplot.png)
 
@@ -157,10 +212,10 @@ From the package root (requires `fixest`, `dplyr`, `tidyr`, `countrycode`,
 `peacesciencer`, `WDI`, `ggplot2`, and `ntlgini` installed):
 
 ```sh
-Rscript analysis/spatial-inequality-politics/00_get_data.R     # downloads V-Dem, democracyData .rda files, WDI
+Rscript analysis/spatial-inequality-politics/00_get_data.R also needs WDI electrification (cached by first run)   # downloads V-Dem, democracyData .rda files, WDI
 Rscript analysis/spatial-inequality-politics/01_build_panel.R
 Rscript analysis/spatial-inequality-politics/02_models.R
-Rscript analysis/spatial-inequality-politics/03_diagnostics.R  # attenuation + cross-validation (~2 min)
+Rscript analysis/spatial-inequality-politics/03_diagnostics.R also needs WDI electrification (cached by first run)# attenuation + cross-validation (~2 min)
 Rscript analysis/spatial-inequality-politics/04_adm2_followup.R
 Rscript analysis/spatial-inequality-politics/05_figures.R
 Rscript analysis/spatial-inequality-politics/06_fixed_effects.R
