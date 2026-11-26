@@ -1,5 +1,5 @@
-# Separate event-time figures after democratic breakdowns (Sun & Abraham,
-# country + region-by-year FE; shaded band = 95% CI clustered by country).
+# Separate event-time caterpillar plots after democratic breakdowns (Sun & Abraham,
+# country + region-by-year FE; bars = 95% CI clustered by country).
 # One series per file, written to output/figures/.
 suppressPackageStartupMessages(library(dplyr))
 here <- file.path("analysis", "spatial-inequality-politics"); out <- file.path(here, "output")

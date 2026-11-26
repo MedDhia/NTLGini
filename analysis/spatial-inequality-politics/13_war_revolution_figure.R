@@ -1,6 +1,6 @@
-# Separate event-time figures after civil-war onset, conflict termination and
+# Separate event-time caterpillar plots after civil-war onset, conflict termination and
 # popular-uprising revolutions (Sun & Abraham, country + region-by-year FE;
-# shaded band = 95% CI clustered by country). One series per file.
+# bars = 95% CI clustered by country). One series per file.
 suppressPackageStartupMessages(library(dplyr))
 here <- file.path("analysis", "spatial-inequality-politics"); out <- file.path(here, "output")
 figs <- file.path(out, "figures"); dir.create(figs, showWarnings = FALSE)

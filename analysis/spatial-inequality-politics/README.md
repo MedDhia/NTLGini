@@ -232,7 +232,7 @@ incumbent-led erosions (e.g., Turkey 2013, Hungary 2018, India 2017, Serbia
 2014, Nicaragua 2007, El Salvador 2021). Only 4 have a coup within a year
 (Niger 1996, Fiji 2000, Thailand 2006, Honduras 2009).
 
-Figures (one series each, in `output/figures/`):
+Caterpillar plots (one series each, point estimate + 95% CI per event year, in `output/figures/`):
 
 ![Total light after breakdown](output/figures/breakdown_total_light.png)
 ![Core-region light after breakdown](output/figures/breakdown_core_light.png)
@@ -365,7 +365,7 @@ events and countries with no regime change for the revolutions. All estimates
 use the Sun & Abraham estimator with country + region×year FE and no
 time-varying controls. The event list is in `war_revolution_events.csv`.
 
-Figures (one series each, in `output/figures/`):
+Caterpillar plots (one series each, point estimate + 95% CI per event year, in `output/figures/`):
 
 ![Total light after civil-war onset](output/figures/war_total_light.png)
 ![Between-region Gini after civil-war onset](output/figures/war_between_gini.png)
@@ -486,5 +486,5 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `breakdown_events.csv`, `breakdown_events_lied.csv`, `breakdown_paths.csv`, `breakdown_jackknife.csv`, `breakdown_heterogeneity.csv`, `breakdown_heterogeneity_paths.csv`: breakdown deep dive
 - `spatial_events_country.csv`, `spatial_events_unit_ddd.csv`: spatial distribution after regime change
 - `war_revolution_events.csv`, `war_revolution_event_study.csv`, `war_revolution_jackknife.csv`: civil wars and revolutions
-- `figures/`: one event-time figure per event × outcome (breakdown_*, war_*, termination_*, revolution_*)
+- `figures/`: one event-time caterpillar plot per event × outcome (breakdown_*, war_*, termination_*, revolution_*)
 - `predictor_correlations.csv`, `coefplot.png`

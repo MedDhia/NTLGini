@@ -1,13 +1,14 @@
-# Shared helper: one event-time path (single series) per figure file.
+# Shared helper: one event-time caterpillar plot (single series) per figure file:
+# a point estimate per event year with its 95% CI as a vertical bar.
 suppressPackageStartupMessages(library(ggplot2))
 plot_event_path <- function(df, title, subtitle, ylab, file, colour = "#257de0") {
   df <- rbind(df[, c("rel", "est", "se")], data.frame(rel = -1, est = 0, se = 0))
   p <- ggplot(df, aes(rel, est)) +
     geom_hline(yintercept = 0, colour = "#9c9c9c", linewidth = 0.4) +
     geom_vline(xintercept = -0.5, colour = "#9c9c9c", linewidth = 0.4, linetype = "dashed") +
-    geom_ribbon(aes(ymin = est - 1.96 * se, ymax = est + 1.96 * se), fill = colour, alpha = 0.15) +
-    geom_line(colour = colour, linewidth = 0.8) +
-    geom_point(colour = colour, size = 2.2) +
+    geom_errorbar(aes(ymin = est - 1.96 * se, ymax = est + 1.96 * se), colour = colour,
+                  width = 0.25, linewidth = 0.6) +
+    geom_point(colour = colour, size = 2.6) +
     scale_x_continuous(breaks = seq(-6, 10, 2)) +
     labs(x = "Years relative to event (t = -1 is the reference year)", y = ylab,
          title = title, subtitle = paste(strwrap(subtitle, width = 85), collapse = "\n")) +
