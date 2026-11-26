@@ -182,6 +182,47 @@ see, such as villages in competitive constituencies. Testing that needs
 population-weighted or unit-level (ADM2/ADM3) outcomes matched to subnational
 electoral data.
 
+### Does democratization increase the *amount* of light? (`08_democracy_light_levels.R`)
+
+This section is the light-based analogue of Acemoglu, Naidu, Restrepo &
+Robinson (2019), with light in place of GDP. The event studies use the Sun &
+Abraham estimator with no time-varying controls, because GDP is the mediator of
+interest. Effects are in log points × 100 (≈ %). WDI GDP per capita is the
+benchmark outcome.
+
+| Event (RoW unless noted) | FE | Total light | Light per capita | GDP pc |
+|---|---|---|---|---|
+| Democratization | country + year | +3.9 (p = .33) | **+9.4 (p = .03)** | +2.5 (p = .36) |
+| Democratization | + region×year | +0.8 (p = .85) | +3.9 (p = .38) | −2.5 (p = .40) |
+| Democratization | + initial-income tercile×year | +2.9 (p = .55) | +7.3 (p = .15) | +2.2 (p = .44) |
+| Democratization (LIED) | country + year | +2.7 (p = .65) | +6.4 (p = .31) | +0.3 (p = .93) |
+| Breakdown | country + year | **+14.4 (p < .001)** | **+11.5 (p = .003)** | **+7.1 (p = .004)** |
+| Breakdown | + region×year | **+11.2 (p = .003)** | +7.9 (p = .05) | +3.3 (p = .16) |
+| Breakdown | + initial-income tercile×year | +11.4 (p = .06) | +12.6 (p = .05) | **+7.8 (p = .01)** |
+
+- Pre-trends are flat in every variant (all p > .05).
+- Dropping events in 2009–2015, around the sensor switch, gives the same results.
+- **ANRR-style dynamic panel** (4 lags, country + year FE): the long-run effect
+  of democracy on light is +5.5 to +13% (SE 5–10, p = .10–.36). The same model
+  on WDI GDP in this 1992–2024 window is null (−9 to +6%). ANRR's ≈ 20% GDP
+  effect doesn't reproduce in this short, post-1992 window.
+- The 5-year light–GDP elasticity is 0.55 (SE 0.12). An ANRR-sized GDP effect
+  would therefore show up as roughly +11% in light, which lies inside every
+  confidence interval above.
+
+**Verdict.**
+- Democratization effects on light are positive in every specification, but
+  small and not robust. The one significant estimate (+9.4% light per capita)
+  is about halved and loses significance once comparisons are limited to
+  countries in the same region. The data can't rule out an effect of ANRR's
+  size, but they don't show one.
+- **Light rises after democratic breakdowns** (+11–14% total light). This
+  survives region-by-year comparisons and has flat pre-trends. Part of it
+  follows GDP. Part (+11% light vs. +3% GDP within region) may reflect
+  autocracies investing in visible infrastructure, or a breakdown sample
+  concentrated in growing middle-income countries. It is a descriptive puzzle,
+  not an established effect.
+
 ![Coefficient plot](output/coefplot.png)
 
 ## Specification grid (`02_models.R`)
@@ -220,6 +261,7 @@ Rscript analysis/spatial-inequality-politics/04_adm2_followup.R
 Rscript analysis/spatial-inequality-politics/05_figures.R
 Rscript analysis/spatial-inequality-politics/06_fixed_effects.R
 Rscript analysis/spatial-inequality-politics/07_reverse_direction.R
+Rscript analysis/spatial-inequality-politics/08_democracy_light_levels.R
 ```
 
 `vdemdata` and `democracyData` are GitHub-only packages. `00_get_data.R` fetches
@@ -235,4 +277,5 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `adm2_followup.csv`, `adm2_leave_one_region_out.csv`, `adm2_jackknife.csv`
 - `fe_battery.csv`, `fe_robustness_summary.csv`, `fe_within_variation.csv`: fixed-effects battery
 - `reverse_crosslag.csv`, `reverse_event_study.csv`, `reverse_events.csv`, `reverse_mechanism.csv`, `reverse_within_sd.csv`: reverse-direction tests
+- `levels_event_study.csv`, `levels_anrr_dynamic_panel.csv`, `levels_light_gdp_elasticity.csv`: democracy and light levels
 - `predictor_correlations.csv`, `coefplot.png`
