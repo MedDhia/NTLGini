@@ -343,6 +343,69 @@ countries, not a break caused by the regime change.
   pre-trends. This matches the breakdown deep dive. It doesn't appear under
   LIED dating, consistent with LIED dating those events later.
 
+### Civil wars and revolutions (`12_war_revolution.R`, `13_war_revolution_figure.R`)
+
+**Events.** First qualifying event per country, 1995–2021:
+- Civil-conflict onset (UCDP/PRIO via `peacesciencer`, ≥ 25 battle deaths, after ≥ 3 conflict-free years): 48 events.
+- Civil-war onset (≥ 1,000 deaths): 18.
+- Conflict termination (≥ 3 years of peace after ≥ 2 conflict years): 32.
+- Revolution by popular uprising (V-Dem `v2regendtype` = 8; event = first year of the successor regime): 11. These are Indonesia 1998, Georgia 2003, Haiti 2004, Kyrgyzstan 2005, Lebanon 2005, Ukraine 2005, Nepal 2006, Egypt 2011, Tunisia 2011, Burkina Faso 2014 and Armenia 2018.
+- Armed revolution (regime lost a civil war, `v2regendtype` = 5): 12.
+- Leader ousted by popular protest (Archigos, through 2015), as a robustness check: 9.
+
+Comparison groups are never-conflict countries (1989–2024) for the conflict
+events and countries with no regime change for the revolutions. All estimates
+use the Sun & Abraham estimator with country + region×year FE and no
+time-varying controls. The event list is in `war_revolution_events.csv`.
+
+![War and revolution paths](output/war_revolution_paths.png)
+
+| Event | Total light | GDP pc | Between-region Gini ADM1 | Core-region share |
+|---|---|---|---|---|
+| Civil-conflict onset (48) | +1.3% (.79) | −1.6% (.53) | +0.6 (.43) | +0.9 pp (.36) |
+| Civil-war onset (18) | −5.2% (.39); years 1–7 ≈ −8% | years 0–4: −5.1% (.02) | +2.6 (.07) | −0.1 pp (.92) |
+| **Conflict termination (32)** | **+16.3% (.03); years 5–9: +24.8% (< .001)** | +6.3% (.07) | **+3.3 (.01)** | +1.6 pp (.28) |
+| **Popular-uprising revolution (11)** | −1.8% (.69) | −0.2% (.95) | +1.3 (.05); years 5–9: +2.2 (.01) | **+1.8 pp (.01); years 5–9: +2.8 pp (< .01)** |
+| Armed revolution (12) | +14.6% (.23)† | −9.6% (.20) | +2.2 (.13) | −1.3 pp (.53)† |
+| Protest ouster, Archigos (9) | +2.2% (.77)† | −2.6% (.58) | +3.3 (.27) | −0.4 pp (.90) |
+
+† marks a pre-trend at p < .05.
+
+- **Minor conflict onsets do nothing detectable** to light or its distribution.
+- **Civil wars dim the lights, but this isn't robust.** Light falls about 8%
+  in the years after war onset, and the decline starts during the escalation
+  before the war threshold. Core-region light falls most (−16% to −35%, very
+  imprecise). GDP falls 5–7% in years 1–3. Dropping one country at a time, the
+  light estimate ranges from −9% to +2%, is never significant, and is driven by
+  Syria. Between-region inequality creeps up through the war (+2 to +5 Gini
+  points by year 10).
+- **The end of conflict brings a large, uneven recovery.** This is the
+  strongest result in this section. Light falls through the final conflict
+  years (the pre-period estimates are the war's damage, not a parallel-trends
+  failure), then recovers steadily to about +28% by years 8–10. GDP recovers
+  roughly half as much (+6 to +13%).
+  - The recovery is spatially uneven. Between-region Gini jumps about 5 points
+    around the end of the conflict, from −2 before to +3 after, and stays up.
+  - Both checks hold: dropping any one country leaves the light ATT between +13%
+    and +23% (late effect +22% to +32%, always p < .05). Between-region Gini
+    stays between +1.9 and +3.8, always p < .05.
+- **Popular revolutions concentrate light in the core, with a lag.** Total light
+  dips about 8% in the revolution year, mostly outside the core (−11.5%), then
+  returns to baseline. The core region's share is flat for about 5 years, then
+  rises 3–5 pp in years 7–10. Between-region Gini rises 3–4 points over the same
+  window. There are no pre-trends.
+  - Dropping one country at a time, the late core-share effect stays between
+    +1.7 and +3.5 pp, significant in 91% of drops. Haiti is the most influential
+    case.
+  - Caveats: there are only 11 events, the late years are identified mainly from
+    the pre-2011 cohorts, and the Archigos protest-ouster events don't replicate
+    the pattern.
+  - Interpretation: post-revolutionary governments (mostly capital-based
+    uprisings) may favor the capital region. This echoes the urban-bias account
+    of regime survival (Ades & Glaeser 1995; Wallace 2014).
+- **Armed revolutions can't be interpreted.** They come after civil wars, so the
+  pre-trends are severe.
+
 ![Coefficient plot](output/coefplot.png)
 
 ## Specification grid (`02_models.R`)
@@ -385,6 +448,8 @@ Rscript analysis/spatial-inequality-politics/08_democracy_light_levels.R
 Rscript analysis/spatial-inequality-politics/09_breakdown_deep_dive.R   # downloads the ADM1 unit table via ntl_gini_units()
 Rscript analysis/spatial-inequality-politics/10_breakdown_figure.R      # needs patchwork
 Rscript analysis/spatial-inequality-politics/11_spatial_distribution_events.R
+Rscript analysis/spatial-inequality-politics/12_war_revolution.R            # ~3 min incl. jackknife
+Rscript analysis/spatial-inequality-politics/13_war_revolution_figure.R
 ```
 
 `vdemdata` and `democracyData` are GitHub-only packages. `00_get_data.R` fetches
@@ -403,4 +468,5 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `levels_event_study.csv`, `levels_anrr_dynamic_panel.csv`, `levels_light_gdp_elasticity.csv`: democracy and light levels
 - `breakdown_events.csv`, `breakdown_events_lied.csv`, `breakdown_paths.csv`, `breakdown_jackknife.csv`, `breakdown_heterogeneity.csv`, `breakdown_heterogeneity_paths.csv`, `breakdown_paths.png`: breakdown deep dive
 - `spatial_events_country.csv`, `spatial_events_unit_ddd.csv`: spatial distribution after regime change
+- `war_revolution_events.csv`, `war_revolution_event_study.csv`, `war_revolution_jackknife.csv`, `war_revolution_paths.png`: civil wars and revolutions
 - `predictor_correlations.csv`, `coefplot.png`
