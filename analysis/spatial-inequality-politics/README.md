@@ -223,6 +223,73 @@ benchmark outcome.
   concentrated in growing middle-income countries. It is a descriptive puzzle,
   not an established effect.
 
+### What happens to light after democratic breakdowns? (`09_breakdown_deep_dive.R`, `10_breakdown_figure.R`)
+
+The events are 32 first, sustained RoW crossings from democracy to autocracy in
+1995–2021, compared with 37 always-democracies. All estimates use the Sun &
+Abraham estimator with country + region×year FE. 28 of the 32 events are
+incumbent-led erosions (e.g., Turkey 2013, Hungary 2018, India 2017, Serbia
+2014, Nicaragua 2007, El Salvador 2021). Only 4 have a coup within a year
+(Niger 1996, Fiji 2000, Thailand 2006, Honduras 2009).
+
+![Breakdown paths](output/breakdown_paths.png)
+
+**After RoW-dated breakdowns, light rises and concentrates in the core region.**
+
+| Outcome (region×year FE) | ATT | p | Pre-trend p |
+|---|---|---|---|
+| Total light | +11.2% | < .001 | .85 |
+| GDP per capita | +3.3% | .16 | .60 |
+| Light per capita minus GDP per capita | +5.3% | .09 | .60 |
+| Light in core region (brightest ADM1 in 1992–94) | **+17.5%** | < .001 | .56 |
+| Light outside the core | +8.2% | .04 | .94 |
+| Core region's share of national light | **+1.6 pp** | .02 | .59 |
+
+- **Timing.** Light starts rising around t−2 and peaks at t+1. Core-region light
+  stays 24–27% above baseline in years +2 to +5, then fades back by years
+  +6 to +8.
+- **Influence.** Dropping one country at a time leaves the ATT between +8.1%
+  and +13.8%, and it stays significant at p < .10 in every case.
+- **Not oil.** The effect comes from low-rent breakdowns (rents < 5% of GDP:
+  +16.2%, p < .001). High-rent cases go the other way (−9.2%, p = .17).
+  Excluding Guyana, Libya and Palestine gives +10.8% (p < .001).
+- **Incumbent-led.** Incumbent-led erosions give +11.8% (p < .001). There are
+  too few coup-led RoW cases (4) to say anything about them.
+- **Concentrated in recent cases.** VIIRS-era events (2012–2021) give +21.1%
+  (p = .06); DMSP-era events give +6.7% (p = .28).
+
+**The result depends on how breakdowns are defined and dated.**
+
+| Definition | Total light ATT | p | Pre-trend p |
+|---|---|---|---|
+| LIED, all breakdowns (33) | −9.0% | .18 | .02 |
+| LIED, coups & civil conflict (15) | **−21.5%** | .08 | .08 |
+| LIED, incumbent-led (18) | −5.4% | .20 | .02 |
+
+- **Coups and civil conflict dim the lights**, which is what you'd expect from
+  economic disruption.
+- **LIED incumbent-led breakdowns show light rising *before* the event date.**
+  For incumbent-led cases in both datasets, LIED dates the breakdown a median
+  **3 years later** than RoW (Turkey +5, Serbia +6, Nicaragua +9, Venezuela +6,
+  Sri Lanka +5). RoW marks the early phase of erosion. LIED marks the later loss
+  of competitive elections, by which time the rise in light has already
+  happened. That reconciles the two series, but it also shows the result is a
+  feature of the **early phase of executive aggrandizement**, not of breakdowns
+  in general.
+
+**Interpretation.** Elected incumbents eroding democracy preside over a
+temporary burst of light, concentrated in the core region. The rise is larger
+than GDP growth would predict. Three readings fit the pattern; none is tested
+here:
+1. Visible infrastructure and urban lighting as performance legitimation in the
+   regime's core.
+2. Spending booms ahead of consolidation (cf. political budget cycles).
+3. Selection: incumbents who can erode democracy tend to be ones presiding over
+   booms.
+
+Two tests would discriminate: event-time public investment or energy data, and
+light in the leader's home region versus the capital region.
+
 ![Coefficient plot](output/coefplot.png)
 
 ## Specification grid (`02_models.R`)
@@ -262,6 +329,8 @@ Rscript analysis/spatial-inequality-politics/05_figures.R
 Rscript analysis/spatial-inequality-politics/06_fixed_effects.R
 Rscript analysis/spatial-inequality-politics/07_reverse_direction.R
 Rscript analysis/spatial-inequality-politics/08_democracy_light_levels.R
+Rscript analysis/spatial-inequality-politics/09_breakdown_deep_dive.R   # downloads the ADM1 unit table via ntl_gini_units()
+Rscript analysis/spatial-inequality-politics/10_breakdown_figure.R      # needs patchwork
 ```
 
 `vdemdata` and `democracyData` are GitHub-only packages. `00_get_data.R` fetches
@@ -278,4 +347,5 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `fe_battery.csv`, `fe_robustness_summary.csv`, `fe_within_variation.csv`: fixed-effects battery
 - `reverse_crosslag.csv`, `reverse_event_study.csv`, `reverse_events.csv`, `reverse_mechanism.csv`, `reverse_within_sd.csv`: reverse-direction tests
 - `levels_event_study.csv`, `levels_anrr_dynamic_panel.csv`, `levels_light_gdp_elasticity.csv`: democracy and light levels
+- `breakdown_events.csv`, `breakdown_events_lied.csv`, `breakdown_paths.csv`, `breakdown_jackknife.csv`, `breakdown_heterogeneity.csv`, `breakdown_heterogeneity_paths.csv`, `breakdown_paths.png`: breakdown deep dive
 - `predictor_correlations.csv`, `coefplot.png`
