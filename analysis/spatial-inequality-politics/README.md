@@ -232,7 +232,14 @@ incumbent-led erosions (e.g., Turkey 2013, Hungary 2018, India 2017, Serbia
 2014, Nicaragua 2007, El Salvador 2021). Only 4 have a coup within a year
 (Niger 1996, Fiji 2000, Thailand 2006, Honduras 2009).
 
-![Breakdown paths](output/breakdown_paths.png)
+Figures (one series each, in `output/figures/`):
+
+![Total light after breakdown](output/figures/breakdown_total_light.png)
+![Core-region light after breakdown](output/figures/breakdown_core_light.png)
+![Light outside the core after breakdown](output/figures/breakdown_periphery_light.png)
+![GDP per capita after breakdown](output/figures/breakdown_gdp.png)
+![Total light after LIED incumbent-led breakdowns](output/figures/breakdown_lied_incumbent_light.png)
+![Total light after LIED coups and civil conflict](output/figures/breakdown_lied_coup_light.png)
 
 **After RoW-dated breakdowns, light rises and concentrates in the core region.**
 
@@ -358,7 +365,17 @@ events and countries with no regime change for the revolutions. All estimates
 use the Sun & Abraham estimator with country + region×year FE and no
 time-varying controls. The event list is in `war_revolution_events.csv`.
 
-![War and revolution paths](output/war_revolution_paths.png)
+Figures (one series each, in `output/figures/`):
+
+![Total light after civil-war onset](output/figures/war_total_light.png)
+![Between-region Gini after civil-war onset](output/figures/war_between_gini.png)
+![Core-region share after civil-war onset](output/figures/war_core_share.png)
+![Total light after conflict termination](output/figures/termination_total_light.png)
+![Between-region Gini after conflict termination](output/figures/termination_between_gini.png)
+![Core-region share after conflict termination](output/figures/termination_core_share.png)
+![Total light after popular-uprising revolutions](output/figures/revolution_total_light.png)
+![Between-region Gini after popular-uprising revolutions](output/figures/revolution_between_gini.png)
+![Core-region share after popular-uprising revolutions](output/figures/revolution_core_share.png)
 
 | Event | Total light | GDP pc | Between-region Gini ADM1 | Core-region share |
 |---|---|---|---|---|
@@ -446,7 +463,7 @@ Rscript analysis/spatial-inequality-politics/06_fixed_effects.R
 Rscript analysis/spatial-inequality-politics/07_reverse_direction.R
 Rscript analysis/spatial-inequality-politics/08_democracy_light_levels.R
 Rscript analysis/spatial-inequality-politics/09_breakdown_deep_dive.R   # downloads the ADM1 unit table via ntl_gini_units()
-Rscript analysis/spatial-inequality-politics/10_breakdown_figure.R      # needs patchwork
+Rscript analysis/spatial-inequality-politics/10_breakdown_figure.R
 Rscript analysis/spatial-inequality-politics/11_spatial_distribution_events.R
 Rscript analysis/spatial-inequality-politics/12_war_revolution.R            # ~3 min incl. jackknife
 Rscript analysis/spatial-inequality-politics/13_war_revolution_figure.R
@@ -466,7 +483,8 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `fe_battery.csv`, `fe_robustness_summary.csv`, `fe_within_variation.csv`: fixed-effects battery
 - `reverse_crosslag.csv`, `reverse_event_study.csv`, `reverse_events.csv`, `reverse_mechanism.csv`, `reverse_within_sd.csv`: reverse-direction tests
 - `levels_event_study.csv`, `levels_anrr_dynamic_panel.csv`, `levels_light_gdp_elasticity.csv`: democracy and light levels
-- `breakdown_events.csv`, `breakdown_events_lied.csv`, `breakdown_paths.csv`, `breakdown_jackknife.csv`, `breakdown_heterogeneity.csv`, `breakdown_heterogeneity_paths.csv`, `breakdown_paths.png`: breakdown deep dive
+- `breakdown_events.csv`, `breakdown_events_lied.csv`, `breakdown_paths.csv`, `breakdown_jackknife.csv`, `breakdown_heterogeneity.csv`, `breakdown_heterogeneity_paths.csv`: breakdown deep dive
 - `spatial_events_country.csv`, `spatial_events_unit_ddd.csv`: spatial distribution after regime change
-- `war_revolution_events.csv`, `war_revolution_event_study.csv`, `war_revolution_jackknife.csv`, `war_revolution_paths.png`: civil wars and revolutions
+- `war_revolution_events.csv`, `war_revolution_event_study.csv`, `war_revolution_jackknife.csv`: civil wars and revolutions
+- `figures/`: one event-time figure per event × outcome (breakdown_*, war_*, termination_*, revolution_*)
 - `predictor_correlations.csv`, `coefplot.png`
