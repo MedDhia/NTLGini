@@ -84,6 +84,49 @@ zones, which the subunit Parquet tables would allow.
   VIIRS-only subsamples and with country×era FE. Still, users of the package's
   within-country time series should be aware of it.
 
+### Fixed-effects battery (`06_fixed_effects.R`)
+
+This section asks whether within-country *changes* in spatial inequality track
+political change. It runs 5 predictors (the four ADM1 measures plus ADM2
+between-Gini) × 19 outcomes under 9 FE designs:
+
+- F1: country + year FE, no controls
+- F2: F1 plus time-varying controls (log GDP pc, log population, % urban, log mean radiance, resource rents)
+- F3: region×year FE
+- F4: country-specific linear trends
+- F5: country×era FE
+- F6 / F7: predictor lagged 3 / 5 years
+- F8: placebo using inequality 3 years *in the future*
+- F9: 5-year-period panel
+
+| | F1 | F2 | F3 | F4 | F5 | F6 | F7 | F8 placebo | F9 |
+|---|---|---|---|---|---|---|---|---|---|
+| p < .05 (of 95) | 13 | 20 | 19 | 12 | 15 | 15 | 11 | 4 | 10 |
+| BH-significant | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+
+- **There is little within-country variation to use.** After country and year
+  FE, only 1.4% (within-region Gini) to 9% (ADM2 between Gini) of each
+  measure's variance is left. A large share of that residual likely reflects
+  sensor noise and the 2012 seam rather than real redistribution of activity.
+- **There is still enough power for moderate effects.** The median F2 SE is
+  0.045 outcome-SD per pooled SD of inequality, so the minimum detectable effect
+  at 80% power is ≈ 0.13. The nulls are not just noise.
+- **The significant results don't point one way.** Of the 20 F2 hits, 8 are in
+  the "inequality is harmful" direction and 12 go the other way.
+- **The only BH-significant within-country result fails the identification
+  checks.** Within-region Gini → lower polyarchy (−0.26 SD, BH p = .04) is
+  stable across F1–F3, F5 and F9. But it vanishes with country trends
+  (F4: −0.07), and the *future* value of inequality predicts current democracy
+  about as well (F8: −0.21, p = .03). That pattern means slow co-moving trends
+  (democratic erosion coinciding with secular lighting trends), not inequality
+  preceding political change.
+- **The coup associations fail the placebo too.** Future between-region
+  inequality "predicts" today's coups (p ≈ .001), which points to reverse
+  causation: political shocks change the light distribution.
+- **No predictor × outcome pair is robust within countries.** Robust here means
+  BH p < .05 in F2, same-sign p < .05 in at least 6 of the 7 non-placebo
+  alternatives, and a null placebo.
+
 ![Coefficient plot](output/coefplot.png)
 
 ## Specification grid (`02_models.R`)
@@ -120,6 +163,7 @@ Rscript analysis/spatial-inequality-politics/02_models.R
 Rscript analysis/spatial-inequality-politics/03_diagnostics.R  # attenuation + cross-validation (~2 min)
 Rscript analysis/spatial-inequality-politics/04_adm2_followup.R
 Rscript analysis/spatial-inequality-politics/05_figures.R
+Rscript analysis/spatial-inequality-politics/06_fixed_effects.R
 ```
 
 `vdemdata` and `democracyData` are GitHub-only packages. `00_get_data.R` fetches
@@ -133,4 +177,5 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `attenuation.csv`: bivariate coefficient after adding each control one at a time
 - `cv_prediction.csv`: country-blocked CV, out-of-sample R² / AUC with and without the inequality measures
 - `adm2_followup.csv`, `adm2_leave_one_region_out.csv`, `adm2_jackknife.csv`
+- `fe_battery.csv`, `fe_robustness_summary.csv`, `fe_within_variation.csv`: fixed-effects battery
 - `predictor_correlations.csv`, `coefplot.png`

@@ -1,0 +1,96 @@
+"predictor","outcome","label","family","f2_est","f2_p","f2_p_bh","n_alt_sig_same","placebo_p","robust_within"
+"between_gini_adm1","conflict_incidence","Intrastate conflict (UCDP) incidence","Conflict & instability",-0.0394640942823497,0.067276608000262,0.277881641740213,3,0.732873360609664,FALSE
+"between_gini_adm1","conflict_onset","Intrastate conflict (UCDP) onset","Conflict & instability",0.000413010024713049,0.961690149989911,0.982371658591845,0,0.488744430118457,FALSE
+"between_gini_adm1","coup_attempt","Coup attempt (Powell & Thyne)","Conflict & instability",-0.0210321749575803,0.0202006448923376,0.186701185972558,3,0.00112659224546213,FALSE
+"between_gini_adm1","fh_total_rev","Freedom House (higher = freer)","Regime",0.0367903804109047,0.466631705651356,0.705460262029671,0,0.887876716489854,FALSE
+"between_gini_adm1","lexical_index","LIED lexical index","Regime",0.0314260345183356,0.593683980725502,0.764427859257858,0,0.868813943430653,FALSE
+"between_gini_adm1","polity2","Polity2","Regime",0.0316713118750344,0.465873077846137,0.705460262029671,2,0.974818991868494,FALSE
+"between_gini_adm1","uds_z1","Extended UDS","Regime",0.018247551956284,0.630211226610878,0.767564955487607,0,0.9986115240627,FALSE
+"between_gini_adm1","v2cagenmob","Mass mobilization","Conflict & instability",-0.0447728987617301,0.438797758645764,0.705460262029671,0,0.675709130968788,FALSE
+"between_gini_adm1","v2caviol","Political violence","Conflict & instability",-0.0461137118625809,0.435324669966145,0.705460262029671,0,0.862753112679743,FALSE
+"between_gini_adm1","v2clgeocl","Civil liberties equal urban-rural","Geographic exclusion",-0.00274836844694575,0.904104204236388,0.959801414327443,0,0.778387647313539,FALSE
+"between_gini_adm1","v2peapsgeo","Public-service access equal urban-rural","Geographic exclusion",0.0184853107495639,0.387512439006465,0.694597768030456,0,0.449903560708027,FALSE
+"between_gini_adm1","v2pepwrgeo","Power equal across urban-rural","Geographic exclusion",-0.0198668737590812,0.597578403059495,0.764427859257858,0,0.918746368845316,FALSE
+"between_gini_adm1","v2stfisccap","Fiscal capacity","Governance",0.0305060496716858,0.319579182935195,0.60720044757687,0,0.605008520953079,FALSE
+"between_gini_adm1","v2svstterr","State authority over territory","Governance",0.0623015400893443,0.473552488258673,0.705460262029671,1,0.961411370328651,FALSE
+"between_gini_adm1","v2x_corr","Political corruption","Governance",-0.0125291516996281,0.603495678361467,0.764427859257858,2,0.772702625641371,FALSE
+"between_gini_adm1","v2x_libdem","Liberal democracy","Regime",0.0482942461591749,0.0838900294910534,0.284626885773217,2,0.323480704106522,FALSE
+"between_gini_adm1","v2x_polyarchy","Electoral democracy (polyarchy)","Regime",0.0720841606882936,0.0326305742352475,0.186701185972558,4,0.208095406670564,FALSE
+"between_gini_adm1","v2x_rule","Rule of law","Governance",0.0600181192728265,0.0353749615526953,0.186701185972558,3,0.43544525265549,FALSE
+"between_gini_adm1","v2xpe_exlgeo","Exclusion by urban-rural location","Geographic exclusion",-0.00155444721195585,0.941394163801413,0.972091799577546,0,0.945812263314441,FALSE
+"between_gini_adm2","conflict_incidence","Intrastate conflict (UCDP) incidence","Conflict & instability",-0.048553035179123,0.0291558935504339,0.186701185972558,3,0.854065398026161,FALSE
+"between_gini_adm2","conflict_onset","Intrastate conflict (UCDP) onset","Conflict & instability",-0.000992065430473129,0.900202456468437,0.959801414327443,0,0.856280212892256,FALSE
+"between_gini_adm2","coup_attempt","Coup attempt (Powell & Thyne)","Conflict & instability",-0.0214041769900953,0.0155101827010844,0.186701185972558,3,0.0628203014203524,FALSE
+"between_gini_adm2","fh_total_rev","Freedom House (higher = freer)","Regime",0.0205454502135388,0.710286936169845,0.847622575839286,0,0.908866985259709,FALSE
+"between_gini_adm2","lexical_index","LIED lexical index","Regime",0.0301232855316515,0.622490269896696,0.767564955487607,0,0.714992987233632,FALSE
+"between_gini_adm2","polity2","Polity2","Regime",0.0253205907702364,0.582856414003232,0.764427859257858,0,0.586297708820966,FALSE
+"between_gini_adm2","uds_z1","Extended UDS","Regime",0.00522889720347754,0.893885632283601,0.959801414327443,0,0.910065834528817,FALSE
+"between_gini_adm2","v2cagenmob","Mass mobilization","Conflict & instability",-0.0551975693070116,0.36595676506768,0.68168417022411,0,0.429437069657021,FALSE
+"between_gini_adm2","v2caviol","Political violence","Conflict & instability",-0.044935693145454,0.482683337178196,0.705460262029671,0,0.758561500149705,FALSE
+"between_gini_adm2","v2clgeocl","Civil liberties equal urban-rural","Geographic exclusion",0.00327525348876784,0.891352519043697,0.959801414327443,0,0.75397608261265,FALSE
+"between_gini_adm2","v2peapsgeo","Public-service access equal urban-rural","Geographic exclusion",0.0289442814379128,0.22510999433425,0.537335177571008,0,0.328148698633019,FALSE
+"between_gini_adm2","v2pepwrgeo","Power equal across urban-rural","Geographic exclusion",-0.000538239069175511,0.989277184221675,0.989277184221675,0,0.500301662574936,FALSE
+"between_gini_adm2","v2stfisccap","Fiscal capacity","Governance",0.0228763380122254,0.465563732501064,0.705460262029671,0,0.757806039440511,FALSE
+"between_gini_adm2","v2svstterr","State authority over territory","Governance",0.0985504716965295,0.301602998563631,0.597871789238895,1,0.653951492355152,FALSE
+"between_gini_adm2","v2x_corr","Political corruption","Governance",0.0021317904733105,0.933993636905123,0.972091799577546,0,0.748604726733777,FALSE
+"between_gini_adm2","v2x_libdem","Liberal democracy","Regime",0.0424555190656963,0.205100052684548,0.526707544833731,0,0.238602896189303,FALSE
+"between_gini_adm2","v2x_polyarchy","Electoral democracy (polyarchy)","Regime",0.0731282478489278,0.0647492094473009,0.277881641740213,1,0.11570925521006,FALSE
+"between_gini_adm2","v2x_rule","Rule of law","Governance",0.0366113796544257,0.208509492848727,0.526707544833731,0,0.47989866684324,FALSE
+"between_gini_adm2","v2xpe_exlgeo","Exclusion by urban-rural location","Geographic exclusion",-0.00706170013488469,0.74150949474945,0.869671629644416,0,0.893906342767798,FALSE
+"between_share_adm1","conflict_incidence","Intrastate conflict (UCDP) incidence","Conflict & instability",-0.0324816192614145,0.11534056283612,0.365245115647714,3,0.606541698212663,FALSE
+"between_share_adm1","conflict_onset","Intrastate conflict (UCDP) onset","Conflict & instability",0.00147573583153829,0.859907837729969,0.959801414327443,0,0.366792034608686,FALSE
+"between_share_adm1","coup_attempt","Coup attempt (Powell & Thyne)","Conflict & instability",-0.019534274603533,0.0246522951468293,0.186701185972558,3,0.00102624717545946,FALSE
+"between_share_adm1","fh_total_rev","Freedom House (higher = freer)","Regime",0.0278037009981404,0.574740809917844,0.764427859257858,0,0.972201326401345,FALSE
+"between_share_adm1","lexical_index","LIED lexical index","Regime",0.0169509749045782,0.765442170616738,0.884279450348996,0,0.98038907936763,FALSE
+"between_share_adm1","polity2","Polity2","Regime",0.0235242935768833,0.569338990738478,0.764427859257858,2,0.888992226501572,FALSE
+"between_share_adm1","uds_z1","Extended UDS","Regime",0.013522116407861,0.713787432285715,0.847622575839286,0,0.900828426532259,FALSE
+"between_share_adm1","v2cagenmob","Mass mobilization","Conflict & instability",-0.039891977092794,0.475975565616607,0.705460262029671,0,0.77124887074426,FALSE
+"between_share_adm1","v2caviol","Political violence","Conflict & instability",-0.0443118239420885,0.430890743599251,0.705460262029671,0,0.875632499360561,FALSE
+"between_share_adm1","v2clgeocl","Civil liberties equal urban-rural","Geographic exclusion",-0.00253558771481839,0.909285550415472,0.959801414327443,0,0.862810977683088,FALSE
+"between_share_adm1","v2peapsgeo","Public-service access equal urban-rural","Geographic exclusion",0.0145860893201476,0.468572940737009,0.705460262029671,0,0.475102828683205,FALSE
+"between_share_adm1","v2pepwrgeo","Power equal across urban-rural","Geographic exclusion",-0.0188951886582823,0.614948015963632,0.767564955487607,0,0.918107817182434,FALSE
+"between_share_adm1","v2stfisccap","Fiscal capacity","Governance",0.0256379683785866,0.386205505171471,0.694597768030456,0,0.55386262323414,FALSE
+"between_share_adm1","v2svstterr","State authority over territory","Governance",0.0519857609192862,0.5288015462346,0.749793237198313,1,0.94545897860624,FALSE
+"between_share_adm1","v2x_corr","Political corruption","Governance",-0.013556805101927,0.562905767120745,0.764427859257858,2,0.914218270668906,FALSE
+"between_share_adm1","v2x_libdem","Liberal democracy","Regime",0.0477384954208457,0.0720637324734396,0.284626885773217,1,0.294063011943309,FALSE
+"between_share_adm1","v2x_polyarchy","Electoral democracy (polyarchy)","Regime",0.0690091979687796,0.0337162076498887,0.186701185972558,4,0.211146035429775,FALSE
+"between_share_adm1","v2x_rule","Rule of law","Governance",0.0561149460499811,0.0396972244566751,0.198486122283375,3,0.401097635836618,FALSE
+"between_share_adm1","v2xpe_exlgeo","Exclusion by urban-rural location","Geographic exclusion",-0.000321238956649718,0.987822217182205,0.989277184221675,0,0.973239806556621,FALSE
+"total_gini","conflict_incidence","Intrastate conflict (UCDP) incidence","Conflict & instability",-0.0648586242743601,0.00957082009959675,0.186701185972558,4,0.137461559136953,FALSE
+"total_gini","conflict_onset","Intrastate conflict (UCDP) onset","Conflict & instability",-0.00830608164628666,0.237528682340458,0.547216977103882,0,0.251579987867923,FALSE
+"total_gini","coup_attempt","Coup attempt (Powell & Thyne)","Conflict & instability",-0.0151955036584668,0.191874906837618,0.520803318559249,0,0.538166685799727,FALSE
+"total_gini","fh_total_rev","Freedom House (higher = freer)","Regime",0.0964446909949883,0.0522619521157057,0.236423116713907,3,0.0878734413188523,FALSE
+"total_gini","lexical_index","LIED lexical index","Regime",0.159388680391506,0.0335198655431489,0.186701185972558,6,0.104423331935138,FALSE
+"total_gini","polity2","Polity2","Regime",0.160228861862386,0.0128661762376419,0.186701185972558,4,0.0378561703009173,FALSE
+"total_gini","uds_z1","Extended UDS","Regime",0.0652982041975559,0.133852621810794,0.410193518452434,0,0.141702253541567,FALSE
+"total_gini","v2cagenmob","Mass mobilization","Conflict & instability",-0.0556508128364418,0.440847079262698,0.705460262029671,0,0.382816609939761,FALSE
+"total_gini","v2caviol","Political violence","Conflict & instability",-0.0431922244509188,0.56975934822221,0.764427859257858,2,0.637217887481708,FALSE
+"total_gini","v2clgeocl","Civil liberties equal urban-rural","Geographic exclusion",0.0381871830848071,0.210683017933492,0.526707544833731,1,0.686023213751596,FALSE
+"total_gini","v2peapsgeo","Public-service access equal urban-rural","Geographic exclusion",0.0457531508752186,0.0820905140286826,0.284626885773217,1,0.421008463728433,FALSE
+"total_gini","v2pepwrgeo","Power equal across urban-rural","Geographic exclusion",0.0403081315394627,0.308375975502167,0.597871789238895,0,0.349998931251939,FALSE
+"total_gini","v2stfisccap","Fiscal capacity","Governance",0.0604165100604267,0.159643233360115,0.446061975565028,1,0.752330003727825,FALSE
+"total_gini","v2svstterr","State authority over territory","Governance",0.113555098871516,0.226246390556214,0.537335177571008,1,0.329562824004312,FALSE
+"total_gini","v2x_corr","Political corruption","Governance",-0.0245704745937646,0.497723452053728,0.716420120380367,0,0.980417753631446,FALSE
+"total_gini","v2x_libdem","Liberal democracy","Regime",0.0626412252384966,0.258557265050679,0.547216977103882,0,0.275471619996373,FALSE
+"total_gini","v2x_polyarchy","Electoral democracy (polyarchy)","Regime",0.0881375884287439,0.151599321146014,0.436422288147617,0,0.199478612475873,FALSE
+"total_gini","v2x_rule","Rule of law","Governance",0.0771190553694011,0.0806840694248714,0.284626885773217,1,0.312964845222103,FALSE
+"total_gini","v2xpe_exlgeo","Exclusion by urban-rural location","Geographic exclusion",-0.0538580824451156,0.0301267095461583,0.186701185972558,2,0.297038480304059,FALSE
+"within_gini_adm1","conflict_incidence","Intrastate conflict (UCDP) incidence","Conflict & instability",0.063852683050083,0.150178465487646,0.436422288147617,1,0.924660967415233,FALSE
+"within_gini_adm1","conflict_onset","Intrastate conflict (UCDP) onset","Conflict & instability",-0.00273818895150543,0.892595563403066,0.959801414327443,0,0.361049363025466,FALSE
+"within_gini_adm1","coup_attempt","Coup attempt (Powell & Thyne)","Conflict & instability",0.0668926378650875,0.0212974842278069,0.186701185972558,2,0.0699593635052883,FALSE
+"within_gini_adm1","fh_total_rev","Freedom House (higher = freer)","Regime",-0.237841262299916,0.0223926357924336,0.186701185972558,3,0.182291722488368,FALSE
+"within_gini_adm1","lexical_index","LIED lexical index","Regime",-0.229904537471738,0.0489946808948699,0.232724734250632,0,0.416471412141647,FALSE
+"within_gini_adm1","polity2","Polity2","Regime",-0.228696911517783,0.03365108531324,0.186701185972558,1,0.304147523048171,FALSE
+"within_gini_adm1","uds_z1","Extended UDS","Regime",-0.182753733574313,0.0296372021654592,0.186701185972558,2,0.201159126060706,FALSE
+"within_gini_adm1","v2cagenmob","Mass mobilization","Conflict & instability",0.0339635710864302,0.772580993462807,0.884279450348996,0,0.834599289190217,FALSE
+"within_gini_adm1","v2caviol","Political violence","Conflict & instability",0.166792913168537,0.289304803995303,0.597477312598995,0,0.196172040318251,FALSE
+"within_gini_adm1","v2clgeocl","Civil liberties equal urban-rural","Geographic exclusion",-0.104452573265822,0.0758578195238684,0.284626885773217,0,0.0749872623936136,FALSE
+"within_gini_adm1","v2peapsgeo","Public-service access equal urban-rural","Geographic exclusion",-0.0540203900513771,0.304493747209021,0.597871789238895,0,0.159794758258839,FALSE
+"within_gini_adm1","v2pepwrgeo","Power equal across urban-rural","Geographic exclusion",-0.0754831644752404,0.244489088216585,0.547216977103882,0,0.151689758120845,FALSE
+"within_gini_adm1","v2stfisccap","Fiscal capacity","Governance",-0.13517309715184,0.10338270886244,0.338667494549373,0,0.612040198693549,FALSE
+"within_gini_adm1","v2svstterr","State authority over territory","Governance",-0.169183744672866,0.473024193695024,0.705460262029671,0,0.183112567763498,FALSE
+"within_gini_adm1","v2x_corr","Political corruption","Governance",0.0692663161659433,0.25920804178605,0.547216977103882,0,0.918492852404794,FALSE
+"within_gini_adm1","v2x_libdem","Liberal democracy","Regime",-0.16816382240395,0.00673438759411021,0.186701185972558,4,0.0587381721957869,FALSE
+"within_gini_adm1","v2x_polyarchy","Electoral democracy (polyarchy)","Regime",-0.257490006586278,0.000436053517779489,0.0414250841890514,5,0.0268409428101427,FALSE
+"within_gini_adm1","v2x_rule","Rule of law","Governance",-0.181830367480499,0.00845702522705916,0.186701185972558,4,0.147618561604952,FALSE
+"within_gini_adm1","v2xpe_exlgeo","Exclusion by urban-rural location","Geographic exclusion",0.0690431762503648,0.253682950364532,0.547216977103882,0,0.221897222919771,FALSE
