@@ -33,4 +33,10 @@ if (!file.exists(wdi_file)) {
   )
   saveRDS(w, wdi_file)
 }
+elec_file <- file.path(cache, "wdi_elec.rds")
+if (!file.exists(elec_file)) {
+  saveRDS(WDI::WDI(indicator = c(elec = "EG.ELC.ACCS.ZS", elec_rural = "EG.ELC.ACCS.RU.ZS",
+                                 elec_urban = "EG.ELC.ACCS.UR.ZS"),
+                   start = 1990, end = 2024, extra = TRUE), elec_file)
+}
 message("Data cached in ", cache)

@@ -219,6 +219,7 @@ Rscript analysis/spatial-inequality-politics/03_diagnostics.R also needs WDI ele
 Rscript analysis/spatial-inequality-politics/04_adm2_followup.R
 Rscript analysis/spatial-inequality-politics/05_figures.R
 Rscript analysis/spatial-inequality-politics/06_fixed_effects.R
+Rscript analysis/spatial-inequality-politics/07_reverse_direction.R
 ```
 
 `vdemdata` and `democracyData` are GitHub-only packages. `00_get_data.R` fetches
@@ -233,4 +234,5 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `cv_prediction.csv`: country-blocked CV, out-of-sample R² / AUC with and without the inequality measures
 - `adm2_followup.csv`, `adm2_leave_one_region_out.csv`, `adm2_jackknife.csv`
 - `fe_battery.csv`, `fe_robustness_summary.csv`, `fe_within_variation.csv`: fixed-effects battery
+- `reverse_crosslag.csv`, `reverse_event_study.csv`, `reverse_events.csv`, `reverse_mechanism.csv`, `reverse_within_sd.csv`: reverse-direction tests
 - `predictor_correlations.csv`, `coefplot.png`
