@@ -423,6 +423,68 @@ Caterpillar plots (one series each, point estimate + 95% CI per event year, in `
 - **Armed revolutions can't be interpreted.** They come after civil wars, so the
   pre-trends are severe.
 
+### Screen: which political events move the spatial distribution of light? (`14_event_screen.R`, `15_screen_figures.R`)
+
+**Design.** 16 event types, each with its first qualifying event per country in
+1995–2021. All use the same estimator (Sun & Abraham, country + region×year FE,
+no controls, window −6 to +10) on six spatial measures: total, between-ADM1,
+within-ADM1 and between-ADM2 Gini, core-region share, and darkest-third share.
+The new event types are:
+- successful coups (Powell & Thyne, via V-Dem);
+- failed coup attempts;
+- first-ever electoral turnover (LIED);
+- introduction of elected regional or local government (V-Dem `v2elsrgel` / `v2ellocelc` crossing from not elected to elected);
+- mass-mobilization surges (`v2cagenmob` entering the top 5%);
+- repression surges (a fall of ≥ 0.15 in the physical-integrity index).
+
+They join the regime-change, war and revolution events from the sections above.
+Election cycles (repeated events) are estimated separately as distributed
+leads and lags of national election years.
+
+**Selection rule.**
+- *Significant:* BH q < .05 across all 192 tests (16 events × 6 outcomes × {ATT years 0–10, years 5–9}), a pre-trend p > .10, and p < .05 in ≥ 80% of drop-one-country re-estimates.
+- *Suggestive:* the same, with q < .10.
+
+**Results.**
+- 28 of 192 tests have p < .05 (about 10 would be expected by chance). Only 2
+  have q < .05, and both have pre-trends: repression surges → core share, and
+  LIED autocratization → darkest-third share.
+- **No event passes the strict rule.**
+- **Three pass the suggestive rule.** All are effects that build up over years
+  5–9:
+
+| Event | Outcome | Years 5–9 | BH q | Pre-trend p | Drop-one-country, share p < .05 |
+|---|---|---|---|---|---|
+| Failed coup attempt (30) | Between-region Gini ADM1 | +3.9 Gini points | .07 | .64 | 100% |
+| Failed coup attempt (30) | Core-region share | +3.5 pp | .08 | .30 | 100% |
+| Popular-uprising revolution (11) | Core-region share | +2.8 pp | .07 | .91 | 91% |
+
+- **There is a consistent direction across event types,** though no single type
+  clears the strict bar. In the core-share caterpillar plot, the events with the
+  largest positive years 5–9 effects are all irregular seizures or uses of power:
+  repression surges (+5.0, with a pre-trend), successful coups (+4.6, p = .02),
+  failed coups (+3.5), popular revolutions (+2.8) and RoW autocratization
+  (+2.0, p = .02). Introducing elected regional or local government points the
+  other way (−0.6, −1.2; both n.s.).
+- A plausible reading is that regimes facing a threat to their hold on power
+  (a coup attempt, an uprising, a crackdown) concentrate resources in the core.
+  This is consistent with coup-proofing and urban-bias accounts. Taken one at a
+  time, each is suggestive, not established.
+- **Election cycles** show no effect on any spatial measure, in competitive or
+  non-competitive regimes (no lead/lag coefficient has q < .10).
+
+**Figures** (caterpillar plots, one per file in `output/figures/`):
+- Overview of all 16 event types for each spatial measure and window:
+  `screen_<outcome>_att.png`, `screen_<outcome>_years5_9.png`
+  (12 plots; filled = passes the suggestive rule, + = pre-trend).
+- Year-by-year paths for the three suggestive results:
+
+![Core-region share, years 5-9, all events](output/figures/screen_core_share_years5_9.png)
+![Between-region Gini, years 5-9, all events](output/figures/screen_between_gini_adm1_years5_9.png)
+![Between-region Gini after failed coup attempts](output/figures/screen_path_failed_coup_attempt_between_gini_adm1.png)
+![Core-region share after failed coup attempts](output/figures/screen_path_failed_coup_attempt_core_share.png)
+![Core-region share after popular-uprising revolutions](output/figures/screen_path_revolution_popular_uprising_core_share.png)
+
 ![Coefficient plot](output/coefplot.png)
 
 ## Specification grid (`02_models.R`)
@@ -467,6 +529,8 @@ Rscript analysis/spatial-inequality-politics/10_breakdown_figure.R
 Rscript analysis/spatial-inequality-politics/11_spatial_distribution_events.R
 Rscript analysis/spatial-inequality-politics/12_war_revolution.R            # ~3 min incl. jackknife
 Rscript analysis/spatial-inequality-politics/13_war_revolution_figure.R
+Rscript analysis/spatial-inequality-politics/14_event_screen.R              # ~1 min
+Rscript analysis/spatial-inequality-politics/15_screen_figures.R
 ```
 
 `vdemdata` and `democracyData` are GitHub-only packages. `00_get_data.R` fetches
@@ -487,4 +551,5 @@ democracyData `84290a7`), so neither package needs to be installed.
 - `spatial_events_country.csv`, `spatial_events_unit_ddd.csv`: spatial distribution after regime change
 - `war_revolution_events.csv`, `war_revolution_event_study.csv`, `war_revolution_jackknife.csv`: civil wars and revolutions
 - `figures/`: one event-time caterpillar plot per event × outcome (breakdown_*, war_*, termination_*, revolution_*)
+- `screen_events.csv`, `screen_paths.csv`, `screen_summary.csv`, `screen_tests.csv`, `screen_election_cycles.csv`: event screen
 - `predictor_correlations.csv`, `coefplot.png`
